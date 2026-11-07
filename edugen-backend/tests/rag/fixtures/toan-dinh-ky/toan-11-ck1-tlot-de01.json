@@ -1,0 +1,243 @@
+{
+ "id": "toan-11-ck1-tlot-de01",
+ "exam": "Đề kiểm tra cuối kì 1 Toán 11 – Đề số 01 (bộ đề chương trình mới, Tailieuonthi)",
+ "heading": "Toán 11 CK1 đề 01",
+ "subject": "toan",
+ "grade": 11,
+ "exam_kind": "dinh_ky_7991",
+ "term": "cuoi_ky_1",
+ "ma_de": "01",
+ "duration_min": null,
+ "source_exam": "PDF 'Đề Số 01 - GV-stamped.pdf', thư mục Drive 'Đề C3/Lớp 11/Đề Thi - Đề Minh Họa/Bộ Đề Thi Cuối Kì 1 Toán 11 chương trình mới có đáp án_1/Lời giải' (watermark Tailieuonthi.edu.vn); bản scan, nhóm chép tay",
+ "source_key": "Lời giải chi tiết trong cùng file (Tailieuonthi, không chính thức)",
+ "images": [],
+ "official": false,
+ "confidence": "medium",
+ "topic_labels": "nhóm tự gán (không chính thức)",
+ "level_labels": "nhóm tự gán 2026-11-05 theo quy tắc của toan-matrix/derived-tn-*.yaml (Biết: một kiến thức/công thức dùng trực tiếp; Hiểu: kết hợp hai kiến thức hoặc tính ngắn rồi diễn giải; Vận dụng: nhiều bước, mô hình thực tế hoặc ý không quen), không chính thức, độ tin cậy medium",
+ "skipped": "Chỉ giữ câu thuộc chủ đề có trong đề TN (Toán topic list). Bỏ: Phần I câu 5–8, Phần II câu 2–3, Phần III câu 3–4 (giới hạn, hàm số liên tục: Toán 11 Chương V).",
+ "questions": [
+  {
+   "part": "I",
+   "cau": 1,
+   "topic": "dai_so_giai_tich/luong_giac",
+   "stem": "Tìm nghiệm của phương trình $\\sin 2x=1$.",
+   "options": {
+    "A": "$x=\\dfrac{\\pi}{2}+k2\\pi$",
+    "B": "$x=\\dfrac{\\pi}{4}+k\\pi$",
+    "C": "$x=\\dfrac{\\pi}{4}+k2\\pi$",
+    "D": "$x=\\dfrac{k\\pi}{2}$"
+   },
+   "answer": "B",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/day_so_cap_so",
+   "stem": "Cho dãy số $(u_n)$, biết $u_n=(-1)^n\\cdot\\dfrac{2^n}{n}$. Tìm số hạng $u_3$.",
+   "options": {
+    "A": "$u_3=\\dfrac{8}{3}$",
+    "B": "$u_3=2$",
+    "C": "$u_3=-2$",
+    "D": "$u_3=-\\dfrac{8}{3}$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 3,
+   "topic": "dai_so_giai_tich/day_so_cap_so",
+   "stem": "Dãy số nào sau đây là cấp số cộng?",
+   "options": {
+    "A": "$1;2;3;4;5$",
+    "B": "$1;2;4;8;16$",
+    "C": "$1;-1;1;-1;1$",
+    "D": "$1;-3;9;-27;81$"
+   },
+   "answer": "A",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 4,
+   "topic": "dai_so_giai_tich/day_so_cap_so",
+   "stem": "Trong các dãy số sau, dãy số nào **không phải** là một cấp số nhân?",
+   "options": {
+    "A": "$2;\\ 4;\\ 8;\\ 16;\\ \\ldots$",
+    "B": "$1;\\ -1;\\ 1;\\ -1;\\ \\ldots$",
+    "C": "$1^2;\\ 2^2;\\ 3^2;\\ 4^2;\\ \\ldots$",
+    "D": "$a;\\ a^3;\\ a^5;\\ a^7;\\ \\ldots\\ (a\\neq 0)$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 9,
+   "topic": "hinh_hoc_do_luong/quan_he_song_song",
+   "stem": "Cho ba mặt phẳng phân biệt $(\\alpha),(\\beta),(\\gamma)$ có $(\\alpha)\\cap(\\beta)=d_1$; $(\\beta)\\cap(\\gamma)=d_2$; $(\\alpha)\\cap(\\gamma)=d_3$. Khi đó ba đường thẳng $d_1,d_2,d_3$:",
+   "options": {
+    "A": "Đôi một cắt nhau.",
+    "B": "Đôi một song song.",
+    "C": "Đồng quy.",
+    "D": "Đôi một song song hoặc đồng quy."
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 10,
+   "topic": "hinh_hoc_do_luong/quan_he_song_song",
+   "stem": "Trong các mệnh đề sau, mệnh đề nào đúng?",
+   "options": {
+    "A": "Hai đường thẳng cùng song song với một mặt phẳng thì song song với nhau.",
+    "B": "Hai đường thẳng cùng song song với một mặt phẳng thì trùng nhau.",
+    "C": "Hai đường thẳng cùng song song với một mặt phẳng thì chéo nhau.",
+    "D": "Hai đường thẳng cùng song song với một mặt phẳng có thể chéo nhau, song song, cắt nhau hoặc trùng nhau."
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 11,
+   "topic": "hinh_hoc_do_luong/quan_he_song_song",
+   "stem": "Cho hai mặt phẳng phân biệt $(P)$ và $(Q)$; đường thẳng $a\\subset(P)$; $b\\subset(Q)$. Tìm khẳng định **sai** trong các mệnh đề sau.",
+   "options": {
+    "A": "Nếu $(P)\\parallel(Q)$ thì $a\\parallel b$.",
+    "B": "Nếu $(P)\\parallel(Q)$ thì $b\\parallel(P)$.",
+    "C": "Nếu $(P)\\parallel(Q)$ thì $a$ và $b$ hoặc song song hoặc chéo nhau.",
+    "D": "Nếu $(P)\\parallel(Q)$ thì $a\\parallel(Q)$."
+   },
+   "answer": "A",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 12,
+   "topic": "hinh_hoc_do_luong/quan_he_song_song",
+   "stem": "Cho hình lăng trụ $ABCD.A'B'C'D'$. Tìm mệnh đề sai trong các mệnh đề sau",
+   "figure": "Hình lăng trụ tứ giác $ABCD.A'B'C'D'$, đáy trên $ABCD$, đáy dưới $A'B'C'D'$.",
+   "options": {
+    "A": "$mp(AA'B'B)$ song song với $mp(CC'D'D)$.",
+    "B": "Diện tích hai mặt bên bất kì bằng nhau.",
+    "C": "$AA'$ song song với $CC'$.",
+    "D": "Hai mặt phẳng đáy song song với nhau."
+   },
+   "answer": "B",
+   "level": "Hiểu"
+  },
+  {
+   "part": "II",
+   "cau": 1,
+   "topic": "dai_so_giai_tich/day_so_cap_so",
+   "stem": "Litva sẽ tham gia vào cộng đồng chung châu Âu sử dụng đồng Euro là đồng tiền chung vào ngày 01 tháng 01 năm 2015. Để kỷ niệm thời khắc lịch sử này, chính quyền đất nước này quyết định dùng $122550$ đồng tiền xu Litas Lithuania cũ của đất nước để xếp một mô hình kim tự tháp. Biết rằng tầng dưới cùng có $4901$ đồng và cứ lên thêm một tầng thì số đồng xu giảm đi $100$ đồng.",
+   "figure": "Ảnh chụp mô hình kim tự tháp xếp bằng đồng xu.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Theo đề bài, đồng tiền xu Litas Lithuania cũ xếp thành một mô hình kim tự tháp, gồm $n$ tầng, số đồng xu các tầng tạo thành cấp số cộng có số hạng đầu bằng $4901$ (tầng dưới cùng) và công sai bằng $-100$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Tầng $40$ của kim tự tháp trên có $2097$ đồng xu.",
+     "answer": false
+    },
+    {
+     "label": "c",
+     "text": "Tổng số đồng xu được dùng để xếp cho 10 tầng đầu tiên (tính từ tầng dưới cùng) của kim tự tháp trên là: $90097$ đồng xu.",
+     "answer": false
+    },
+    {
+     "label": "d",
+     "text": "Mô hình Kim tự tháp này có tất cả $50$ tầng.",
+     "answer": true
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Biết",
+    "Hiểu",
+    "Vận dụng"
+   ],
+   "level": "Vận dụng"
+  },
+  {
+   "part": "II",
+   "cau": 4,
+   "topic": "hinh_hoc_do_luong/quan_he_song_song",
+   "stem": "Cho hình chóp tứ giác $S.ABCD$ có đáy $ABCD$ là hình vuông cạnh $a$ và $SA=SB=SC=SD$. Gọi $M$ và $N$ lần lượt là trung điểm của $SA$ và $SC$. Xét tính đúng – sai của các mệnh đề sau?",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Các mặt bên của hình chóp là các tam giác đều.",
+     "answer": false
+    },
+    {
+     "label": "b",
+     "text": "Giao tuyến của $(SAB)$ và $(SCD)$ là đường thẳng đi qua $S$ và song song với $AB$.",
+     "answer": true
+    },
+    {
+     "label": "c",
+     "text": "$MN\\parallel(ABCD)$.",
+     "answer": true
+    },
+    {
+     "label": "d",
+     "text": "Mặt phẳng $(\\alpha)$ đi qua $M$ và $N$ song song với $AB$ cắt cạnh $SB$ tại $P$, cạnh $SD$ tại $Q$ thì diện tích của tứ giác $MPNQ$ là $\\dfrac{a^2}{2}$.",
+     "answer": false
+    }
+   ],
+   "statement_levels": [
+    "Hiểu",
+    "Hiểu",
+    "Biết",
+    "Vận dụng"
+   ],
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 1,
+   "topic": "dai_so_giai_tich/luong_giac",
+   "stem": "Hằng ngày, mực nước của con kênh lên xuống theo thủy triều. Độ sâu $h$ (m) của mực nước trong kênh tính theo thời gian $t$ (h) được cho bởi công thức $h=3\\cos\\left(\\dfrac{\\pi t}{12}+\\dfrac{\\pi}{3}\\right)+12$ $(0\\le t\\le 24)$. Xác định thời điểm trong ngày khi chiều cao của mực nước trong kênh là $15$ m.",
+   "answer": "20",
+   "answer_value": 20,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/day_so_cap_so",
+   "stem": "Người ta trồng $465$ cây trong một khu vườn hình tam giác như sau: Hàng thứ nhất có $1$ cây, hàng thứ hai có $2$ cây, hàng thứ ba có $3$ cây… Số hàng cây trong khu vườn là bao nhiêu?",
+   "answer": "30",
+   "answer_value": 30,
+   "level": "Hiểu"
+  },
+  {
+   "part": "III",
+   "cau": 5,
+   "topic": "hinh_hoc_do_luong/quan_he_song_song",
+   "stem": "Cho hình chóp $S.ABCD$ có $SA$ vuông góc với mặt đáy, $ABCD$ là hình vuông cạnh $\\sqrt{2}$, $SA=2$. Gọi $M$ là trung điểm cạnh $SC$, $(\\alpha)$ là mặt phẳng đi qua $A$, $M$ và song song với đường thẳng $BD$. Tính diện tích thiết diện của hình chóp bị cắt bởi mặt phẳng $(\\alpha)$.",
+   "rounding": "hàng phần trăm",
+   "answer": "0,94",
+   "answer_value": 0.94,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 6,
+   "topic": "hinh_hoc_do_luong/quan_he_song_song",
+   "stem": "Cho hình hộp $ABCD.A'B'C'D'$. Trên các cạnh $AA'$; $BB'$; $CC'$ lần lượt lấy ba điểm $M,N,P$ sao cho $\\dfrac{A'M}{AA'}=\\dfrac{1}{3}$; $\\dfrac{B'N}{BB'}=\\dfrac{2}{3}$; $\\dfrac{C'P}{CC'}=\\dfrac{1}{2}$. Biết mặt phẳng $(MNP)$ cắt cạnh $DD'$ tại $Q$. Tính tỉ số $\\dfrac{D'Q}{DD'}$. (Làm tròn kết quả đến chữ số thập phân thứ hai)",
+   "rounding": "hàng phần trăm",
+   "answer": "0,17",
+   "answer_value": 0.17,
+   "level": "Vận dụng"
+  }
+ ]
+}

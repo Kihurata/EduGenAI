@@ -3,8 +3,12 @@
 import json
 from pathlib import Path
 
+from qdrant_client import QdrantClient
+
 from app.rag.dto import Chunk
+from app.rag.storage.qdrant import index_chunks
 from app.rag.vocab import PART_BY_TYPE
+from tests.rag.fakes import FakeEmbedder
 
 RAG_TESTS = Path(__file__).parent
 FIXTURES = RAG_TESTS / "fixtures"
@@ -47,6 +51,13 @@ def exam_item(i, topic=DAO_HAM, part="I", subject="toan"):
                  chapter="", lesson="", section="", heading_path=f"Phần {part} > Câu {i}", source="de.json",
                  page=None, official=True, year=2025, exam_code="0101", part=part, question_no=i, topic=topic,
                  type={v: t for t, v in PART_BY_TYPE.items()}[part])
+
+
+def memory_client(chunks=()):
+    client = QdrantClient(":memory:")
+    if chunks:
+        index_chunks(client, list(chunks), FakeEmbedder())
+    return client
 
 
 def cell(qtype="multiple_choice", count=1, topic=DAO_HAM, level="Biết", **extra):

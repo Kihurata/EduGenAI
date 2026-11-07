@@ -1,0 +1,34 @@
+{
+  "source": "SGK Toán 12 Kết nối tri thức, tập 1 and tập 2, tables of contents (official textbook, confidence high); topic codes from the vault's Toán topic list",
+  "books": {
+    "sgk-toan-12-kntt-tap-1.pdf": [
+      {"topic": "ung_dung_dao_ham", "chapter": "Chương I. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số", "lessons": [
+        "Bài 1. Tính đơn điệu và cực trị của hàm số",
+        "Bài 2. Giá trị lớn nhất và giá trị nhỏ nhất của hàm số",
+        "Bài 3. Đường tiệm cận của đồ thị hàm số",
+        "Bài 4. Khảo sát sự biến thiên và vẽ đồ thị của hàm số",
+        "Bài 5. Ứng dụng đạo hàm để giải quyết một số vấn đề liên quan đến thực tiễn"]},
+      {"topic": "vecto_khong_gian", "chapter": "Chương II. Vectơ và hệ trục toạ độ trong không gian", "lessons": [
+        "Bài 6. Vectơ trong không gian",
+        "Bài 7. Hệ trục toạ độ trong không gian",
+        "Bài 8. Biểu thức toạ độ của các phép toán vectơ"]},
+      {"topic": "thong_ke_phan_tan", "chapter": "Chương III. Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm", "lessons": [
+        "Bài 9. Khoảng biến thiên và khoảng tứ phân vị",
+        "Bài 10. Phương sai và độ lệch chuẩn"]}
+    ],
+    "sgk-toan-12-kntt-tap-2.pdf": [
+      {"topic": "nguyen_ham_tich_phan", "chapter": "Chương IV. Nguyên hàm và tích phân", "lessons": [
+        "Bài 11. Nguyên hàm",
+        "Bài 12. Tích phân",
+        "Bài 13. Ứng dụng hình học của tích phân"]},
+      {"topic": "toa_do_khong_gian", "chapter": "Chương V. Phương pháp toạ độ trong không gian", "lessons": [
+        "Bài 14. Phương trình mặt phẳng",
+        "Bài 15. Phương trình đường thẳng trong không gian",
+        "Bài 16. Công thức tính góc trong không gian",
+        "Bài 17. Phương trình mặt cầu"]},
+      {"topic": "xac_suat_co_dieu_kien", "chapter": "Chương VI. Xác suất có điều kiện", "lessons": [
+        "Bài 18. Xác suất có điều kiện",
+        "Bài 19. Công thức xác suất toàn phần và công thức Bayes"]}
+    ]
+  }
+}

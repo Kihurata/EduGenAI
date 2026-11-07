@@ -1,0 +1,11 @@
+{
+ "_source": "06-testing/fixtures/toan-matrix/derived-tn-2025-0101.yaml (vault): level per Câu from the cell comments; team-derived, confidence medium. Part II: one level per statement a-d.",
+ "I": {"1": "Hiểu", "2": "Biết", "3": "Hiểu", "4": "Biết", "5": "Biết", "6": "Biết", "7": "Biết", "8": "Biết", "9": "Biết", "10": "Biết", "11": "Biết", "12": "Hiểu"},
+ "II": {
+  "1": ["Biết", "Biết", "Biết", "Hiểu"],
+  "2": ["Hiểu", "Hiểu", "Hiểu", "Vận dụng"],
+  "3": ["Hiểu", "Hiểu", "Vận dụng", "Vận dụng"],
+  "4": ["Biết", "Hiểu", "Hiểu", "Vận dụng"]
+ },
+ "III": {"1": "Vận dụng", "2": "Vận dụng", "3": "Vận dụng", "4": "Vận dụng", "5": "Vận dụng", "6": "Vận dụng"}
+}

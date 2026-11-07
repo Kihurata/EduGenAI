@@ -1,0 +1,249 @@
+[
+ {
+  "id": "2025-0101-I-1",
+  "query": "Cho hình lăng trụ $ABC.A'B'C'$ (xem hình dưới). Phát biểu nào sau đây là đúng?",
+  "cell": {
+   "subject": "toan",
+   "topic": "hinh_hoc_do_luong/vecto_khong_gian",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Vectơ trong không gian"
+  ]
+ },
+ {
+  "id": "2025-0101-I-4",
+  "query": "Trong không gian với hệ tọa độ $Oxyz$, cho đường thẳng $(d): \\dfrac{x-3}{4}=\\dfrac{y+2}{-5}=\\dfrac{z-1}{2}$. Vectơ nào sau đây là một vectơ chỉ phương của đường thẳng $(d)$?",
+  "cell": {
+   "subject": "toan",
+   "topic": "hinh_hoc_do_luong/toa_do_duong_thang",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Phương trình đường thẳng trong không gian"
+  ]
+ },
+ {
+  "id": "2025-0101-I-5",
+  "query": "Họ nguyên hàm của hàm số $f(x)=x^2$ là",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/nguyen_ham",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Nguyên hàm"
+  ]
+ },
+ {
+  "id": "2025-0101-I-8",
+  "query": "Trong mặt phẳng với hệ tọa độ $Oxy$, diện tích $S$ của hình phẳng giới hạn bởi đồ thị của hàm số $y=2x-3$, trục hoành và hai đường thẳng $x=1, x=2$ được xác định bằng công thức",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/tich_phan_dien_tich",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Ứng dụng hình học của tích phân"
+  ]
+ },
+ {
+  "id": "2025-0101-I-9",
+  "query": "Trong không gian với hệ tọa độ $Oxyz$, mặt phẳng đi qua điểm $A(2;1;-4)$ nhận $\\vec{n}=(3;2;-1)$ làm một vectơ pháp tuyến có phương trình là",
+  "cell": {
+   "subject": "toan",
+   "topic": "hinh_hoc_do_luong/toa_do_mat_phang",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Phương trình mặt phẳng"
+  ]
+ },
+ {
+  "id": "2025-0101-I-11",
+  "query": "Cho hàm số $y=\\dfrac{ax+b}{cx+d}$ $(ac\\neq0, ad-bc\\neq0)$ có đồ thị như hình dưới. Đường tiệm cận đứng của đồ thị hàm số đã cho có phương trình là",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/tiem_can",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Đường tiệm cận của đồ thị hàm số"
+  ]
+ },
+ {
+  "id": "2025-0101-II-1",
+  "query": "Cho hàm số $f(x)=x^3-12x-8$.\nHàm số đã cho có đạo hàm là $f'(x)=3x^2-12$.\nPhương trình $f'(x)=0$ có tập nghiệm là $S=\\{2\\}$.\n$f(2)=24$.\nGiá trị lớn nhất của hàm số $f(x)$ trên đoạn $[-3;3]$ bằng $24$.",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/ung_dung_dao_ham",
+   "type": "true_false"
+  },
+  "expected_lessons": [
+   "Tính đơn điệu và cực trị của hàm số",
+   "Giá trị lớn nhất và giá trị nhỏ nhất của hàm số"
+  ]
+ },
+ {
+  "id": "2025-0101-II-2",
+  "query": "Đối với ngành nuôi trồng thủy sản, việc kiểm soát lượng thuốc tồn dư trong nước là một nhiệm vụ quan trọng nhằm đáp ứng các tiêu chuẩn an toàn về môi trường. Khi nghiên cứu một loại thuốc trị bệnh trong nuôi trồng thủy sản, người ta sử dụng thuốc đó một lần và theo dõi nồng độ thuốc tồn dư trong nước kể từ lúc sử dụng thuốc. Kết quả cho thấy nồng độ thuốc $y(t)$ (đơn vị: mg/lít) tồn dư trong nước tại thời điểm $t$ ngày $(t\\geq0)$ kể từ lúc sử dụng thuốc, thỏa mãn $y(t)>0$ và $y'(t)=k\\cdot y(t)$ $(t\\geq0)$, trong đó $k$ là hằng số khác không. Đo nồng độ thuốc tồn dư trong nước tại các thời điểm $t=6$ (ngày); $t=12$ (ngày) nhận được kết quả lần lượt là $2$ mg/lít; $1$ mg/lít. Cho biết $y(t)=e^{g(t)}$ $(t\\geq0)$.\n$g(t)=kt+C$ $(t\\geq0)$ với $C$ là một hằng số xác định.\n$k=\\dfrac{\\ln 2}{6}$.\n$C=2\\ln 2$.\nNồng độ thuốc tồn dư trong nước tại thời điểm $t=25$ (ngày) kể từ lúc sử dụng thuốc lớn hơn $0{,}25$ mg/lít.",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/nguyen_ham_mo_hinh",
+   "type": "true_false"
+  },
+  "expected_lessons": [
+   "Nguyên hàm",
+   "Tích phân"
+  ]
+ },
+ {
+  "id": "2025-0101-II-4",
+  "query": "Một phần mềm nhận dạng tin nhắn quảng cáo trên điện thoại bằng cách dựa theo từ khóa để đánh dấu một số tin nhắn được gửi đến. Qua một thời gian dài sử dụng, người ta thấy rằng trong số tất cả các tin nhắn gửi đến, có 15% số tin nhắn bị đánh dấu. Trong số các tin nhắn bị đánh dấu, có 10% số tin nhắn không phải là quảng cáo. Trong số các tin nhắn không bị đánh dấu, có 5% số tin nhắn là quảng cáo. Chọn ngẫu nhiên một tin nhắn được gửi đến điện thoại.\nXác suất để tin nhắn đó không bị đánh dấu bằng $0{,}85$.\nXác suất để tin nhắn đó không phải là quảng cáo, biết rằng nó không bị đánh dấu, bằng $0{,}95$.\nXác suất để tin nhắn đó không phải là quảng cáo bằng $0{,}85$.\nXác suất để tin nhắn đó không bị đánh dấu, biết rằng nó không phải là quảng cáo, lớn hơn $0{,}95$.",
+  "cell": {
+   "subject": "toan",
+   "topic": "thong_ke_xac_suat/xac_suat_co_dieu_kien",
+   "type": "true_false"
+  },
+  "expected_lessons": [
+   "Xác suất có điều kiện",
+   "Công thức xác suất toàn phần và công thức Bayes"
+  ]
+ },
+ {
+  "id": "2025-0101-III-2",
+  "query": "Nếu một doanh nghiệp sản xuất $x$ sản phẩm trong một tháng $(x\\in\\mathbb{N}^*; 1\\leq x\\leq 4500)$ thì doanh thu nhận được khi bán hết số sản phẩm đó là $F(x)=-0{,}01x^2+300x$ (nghìn đồng), trong khi chi phí sản xuất bình quân cho mỗi sản phẩm là $G(x)=\\dfrac{30000}{x}+200$ (nghìn đồng). Giả sử số sản phẩm sản xuất ra luôn được bán hết. Trong một tháng, doanh nghiệp đó cần sản xuất ít nhất bao nhiêu sản phẩm để lợi nhuận thu được lớn hơn 100 triệu đồng?",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/ham_so_thuc_te",
+   "type": "short_answer"
+  },
+  "expected_lessons": [
+   "Giá trị lớn nhất và giá trị nhỏ nhất của hàm số",
+   "Ứng dụng đạo hàm để giải quyết một số vấn đề liên quan đến thực tiễn"
+  ]
+ },
+ {
+  "id": "2026-0102-I-1",
+  "query": "Cho hình lập phương $ABCD.A'B'C'D'$ (xem hình dưới). Vectơ nào sau đây bằng vectơ $\\overrightarrow{AD}$?",
+  "cell": {
+   "subject": "toan",
+   "topic": "hinh_hoc_do_luong/vecto_khong_gian",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Vectơ trong không gian"
+  ]
+ },
+ {
+  "id": "2026-0102-I-3",
+  "query": "Trong không gian với hệ tọa độ $Oxyz$, cho hai điểm $A(2;3;1)$ và $B(4;1;1)$. Vectơ $\\overrightarrow{AB}$ có tọa độ là",
+  "cell": {
+   "subject": "toan",
+   "topic": "hinh_hoc_do_luong/toa_do_vecto",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Hệ trục toạ độ trong không gian",
+   "Biểu thức toạ độ của các phép toán vectơ"
+  ]
+ },
+ {
+  "id": "2026-0102-I-4",
+  "query": "Cho $\\int f(x)\\,dx=\\sin x+C$. Phát biểu nào sau đây là đúng?",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/nguyen_ham",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Nguyên hàm"
+  ]
+ },
+ {
+  "id": "2026-0102-I-8",
+  "query": "Hàm số $F(x)=5x^3$ là một nguyên hàm của hàm số nào sau đây?",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/nguyen_ham",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Nguyên hàm"
+  ]
+ },
+ {
+  "id": "2026-0102-I-12",
+  "query": "Cho hàm số $y=\\dfrac{ax+b}{cx+d}$ $(c\\neq0, ad-bc\\neq0)$ có bảng biến thiên như hình dưới đây. Đường tiệm cận đứng của đồ thị hàm số đã cho có phương trình là",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/tiem_can",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Đường tiệm cận của đồ thị hàm số"
+  ]
+ },
+ {
+  "id": "2026-0102-II-1",
+  "query": "Một hệ thống pin năng lượng mặt trời gồm các tấm pin được kết nối với một bộ lưu trữ điện. Trong thời gian mặt trời chiếu sáng của một ngày, năng lượng điện thu được từ các tấm pin được lưu trong bộ lưu trữ điện. Gọi $F(t)$ là năng lượng điện (kWh) lưu trữ được kể từ thời điểm hệ thống bắt đầu hoạt động đến thời điểm $t$, trong đó $t$ là thời gian tính theo giờ $(0\\leq t\\leq12)$ và thời điểm hệ thống bắt đầu hoạt động ứng với $t=0$. Biết rằng $F(0)=0$. Tốc độ lưu trữ năng lượng điện (kW) của hệ thống này là hàm số $f(t)=F'(t)$ với $0\\leq t\\leq12$. Số liệu ghi nhận được ở một ngày cụ thể trong năm cho thấy $f(t)=-0{,}15t^2+1{,}8t$ với $0\\leq t\\leq12$.\n$F(t)=-0{,}05t^3+0{,}9t^2$ với $0\\leq t\\leq12$.\nNăng lượng điện (kWh) lưu trữ được kể từ thời điểm $t=a$ đến thời điểm $t=b$ $(0\\leq a<b\\leq12)$ là $\\int_a^b f(t)\\,dt$.\nNăng lượng điện lưu trữ được kể từ thời điểm $t=1$ đến thời điểm $t=5$ nhỏ hơn $15{,}3$ kWh.\nNăng lượng điện lưu trữ được kể từ thời điểm $t=1$ đến thời điểm $t=9$ gấp hai lần năng lượng điện lưu trữ được kể từ thời điểm $t=1$ đến thời điểm $t=5$.",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/tich_phan_thuc_te",
+   "type": "true_false"
+  },
+  "expected_lessons": [
+   "Tích phân"
+  ]
+ },
+ {
+  "id": "2026-0102-II-2",
+  "query": "Cho hàm số $f(x)=\\dfrac{1}{3}x^3-2x^2+3x+8$.\nĐạo hàm của hàm số đã cho là $f'(x)=x^2-4x+3$.\nPhương trình $f'(x)=0$ có tập nghiệm là $S=\\{1;3\\}$.\nHàm số đã cho nghịch biến trên khoảng $(1;3)$.\nGiá trị cực tiểu của hàm số đã cho bằng $\\dfrac{28}{3}$.",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/ung_dung_dao_ham",
+   "type": "true_false"
+  },
+  "expected_lessons": [
+   "Tính đơn điệu và cực trị của hàm số"
+  ]
+ },
+ {
+  "id": "2026-0102-II-3",
+  "query": "Nhằm đưa ra cảnh báo sớm về tình trạng sức khỏe của cư dân, người ta sử dụng một ứng dụng trí tuệ nhân tạo để sàng lọc nguy cơ mắc bệnh dựa trên hồ sơ y tế được lưu trữ. Khi phát hiện nguy cơ mắc bệnh, ứng dụng này sẽ gửi cảnh báo để giúp người dân đi khám bệnh kịp thời. Người ta dùng ứng dụng này để tầm soát nguy cơ mắc một loại bệnh. Kết quả thu được khi quét thử nghiệm hồ sơ y tế của 10000 người như sau: Có 1000 người nhận được cảnh báo và 9000 người còn lại không nhận được cảnh báo từ ứng dụng. Trong số 1000 người nhận được cảnh báo thì có 600 người có bệnh và 400 người không có bệnh. Trong số 9000 người không nhận được cảnh báo thì có 200 người có bệnh và 8800 người không có bệnh. Chọn ngẫu nhiên một người trong số 10000 người nói trên.\nXác suất để người đó không nhận được cảnh báo từ ứng dụng bằng $0{,}9$.\nXác suất để người đó không có bệnh, biết rằng người đó không nhận được cảnh báo từ ứng dụng, lớn hơn $0{,}97$.\nXác suất để người đó không có bệnh bằng $0{,}9$.\nXác suất để người đó không nhận được cảnh báo từ ứng dụng, biết rằng người đó không có bệnh, lớn hơn $0{,}95$.",
+  "cell": {
+   "subject": "toan",
+   "topic": "thong_ke_xac_suat/xac_suat_co_dieu_kien",
+   "type": "true_false"
+  },
+  "expected_lessons": [
+   "Xác suất có điều kiện",
+   "Công thức xác suất toàn phần và công thức Bayes"
+  ]
+ },
+ {
+  "id": "2026-0102-III-1",
+  "query": "Để chế tác một hạt cườm, người ta lấy một khối vật thể có dạng một khối tròn xoay được tạo thành khi quay hình phẳng giới hạn bởi trục $Ox$ và nửa trên của elip $\\dfrac{x^2}{1{,}5^2}+\\dfrac{y^2}{1^2}=1$ (một đơn vị dài trên mỗi trục tọa độ tương ứng với một xăng-ti-mét trong thực tế) quanh trục $Ox$; sau đó khoan dọc theo trục xoay (xem hình dưới). Lỗ khoan có dạng hình trụ với bán kính $0{,}1$ cm và có trục nằm trên trục xoay. Phần còn lại sau khi khoan là hạt cườm, có dạng một khối tròn xoay. Thể tích của hạt cườm đó bằng bao nhiêu xăng-ti-mét khối (không làm tròn kết quả các phép tính trung gian, chỉ làm tròn kết quả cuối cùng đến hàng phần trăm)?",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/the_tich_khoi_tron_xoay",
+   "type": "short_answer"
+  },
+  "expected_lessons": [
+   "Ứng dụng hình học của tích phân"
+  ]
+ },
+ {
+  "id": "2026-0102-III-4",
+  "query": "Một công ty nông sản có công suất chế biến không quá 180 tấn nguyên liệu một tháng. Nếu công ty chế biến $x$ tấn nguyên liệu trong một tháng $(1\\leq x\\leq180)$ thì chi phí sản xuất và doanh thu lần lượt là $C(x)=0{,}002x^3+30x+20$ (triệu đồng) và $R(x)=90x$ (triệu đồng). Lợi nhuận lớn nhất mà công ty đạt được trong một tháng là bao nhiêu triệu đồng?",
+  "cell": {
+   "subject": "toan",
+   "topic": "dai_so_giai_tich/ham_so_thuc_te",
+   "type": "short_answer"
+  },
+  "expected_lessons": [
+   "Giá trị lớn nhất và giá trị nhỏ nhất của hàm số",
+   "Ứng dụng đạo hàm để giải quyết một số vấn đề liên quan đến thực tiễn"
+  ]
+ }
+]

@@ -1,0 +1,296 @@
+{
+ "id": "toan-11-gk2-2025-tlot-de01",
+ "exam": "Kiểm tra giữa học kỳ II khối 11 năm học 2024 - 2025 – Đề số 1 (Tailieuonthi)",
+ "heading": "Toán 11 GK2 2024-2025 đề 1",
+ "subject": "toan",
+ "grade": 11,
+ "exam_kind": "dinh_ky_7991",
+ "term": "giua_ky_2",
+ "ma_de": "01",
+ "duration_min": null,
+ "source_exam": "PDF 'ĐỀ SỐ 1 - GV-stamped.pdf', thư mục Drive 'Đề C3/Lớp 11/Đề Thi - Đề Minh Họa/Bộ Đề Thi Giữa Kì 2 Toán 11 chương trình mới có đáp án_1/Lời giải' (watermark Tailieuonthi.edu.vn); bản scan, nhóm chép tay",
+ "source_key": "Lời giải chi tiết trong cùng file (Tailieuonthi, không chính thức)",
+ "images": [],
+ "official": false,
+ "confidence": "medium",
+ "topic_labels": "nhóm tự gán (không chính thức)",
+ "level_labels": "nhóm tự gán 2026-11-05 theo quy tắc của toan-matrix/derived-tn-*.yaml (Biết: một kiến thức/công thức dùng trực tiếp; Hiểu: kết hợp hai kiến thức hoặc tính ngắn rồi diễn giải; Vận dụng: nhiều bước, mô hình thực tế hoặc ý không quen), không chính thức, độ tin cậy medium",
+ "skipped": "Cấu trúc CV 7991: trắc nghiệm câu 1–12, đúng/sai câu 13–14, trả lời ngắn câu 15–18, tự luận câu 19 trở đi. Bỏ phần tự luận (D-001).",
+ "questions": [
+  {
+   "part": "I",
+   "cau": 1,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Với $a$ là số thực dương tùy ý, $\\sqrt[3]{a^2}$ bằng:",
+   "options": {
+    "A": "$a^{\\frac{1}{6}}$",
+    "B": "$a^6$",
+    "C": "$a^{\\frac{2}{3}}$",
+    "D": "$a^{\\frac{3}{2}}$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Tập xác định của hàm số $y=(x-1)^{\\sqrt{3}}$ là",
+   "options": {
+    "A": "$\\mathbb{R}\\setminus\\{1\\}$",
+    "B": "$\\mathbb{R}$",
+    "C": "$(1;+\\infty)$",
+    "D": "$(-1;+\\infty)$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 3,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Một khối lăng trụ có diện tích đáy bằng $6$ và chiều cao bằng $5$. Thể tích của khối lăng trụ đó bằng",
+   "options": {
+    "A": "$15$",
+    "B": "$90$",
+    "C": "$10$",
+    "D": "$30$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 4,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Cho $a,b$ là các số thực dương, $a\\neq 1$ thỏa mãn $\\log_a b=3$. Tính $\\log_{\\sqrt{a}} a^2b^3$?",
+   "options": {
+    "A": "$24$",
+    "B": "$25$",
+    "C": "$22$",
+    "D": "$23$"
+   },
+   "answer": "C",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 5,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Đường cong trong hình bên là của đồ thị hàm số nào sau đây?",
+   "figure": "Đồ thị một đường cong nghịch biến trên toàn trục số, cắt trục $Oy$ tại một điểm phía trên $O$, tiến sát trục $Ox$ khi $x$ tăng.",
+   "options": {
+    "A": "$y=\\log_2 x$",
+    "B": "$y=(0{,}8)^x$",
+    "C": "$y=\\log_{0{,}4} x$",
+    "D": "$y=(\\sqrt{2})^x$"
+   },
+   "answer": "B",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 6,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Nghiệm của phương trình $3^{x+2}=27$ là",
+   "options": {
+    "A": "$x=-2$",
+    "B": "$x=-1$",
+    "C": "$x=2$",
+    "D": "$x=1$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 7,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Tính thể tích của khối lăng trụ đứng có đáy là tam giác vuông cân, cạnh góc vuông là $a$, cạnh bên bằng $2a$.",
+   "options": {
+    "A": "$V=\\dfrac{1}{2}a^3$",
+    "B": "$V=2a^3$",
+    "C": "$V=a^3$",
+    "D": "$V=4a^3$"
+   },
+   "answer": "C",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 8,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Tập nghiệm của bất phương trình $\\log_{\\frac{1}{4}}(x-1)>-1$ là",
+   "options": {
+    "A": "$\\left(\\dfrac{5}{4};+\\infty\\right)$",
+    "B": "$\\left(1;\\dfrac{5}{4}\\right)$",
+    "C": "$(-\\infty;2)$",
+    "D": "$(1;5)$"
+   },
+   "answer": "D",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 9,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Cho hình lăng trụ $ABC.A'B'C'$ có đường vuông góc chung của $AA'$ và $BC'$ là $AB$. Nhận xét nào dưới đây **sai**?",
+   "options": {
+    "A": "$\\widehat{A'C'B'}=90^\\circ$",
+    "B": "$\\widehat{ABC}=90^\\circ$",
+    "C": "$\\widehat{A'B'B}=90^\\circ$",
+    "D": "$\\widehat{ABC'}=90^\\circ$"
+   },
+   "answer": "A",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 10,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Trong không gian cho hai đường thẳng phân biệt $a;b$ và mặt phẳng $(P)$, trong đó $a\\perp(P)$. Mệnh đề nào sau đây **sai**?",
+   "options": {
+    "A": "Nếu $b\\parallel a$ thì $b\\perp(P)$.",
+    "B": "Nếu $b\\perp a$ thì $b\\parallel(P)$.",
+    "C": "Nếu $b\\parallel(P)$ thì $b\\perp a$.",
+    "D": "Nếu $b\\perp(P)$ thì $b\\parallel a$."
+   },
+   "answer": "B",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 11,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Cho tứ diện $OABC$ có $OA,OB,OC$ đôi một vuông góc với nhau và $OA=OB=OC=a$. Khi đó thể tích của khối tứ diện $OABC$ là:",
+   "options": {
+    "A": "$\\dfrac{a^3}{2}$",
+    "B": "$\\dfrac{a^3}{12}$",
+    "C": "$\\dfrac{a^3}{6}$",
+    "D": "$\\dfrac{a^3}{3}$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 12,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Cho một khối chóp có chiều cao bằng $h$ và diện tích đáy bằng $B$. Nếu giữ nguyên chiều cao $h$, còn diện tích đáy tăng lên $3$ lần thì ta được một khối chóp mới có thể tích là:",
+   "options": {
+    "A": "$V=Bh$",
+    "B": "$V=\\dfrac{1}{6}Bh$",
+    "C": "$V=\\dfrac{1}{2}Bh$",
+    "D": "$V=\\dfrac{1}{3}Bh$"
+   },
+   "answer": "A",
+   "level": "Biết"
+  },
+  {
+   "part": "II",
+   "cau": 13,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Cho phương trình $9^{x+1}-13\\cdot 6^x+4^{x+1}=0$. Xét tính đúng sai của các mệnh đề sau",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Nếu đặt $\\left(\\dfrac{3}{2}\\right)^x=t$ thì phương trình đã cho trở thành $9t^2-13t+4=0$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Phương trình đã cho có hai nghiệm, trong đó có một nghiệm nguyên âm",
+     "answer": true
+    },
+    {
+     "label": "c",
+     "text": "Tổng tất cả các nghiệm của phương trình đã cho bằng $0$.",
+     "answer": false
+    },
+    {
+     "label": "d",
+     "text": "Phương trình đã cho có hai nghiệm và đều là nghiệm nguyên dương.",
+     "answer": false
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Hiểu",
+    "Hiểu",
+    "Hiểu"
+   ],
+   "level": "Hiểu"
+  },
+  {
+   "part": "II",
+   "cau": 14,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Cho hình chóp $S.ABC$ có đáy $ABC$ là tam giác đều cạnh $a$. Biết $SA=a\\sqrt{2}$ và $SA$ vuông góc với mặt đáy. Gọi $M$ là trung điểm của $BC$ và $H$ là hình chiếu vuông góc của $A$ lên $SM$.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Đường thẳng $AH$ vuông góc với mặt phẳng $(SBC)$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Đường thẳng $SH$ là hình chiếu của đường thẳng $SA$ lên mặt phẳng $(SBC)$",
+     "answer": true
+    },
+    {
+     "label": "c",
+     "text": "Độ dài đoạn thẳng $AH$ bằng $\\dfrac{6a}{11}$",
+     "answer": false
+    },
+    {
+     "label": "d",
+     "text": "Cosin góc tạo bởi đường thẳng $SA$ và mặt phẳng $(SBC)$ bằng $\\dfrac{\\sqrt{11}}{33}$",
+     "answer": false
+    }
+   ],
+   "statement_levels": [
+    "Hiểu",
+    "Hiểu",
+    "Hiểu",
+    "Vận dụng"
+   ],
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 15,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Cho biết hai số thực dương $a$ và $b$ thỏa mãn $\\log_a^2(ab)=4$; với $b>1>a>0$. Hỏi giá trị của biểu thức $\\log_a^3(ab^2)$ tương ứng bằng bao nhiêu?",
+   "answer": "-125",
+   "answer_value": -125,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 16,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Tính tổng các giá trị nguyên của tham số $m\\in[0;5]$ để bất phương trình $\\log_2(5^x-1)\\le m$ có nghiệm $x\\ge 1$.",
+   "answer": "14",
+   "answer_value": 14,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 17,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Một người gửi ngân hàng 200 triệu đồng với kì hạn 1 tháng theo hình thức lãi kép, lãi suất $0{,}58\\%$ một tháng (kể từ tháng thứ hai trở đi, tiền lãi được tính theo phần trăm của tổng tiền gốc và tiền lãi tháng trước đó). Hỏi sau ít nhất bao nhiêu tháng thì người đó có tối thiểu 225 triệu đồng trong tài khoản tiết kiệm, biết rằng ngân hàng chỉ tính lãi khi đến kì hạn?",
+   "answer": "21",
+   "answer_value": 21,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 18,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Cho hình chóp tứ giác đều $S.ABCD$ có đáy $ABCD$ là hình vuông, $E$ là điểm đối xứng của $D$ qua trung điểm $SA$. Gọi $M$, $N$ lần lượt là trung điểm của $AE$ và $BC$. Gọi $\\alpha$ là góc giữa hai đường thẳng $MN$ và $BD$. Tính $\\sin\\alpha$",
+   "answer": "1",
+   "answer_value": 1,
+   "level": "Vận dụng"
+  }
+ ]
+}

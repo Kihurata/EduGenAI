@@ -1,0 +1,110 @@
+{
+ "id": "toan-10-ck1-2025-kntt-tlot-de01",
+ "exam": "Đề kiểm tra cuối kì 1 Toán 10 năm 2025 (Kết Nối Tri Thức) – Đề số 01 (Tailieuonthi)",
+ "heading": "Toán 10 CK1 2025 KNTT đề 01",
+ "term": "cuoi_ky_1",
+ "ma_de": "01",
+ "subject": "toan",
+ "grade": 10,
+ "exam_kind": "dinh_ky_7991",
+ "duration_min": null,
+ "images": [],
+ "official": false,
+ "confidence": "medium",
+ "topic_labels": "nhóm tự gán (không chính thức)",
+ "level_labels": "nhóm tự gán 2026-11-05 theo quy tắc của toan-matrix/derived-tn-*.yaml (Biết: một kiến thức/công thức dùng trực tiếp; Hiểu: kết hợp hai kiến thức hoặc tính ngắn rồi diễn giải; Vận dụng: nhiều bước, mô hình thực tế hoặc ý không quen), không chính thức, độ tin cậy medium",
+ "source_key": "Lời giải chi tiết trong cùng file (Tailieuonthi, không chính thức)",
+ "source_exam": "PDF 'Đề Số 01 - GV-stamped.pdf', thư mục Drive 'Đề C3/Lớp 10/Đề Thi - Đề Minh Họa/Bộ Đề Thi Cuối Kì 1 Toán 10 chương trình mới có đáp án_2/Bộ Đề Thi Cuối Kì 1 Toán 10 năm 2025 (Kết Nối Tri Thức)/Lời giải' (watermark Tailieuonthi.edu.vn); bản scan, nhóm chép tay",
+ "skipped": "Chỉ giữ câu thuộc chủ đề có trong đề TN (Toán topic list). Bỏ: Phần I câu 1, 5–12 (mệnh đề, hệ thức lượng, vectơ phẳng, số gần đúng, thống kê không ghép nhóm), Phần II câu 1, 3, 4, Phần III câu 1, 2, 4, 5, 6.",
+ "questions": [
+  {
+   "part": "I",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/he_bat_phuong_trinh_bac_nhat_hai_an",
+   "stem": "Bất phương trình nào sau đây **không** phải là bất phương trình bậc nhất hai ẩn?",
+   "options": {
+    "A": "$\\dfrac{x}{2}-\\dfrac{y}{3}+10<0$",
+    "B": "$2x-3y+5<0$",
+    "C": "$x+3y^2-2x+1\\le 0$",
+    "D": "$x-5y-1\\ge 0$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 3,
+   "topic": "dai_so_giai_tich/he_bat_phuong_trinh_bac_nhat_hai_an",
+   "stem": "Trong mặt phẳng với hệ trục tọa độ $Oxy$, điểm nào sau đây thuộc miền nghiệm của hệ bất phương trình $\\begin{cases}x-y+1>0\\\\x+y-1<0\\end{cases}$",
+   "options": {
+    "A": "$Q(1;1)$",
+    "B": "$N(1;2)$",
+    "C": "$P(-1;2)$",
+    "D": "$M(1;-1)$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 4,
+   "topic": "dai_so_giai_tich/ham_so_bac_hai",
+   "stem": "Tập xác định của hàm số $y=\\sqrt{1-2x}$ là",
+   "options": {
+    "A": "$\\left(-\\infty;\\dfrac{1}{2}\\right]$",
+    "B": "$\\left(\\dfrac{1}{2};+\\infty\\right)$",
+    "C": "$\\left(-\\infty;\\dfrac{1}{2}\\right)$",
+    "D": "$\\left[\\dfrac{1}{2};+\\infty\\right)$"
+   },
+   "answer": "A",
+   "level": "Biết"
+  },
+  {
+   "part": "II",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/ham_so_bac_hai",
+   "stem": "Trong môn cầu lông, khi phát cầu, người chơi cần đánh cầu qua khỏi lưới sang sân đối phương và không được để cho cầu rơi ngoài biên. Trong mặt phẳng $Oxy$ mỗi đơn vị tương ứng $1$ m, chọn điểm có tọa độ $(0;y_0)$ là điểm phát cầu thì phương trình quỹ đạo của quả cầu khi rời khỏi mặt vợt là: $y=\\dfrac{-9{,}8x^2}{2v_0^2\\cos^2\\alpha}+(\\tan\\alpha)x+y_0$, trong đó $\\alpha$ là góc phát cầu (so với phương ngang của mặt đất); $v_0$ là vận tốc ban đầu của cầu (tính bằng m/s); $y_0$ là khoảng cách từ vị trí phát cầu đến mặt đất (tính bằng m). Giả sử trong một đợt phát cầu có góc phát cầu là $45^\\circ$, vận tốc ban đầu bằng $8$ m/s và khoảng cách từ vị trí phát cầu đến mặt đất bằng $0{,}5$ m",
+   "figure": "Đồ thị quỹ đạo parabol của quả cầu trong hệ $Oxy$: xuất phát tại $(0;y_0)$ với góc $\\alpha$, đi lên rồi rơi xuống trục $Ox$ tại điểm chạm đất.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Phương trình quỹ đạo của quả cầu khi rời khỏi mặt vợt là: $y=\\dfrac{-4{,}9x^2}{32}+x+0{,}5$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Tầm bay cao của quả cầu là $2{,}13$ m (làm tròn đến hàng phần trăm).",
+     "answer": true
+    },
+    {
+     "label": "c",
+     "text": "Tầm bay xa của quả cầu là $7{,}15$ m (làm tròn đến hàng phần trăm).",
+     "answer": false
+    },
+    {
+     "label": "d",
+     "text": "Nếu vị trí đứng phát cầu cách xa lưới $5$ m thì đợt phát cầu này là một đợt phát cầu tốt, biết mép trên của lưới cách mặt sân là $1{,}524$ m.",
+     "answer": true
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Hiểu",
+    "Hiểu",
+    "Vận dụng"
+   ],
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 3,
+   "topic": "dai_so_giai_tich/ham_so_bac_hai",
+   "stem": "Một viên bi được ném xiên từ vị trí $A$ cách mặt đất $2$ m theo quỹ đạo dạng parabol như hình vẽ sau đây. Khoảng cách từ vị trí $E$ đến vị trí $F$ là bao nhiêu mét? Biết rằng vị trí $E$ là nơi viên bi rơi xuống chạm mặt đất. *Kết quả làm tròn đến chữ số thập phân thứ nhất.*",
+   "rounding": "hàng phần mười",
+   "figure": "Parabol trong hệ trục (đơn vị m): $F$ là gốc tọa độ trên mặt đất, $A(0;2)$ trên trục tung, đỉnh $C(1;7)$, parabol cắt trục hoành tại $E$ (hoành độ dương).",
+   "answer": "2,2",
+   "answer_value": 2.2,
+   "level": "Vận dụng"
+  }
+ ]
+}

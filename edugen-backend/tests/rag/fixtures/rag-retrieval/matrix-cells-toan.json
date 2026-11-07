@@ -1,0 +1,72 @@
+[
+ {
+  "subject": "toan",
+  "topic": "dai_so_giai_tich/nguyen_ham",
+  "level": "Biết",
+  "type": "multiple_choice",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "dai_so_giai_tich/tiem_can",
+  "level": "Biết",
+  "type": "multiple_choice",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "hinh_hoc_do_luong/toa_do_mat_phang",
+  "level": "Biết",
+  "type": "multiple_choice",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "hinh_hoc_do_luong/vecto_khong_gian",
+  "level": "Hiểu",
+  "type": "multiple_choice",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "dai_so_giai_tich/ung_dung_dao_ham",
+  "level": "Hiểu",
+  "type": "true_false",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "thong_ke_xac_suat/xac_suat_co_dieu_kien",
+  "level": "Hiểu",
+  "type": "true_false",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "dai_so_giai_tich/tich_phan_thuc_te",
+  "level": "Vận dụng",
+  "type": "true_false",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "dai_so_giai_tich/tich_phan_dien_tich",
+  "level": "Hiểu",
+  "type": "short_answer",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "dai_so_giai_tich/ham_so_thuc_te",
+  "level": "Vận dụng",
+  "type": "short_answer",
+  "count": 2
+ },
+ {
+  "subject": "toan",
+  "topic": "dai_so_giai_tich/the_tich_khoi_tron_xoay",
+  "level": "Vận dụng",
+  "type": "short_answer",
+  "count": 2
+ }
+]

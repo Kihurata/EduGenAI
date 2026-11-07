@@ -77,7 +77,7 @@ test.describe("hình khối trong đề", () => {
 
     // Editing a question with a figure keeps the figure (BE redraws it from the spec).
     const before = await figures.count();
-    const article = page.locator("article", { has: first });
+    const article = page.locator("article", { has: figures }).first(); // first question that has a figure
     await article.getByRole("button", { name: "Sửa" }).click();
     await expect(article.getByTestId("question-figure")).toBeVisible(); // live preview in the editor
     await page.getByRole("button", { name: "Lưu câu" }).click();

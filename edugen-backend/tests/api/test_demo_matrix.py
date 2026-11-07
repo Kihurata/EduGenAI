@@ -45,3 +45,47 @@ def test_script_is_idempotent_by_name(db, teacher):
     assert script.find_existing(db, teacher, parsed.name) is None
     matrix = script.create_matrix(db, teacher, parsed)
     assert script.find_existing(db, teacher, parsed.name).id == matrix.id
+
+
+# --- Bản rows của ma trận demo: tải lên qua giao diện (JSON, đọc ngay, không gọi AI) ---
+
+UPLOAD_FIXTURE = ROOT / "data" / "demo" / "matrix_toan12_demo_upload.json"
+
+
+def _signature(cells):
+    """(dạng, chủ đề, mức, số ý theo mức); Đúng–Sai bung mỗi câu thành một phần tử vì bản rows ghép từng câu."""
+    out = []
+    for c in cells:
+        if c.statement_levels:
+            out += [(c.type, c.topic, c.level, tuple(c.statement_levels), 1)] * c.count
+        else:
+            out.append((c.type, c.topic, c.level, None, c.count))
+    return out
+
+
+def test_upload_fixture_has_same_cells_as_cells_fixture():
+    from app.domain.matrix_reader import read_matrix
+
+    parsed = read_matrix(UPLOAD_FIXTURE.read_text(encoding="utf-8"))
+    assert parsed.issues == []
+    assert (parsed.subject, parsed.grade) == ("toan", 12)
+    expected = script.load_fixture(FIXTURE)
+    assert _signature(parsed.cells) == _signature(expected.cells)
+    tf = [c for c in parsed.cells if c.statement_levels]
+    assert all(c.statement_units and all(c.statement_units) for c in tf)
+
+
+def test_upload_fixture_is_accepted_by_upload_endpoint(client, teacher_headers, converter, monkeypatch):
+    def boom(source):
+        raise AssertionError("tải JSON không được gọi converter")
+
+    monkeypatch.setattr(converter, "convert", boom)
+    resp = client.post(
+        "/api/v1/matrices",
+        files={"file": ("matrix_toan12_demo_upload.json", UPLOAD_FIXTURE.read_bytes(), "application/json")},
+        headers=teacher_headers,
+    )
+    assert resp.status_code == 202, resp.text
+    assert resp.json()["status"] == "parsed"
+    got = client.get(f"/api/v1/matrices/{resp.json()['id']}", headers=teacher_headers).json()
+    assert (got["status"], got["grade"], got["issues"]) == ("parsed", 12, [])

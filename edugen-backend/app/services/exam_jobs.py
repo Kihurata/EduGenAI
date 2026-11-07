@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.core.errors import LLMError
 from app.domain.cell import Cell
 from app.domain.exam_document import ExamInfo, build_blocks
+from app.domain.exam_variant import make_variant, variant_seed
 from app.domain.generation import QuestionGenerator, generate_all
 from app.domain.matrix_json import exam_kind_of
 from app.models import (
@@ -140,20 +141,31 @@ def _mark_generation_failed(session_factory: sessionmaker, exam_id: uuid.UUID, m
         log.exception("không ghi được trạng thái lỗi cho đề %s", exam_id)
 
 
+def variant_questions(exam: Exam, code: str) -> list[dict]:
+    """Câu của đề theo mã đề (đã xáo). Xuất file và xem trước dùng chung hàm này để luôn khớp nhau."""
+    return make_variant([q.content for q in exam.questions], variant_seed(exam.id, code))
+
+
 def export_exam(
-    session: Session, storage: LocalStorage, exam: Exam, variant: ExportVariant
+    session: Session, storage: LocalStorage, exam: Exam, variant: ExportVariant, code: str | None = None
 ) -> tuple[bytes, str]:
-    """Dựng DOCX, lưu vào storage và ghi exam_exports; trả (nội dung, tên file)."""
+    """Dựng DOCX, lưu vào storage và ghi exam_exports; trả (nội dung, tên file).
+
+    `code` là mã đề: câu và phương án được xáo theo seed của (đề, mã đề) và mã in trên đề; không có
+    thì xuất bản gốc. Đề đã duyệt không sửa được nên cùng mã luôn ra cùng thứ tự.
+    """
     matrix = exam.matrix
     info = ExamInfo(
         school_name=session.get(School, exam.school_id).name, title=exam.title,
         subject_name=matrix.subject.name, grade=matrix.grade, duration_minutes=exam.duration_minutes,
+        code=code,
     )  # fmt: skip
     cells = [cell_of(matrix, row) for row in matrix.cells]
-    data = to_docx(build_blocks(info, [q.content for q in exam.questions], variant, cells))
-    key = f"exports/{exam.id}/{uuid.uuid4()}-{variant.value}.docx"
+    questions = variant_questions(exam, code) if code else [q.content for q in exam.questions]
+    data = to_docx(build_blocks(info, questions, variant, cells))
+    key = f"exports/{exam.id}/{uuid.uuid4()}-{variant.value}{f'-{code}' if code else ''}.docx"
     storage.save(key, data)
     session.add(ExamExport(exam_id=exam.id, variant=variant, storage_key=key))
     session.commit()
     suffix = "GV" if variant is ExportVariant.teacher else "HS"
-    return data, f"{exam.title} - {suffix}.docx"
+    return data, f"{exam.title} - {suffix}{f' - Mã đề {code}' if code else ''}.docx"

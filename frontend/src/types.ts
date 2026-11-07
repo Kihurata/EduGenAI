@@ -123,6 +123,12 @@ export interface CellRun {
   error_message: string | null;
 }
 
+/** GET /exams/{id}/variant?code=: các câu của đề theo mã đề, đúng thứ tự file xuất ra. */
+export interface ExamVariant {
+  code: string;
+  questions: { position: number; part: string; content: QuestionContent }[];
+}
+
 export interface Exam {
   id: string;
   matrix_id: string;

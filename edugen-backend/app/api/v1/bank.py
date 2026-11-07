@@ -14,7 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.api.deps import DB, Admin, CurrentUser, get_in_school, not_found
-from app.api.v1.exams import ExamOut, download
+from app.api.v1.exams import ExamOut, download, download_variants
 from app.api.v1.matrices import MatrixOut
 from app.db.session import get_session_factory
 from app.models import Exam, ExamBankEntry, ExamMatrix, User
@@ -148,9 +148,21 @@ def read_entry(entry_id: uuid.UUID, db: DB, user: CurrentUser, rag: Rag) -> Bank
 
 @router.get("/{entry_id}/export")
 def export_entry(
-    entry_id: uuid.UUID, variant: ExportVariant, db: DB, user: CurrentUser, storage: Storage
+    entry_id: uuid.UUID,
+    variant: ExportVariant,
+    db: DB,
+    user: CurrentUser,
+    storage: Storage,
+    code: str | None = None,
 ) -> Response:
-    return download(db, storage, get_entry(db, entry_id, user).exam, variant)
+    return download(db, storage, get_entry(db, entry_id, user).exam, variant, code)
+
+
+@router.get("/{entry_id}/export-variants")
+def export_entry_variants(
+    entry_id: uuid.UUID, variant: ExportVariant, codes: str, db: DB, user: CurrentUser, storage: Storage
+) -> Response:
+    return download_variants(db, storage, get_entry(db, entry_id, user).exam, variant, codes)
 
 
 @router.patch("/{entry_id}")

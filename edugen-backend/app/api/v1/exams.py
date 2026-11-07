@@ -1,6 +1,8 @@
 """Sinh đề từ ma trận đã xác nhận (job nền), GV duyệt đề (F-05) và xuất DOCX đề đã duyệt."""
 
+import io
 import uuid
+import zipfile
 from datetime import datetime
 from typing import Annotated, Any
 from urllib.parse import quote
@@ -16,6 +18,7 @@ from app.api.v1.schemas import Accepted
 from app.core.errors import LLMError
 from app.db.session import get_session_factory
 from app.domain.exam_structure import PART_OF_TYPE
+from app.domain.exam_variant import is_valid_code
 from app.domain.generation import QuestionGenerator
 from app.models import Exam, ExamBankEntry, ExamQuestion, User
 from app.models.enums import (
@@ -26,7 +29,7 @@ from app.models.enums import (
     QuestionType,
     UserRole,
 )
-from app.services.exam_jobs import DOCX_MIME, export_exam, run_exam_generation, settle
+from app.services.exam_jobs import DOCX_MIME, export_exam, run_exam_generation, settle, variant_questions
 from app.services.exam_review import (
     approval_problems,
     edit_question,
@@ -120,14 +123,55 @@ def get_exam(db: Session, exam_id: uuid.UUID, user: User) -> Exam:
     return exam
 
 
-def download(db: Session, storage: LocalStorage, exam: Exam, variant: ExportVariant) -> Response:
-    if exam.status is not ExamStatus.approved:
-        raise HTTPException(status.HTTP_409_CONFLICT, "Đề chưa được duyệt, chưa xuất được")
-    data, filename = export_exam(db, storage, exam, variant)
+MAX_VARIANT_CODES = 10
+ZIP_MIME = "application/zip"
+
+
+def attachment(data: bytes, filename: str, media_type: str) -> Response:
     return Response(
-        data, media_type=DOCX_MIME,
+        data, media_type=media_type,
         headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(filename)}"},
     )  # fmt: skip
+
+
+def check_codes(codes: list[str]) -> list[str]:
+    """Mã đề hợp lệ (1–8 chữ/số), bỏ trùng giữ thứ tự; sai → 422."""
+    bad = [c for c in codes if not is_valid_code(c)]
+    if bad or not codes:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT, f"Mã đề gồm 1–8 chữ hoặc số, không hợp lệ: {bad or codes}"
+        )
+    return list(dict.fromkeys(codes))
+
+
+def download(
+    db: Session, storage: LocalStorage, exam: Exam, variant: ExportVariant, code: str | None = None
+) -> Response:
+    if exam.status is not ExamStatus.approved:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Đề chưa được duyệt, chưa xuất được")
+    if code is not None:
+        check_codes([code])
+    data, filename = export_exam(db, storage, exam, variant, code)
+    return attachment(data, filename, DOCX_MIME)
+
+
+def download_variants(
+    db: Session, storage: LocalStorage, exam: Exam, variant: ExportVariant, codes: str
+) -> Response:
+    """Nhiều mã đề trong một file zip (mỗi mã một DOCX)."""
+    if exam.status is not ExamStatus.approved:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Đề chưa được duyệt, chưa xuất được")
+    wanted = check_codes([c.strip() for c in codes.split(",") if c.strip()])
+    if len(wanted) > MAX_VARIANT_CODES:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT, f"Tối đa {MAX_VARIANT_CODES} mã đề mỗi lần xuất"
+        )
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        for code in wanted:
+            data, filename = export_exam(db, storage, exam, variant, code)
+            archive.writestr(filename, data)
+    return attachment(buffer.getvalue(), f"{exam.title} - {len(wanted)} mã đề.zip", ZIP_MIME)
 
 
 @router.post("", status_code=status.HTTP_202_ACCEPTED)
@@ -167,6 +211,31 @@ def read_exam(exam_id: uuid.UUID, db: DB, user: CurrentUser) -> ExamOut:
     return ExamOut.of(get_exam(db, exam_id, user))
 
 
+class VariantQuestionOut(BaseModel):
+    position: int  # thứ tự trong cả đề theo mã đề; "Câu n" vẫn tính lại theo phần
+    part: str
+    content: dict[str, Any]
+
+
+class VariantOut(BaseModel):
+    code: str
+    questions: list[VariantQuestionOut]
+
+
+@router.get("/{exam_id}/variant")
+def read_variant(exam_id: uuid.UUID, code: str, db: DB, user: CurrentUser) -> VariantOut:
+    """Các câu của đề theo mã đề, đúng thứ tự file xuất ra, để xem trước. Không đổi dữ liệu."""
+    [code] = check_codes([code])
+    contents = variant_questions(get_exam(db, exam_id, user), code)
+    return VariantOut(
+        code=code,
+        questions=[
+            VariantQuestionOut(position=i, part=PART_OF_TYPE[QuestionType(c["type"])], content=c)
+            for i, c in enumerate(contents, start=1)
+        ],
+    )
+
+
 @router.get("/{exam_id}/export")
 def export(
     exam_id: uuid.UUID,
@@ -174,8 +243,23 @@ def export(
     db: DB,
     user: CurrentUser,
     storage: Annotated[LocalStorage, Depends(get_storage)],
+    code: str | None = None,
 ) -> Response:
-    return download(db, storage, get_exam(db, exam_id, user), variant)
+    """Không có `code`: bản gốc. Có `code` (mã đề): câu và phương án xáo theo mã, mã in trên đề."""
+    return download(db, storage, get_exam(db, exam_id, user), variant, code)
+
+
+@router.get("/{exam_id}/export-variants")
+def export_variants(
+    exam_id: uuid.UUID,
+    variant: ExportVariant,
+    codes: str,
+    db: DB,
+    user: CurrentUser,
+    storage: Annotated[LocalStorage, Depends(get_storage)],
+) -> Response:
+    """`codes`: các mã đề cách nhau bằng dấu phẩy, ví dụ 101,102,103; trả zip mỗi mã một DOCX."""
+    return download_variants(db, storage, get_exam(db, exam_id, user), variant, codes)
 
 
 # --- GV duyệt đề (F-05) ---

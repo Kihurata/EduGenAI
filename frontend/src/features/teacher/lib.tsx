@@ -144,3 +144,30 @@ export function mathOption(o: string): string {
 
 // Serif face of printed Vietnamese exams (the .docx export uses Times New Roman).
 export const PAPER_FONT = "font-['Times_New_Roman',Tinos,Times,serif]";
+
+// ----- Mã đề (khớp BE: 1–8 chữ hoặc số, tối đa 10 mã mỗi lần xuất) -----
+
+export const MAX_EXAM_CODES = 10;
+const CODE_RE = /^[0-9A-Za-z]{1,8}$/;
+export const SUGGESTED_CODES = ["101", "102", "103", "104"];
+
+/** "101, 102 103" → các mã đề (bỏ trùng, giữ thứ tự) hoặc thông báo lỗi. Rỗng = bản gốc, không lỗi. */
+export function parseCodes(text: string): { codes: string[]; error: string | null } {
+  const codes = [...new Set(text.split(/[\s,;]+/).filter(Boolean))];
+  const bad = codes.filter((c) => !CODE_RE.test(c));
+  if (bad.length) return { codes: [], error: `Mã đề gồm 1–8 chữ hoặc số, không hợp lệ: ${bad.join(", ")}` };
+  if (codes.length > MAX_EXAM_CODES) return { codes: [], error: `Tối đa ${MAX_EXAM_CODES} mã đề mỗi lần tải` };
+  return { codes, error: null };
+}
+
+/** Đường dẫn tải file: không mã → bản gốc; một mã → DOCX; nhiều mã → zip mỗi mã một DOCX. */
+export function exportRequest(base: string, variant: "student" | "teacher", codes: string[]): { path: string; fallback: string } {
+  const suffix = variant === "teacher" ? "gv" : "hs";
+  if (codes.length === 0) return { path: `${base}/export?variant=${variant}`, fallback: `de-${suffix}.docx` };
+  if (codes.length === 1) return { path: `${base}/export?variant=${variant}&code=${codes[0]}`, fallback: `de-${suffix}-${codes[0]}.docx` };
+  return { path: `${base}/export-variants?variant=${variant}&codes=${codes.join(",")}`, fallback: `de-${suffix}-${codes.length}-ma-de.zip` };
+}
+
+export function codesLabel(codes: string[]): string {
+  return codes.length > 1 ? `.zip, ${codes.length} mã đề` : ".docx";
+}

@@ -150,11 +150,13 @@ features:
     test_cases: [TC-011]
     unit:
       - tests/unit/test_exam_document.py
+      - tests/unit/test_exam_variant.py   # mã đề: xáo câu và phương án, giữ đáp án đúng
       - tests/unit/test_docx_export.py   # LaTeX → Word equations (OMML) via Pandoc
     integration:
       - tests/api/test_exam_export.py   # TC-011: 2025 mã 0101 → DOCX, official key + matrix table
       - tests/api/test_exams.py::test_export_student_and_teacher_docx
       - tests/api/test_exams.py::test_only_approved_exam_is_exported
+      - tests/api/test_exam_variants.py   # mã đề: export?code=, export-variants (zip), bank
 
   F-07:
     title: Exam bank   # was "Question bank"; the team chose a bank of official exams (vault F-07)

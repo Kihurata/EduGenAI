@@ -22,6 +22,11 @@ class SampleRag:
     def from_file(cls, path: str | Path) -> "SampleRag":
         return cls(json.loads(Path(path).read_text(encoding="utf-8")))
 
+    @classmethod
+    def from_files(cls, first: str | Path, *rest: str | Path) -> "SampleRag":
+        """Gộp nhiều file mẫu theo thứ tự (vd thêm ket_qua_mau_hinh.json để thử câu có hình khối)."""
+        return cls([s for path in (first, *rest) for s in json.loads(Path(path).read_text(encoding="utf-8"))])
+
     def generate(self, cell: Cell) -> tuple[list[Question], list[Question]]:
         same_type = [q for q in self.questions if q.get("dang") == TYPE_TO_RAG[cell.type]]
         if not same_type:

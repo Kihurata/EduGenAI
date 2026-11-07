@@ -55,3 +55,14 @@ def test_broken_svg_raises_figure_error(bad):
 def test_bad_scale_raises_figure_error(scale):
     with pytest.raises(FigureError):
         svg_to_png(render_svg(SPEC), scale=scale)
+
+
+def test_external_references_in_the_svg_are_never_followed(tmp_path):
+    """Chế độ an toàn của cairosvg: SVG giả trỏ tới file máy chủ cho ra đúng ảnh như khi không có thẻ đó."""
+    secret = tmp_path / "secret.png"
+    secret.write_bytes(svg_to_png(render_svg(SPEC)))
+    clean = render_svg(SPEC)
+    sneaky = clean.replace("</svg>", f'<image x="0" y="0" width="50" height="50" xlink:href="file://{secret}"/></svg>').replace(
+        "<svg ", '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ', 1
+    )
+    assert svg_to_png(sneaky) == svg_to_png(clean)

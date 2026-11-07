@@ -109,6 +109,7 @@ class Question(TypedDict):
     answer: NotRequired[str]  # multiple_choice, short_answer
     figure: NotRequired[str]
     table: NotRequired[list[list[str]]]
+    figure_spec: NotRequired[dict]  # {solid, a, b, h, foot}: sizes of a solid the backend draws (domain/figure.py)
     sympy: NotRequired[dict]  # {"expr": str, "verified": bool}
 
 

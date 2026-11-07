@@ -24,7 +24,8 @@ def heading_path(subject, grade, titles):
 
 @lru_cache(maxsize=1)
 def _tokenizer():
-    from tokenizers import Tokenizer  # a core dependency (no torch, unlike transformers): ingest needs it without the embed extra
+    # A core dependency (no torch, unlike transformers): ingest needs it without the embed extra.
+    from tokenizers import Tokenizer
 
     return Tokenizer.from_pretrained("BAAI/bge-m3")
 

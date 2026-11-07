@@ -17,6 +17,7 @@ SYSTEM_PROMPT = """Bạn là giáo viên ra đề thi tốt nghiệp THPT môn T
 - Đúng/Sai: đúng 4 ý a, b, c, d, mỗi ý có đáp án true (Đúng) hoặc false (Sai).
 - Trả lời ngắn: đáp án là số, tối đa 4 kí tự kể cả dấu "-" và dấu phẩy thập phân (ví dụ 12, -1,5, 0,25); làm tròn nếu cần và ghi rõ cách làm tròn trong đề.
 - Câu cần hình vẽ: mô tả hình trong figure đủ chi tiết để vẽ lại (các điểm, hình, nhãn, độ dài đã cho); câu cần bảng số liệu: ghi bảng trong table, mỗi hàng là một danh sách ô. Câu không cần thì để figure, table là null.
+- Hình hộp chữ nhật, lăng trụ đứng đáy tam giác vuông, hình chóp đáy chữ nhật: ghi tham số vào figure_spec để máy vẽ hình, và vẫn ghi mô tả bằng chữ trong figure (dùng khi máy không vẽ được). figure_spec gồm solid (box, prism hoặc pyramid) và a, b, h là các độ dài dương: box là hình hộp chữ nhật AB = a, AD = b, AA' = h; prism là lăng trụ đứng có đáy ABC vuông tại A, AB = a, AC = b, chiều cao h; pyramid là chóp đáy chữ nhật AB = a, AD = b, chiều cao h. foot chỉ dùng cho pyramid: "A" nếu SA vuông góc với đáy, "center" nếu chân đường cao là tâm đáy; hình khác thì foot là null. Tên đỉnh cố định: hình hộp ABCD.A'B'C'D', lăng trụ ABC.A'B'C', hình chóp S.ABCD; đề bài phải dùng đúng các tên này. Hình khác hoặc câu không cần hình thì figure_spec là null.
 - Trả lời ngắn: ghi vào sympy.expr một biểu thức SymPy có giá trị đúng bằng đáp số trước khi làm tròn, viết theo cú pháp Python (lũy thừa dùng **, không dùng ^); được dùng Rational, sqrt, pi, Integral, diff, binomial, factorial; không chứa biến tự do (ví dụ Rational(3, 2), sqrt(2)*pi, Integral(x**2, (x, 0, 1))). Biểu thức phải tính ra đáp số từ dữ kiện của đề (ví dụ diff, solve, Integral, phép tính trên số liệu đã cho), không ghi thẳng đáp số.
 - Trắc nghiệm: nếu phương án đúng là một số thì ghi sympy.expr như trên, nếu không thì để sympy.expr là null.
 - Câu mẫu từ đề chính thức chỉ để tham khảo văn phong và độ khó; không chép lại.
@@ -54,14 +55,23 @@ def system_prompt(subject: str, rag: bool = True) -> str:
     return f"{renamed}\n{rules}" if rules else renamed
 
 _STR = {"type": "string"}
-_COMMON = {"stem": _STR, "explanation": _STR, "source_chunk_ids": {"type": "array", "items": _STR},
-           # Optional per the contract, but structured outputs need every property required, so null = absent.
-           "figure": {"anyOf": [_STR, {"type": "null"}]},
-           "table": {"anyOf": [{"type": "array", "items": {"type": "array", "items": _STR}}, {"type": "null"}]}}
 
 
 def _object(props):
     return {"type": "object", "properties": props, "required": list(props), "additionalProperties": False}
+
+
+# Sizes only, never coordinates: the backend builds the points and draws them (domain/figure.py).
+_FIGURE_SPEC = {"anyOf": [{"type": "null"}, _object({
+    "solid": {"type": "string", "enum": ["box", "prism", "pyramid"]},
+    "a": {"type": "number"}, "b": {"type": "number"}, "h": {"type": "number"},
+    "foot": {"anyOf": [{"type": "string", "enum": ["A", "center"]}, {"type": "null"}]},
+})]}
+_COMMON = {"stem": _STR, "explanation": _STR, "source_chunk_ids": {"type": "array", "items": _STR},
+           # Optional per the contract, but structured outputs need every property required, so null = absent.
+           "figure": {"anyOf": [_STR, {"type": "null"}]},
+           "table": {"anyOf": [{"type": "array", "items": {"type": "array", "items": _STR}}, {"type": "null"}]},
+           "figure_spec": _FIGURE_SPEC}
 
 
 _ITEMS = {
@@ -92,7 +102,7 @@ def generate(cell: Cell, theory_chunks: list[Chunk], exam_items: list[Chunk], ll
     """Ask `llm` for cell["count"] questions; returns question dicts tagged with the cell's type, level and topic."""
     log_suspicious([*theory_chunks, *shown_exam_items(cell, exam_items)])
     prompt = mask_pii(build_prompt(cell, theory_chunks, exam_items, format_examples, previous_stems))
-    questions = [{k: v for k, v in q.items() if not (k in ("figure", "table") and v is None)}
+    questions = [{k: v for k, v in q.items() if not (k in ("figure", "table", "figure_spec") and v is None)}
                  | {"type": cell["type"], "level": cell["level"], "topic": cell["topic"]}
                  for q in map(normalize_strings, _ask(llm, system, prompt, SCHEMAS[cell["type"]]))]  # BUG-004
     if levels := cell.get("statement_levels"):

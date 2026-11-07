@@ -111,3 +111,8 @@ def test_BUG_004_stored_questions_with_broken_latex_export_clean_formulas():
     """Exams already in the DB (e81f6617) were generated before the fix; the export normalises them too."""
     assert split_math(r"Với $1 \≤ x \≤ 120$ thì $x \tiff 2$.") == [
         ("Với ", False), (r"1 \le x \le 120", True), (" thì ", False), (r"x \iff 2", True), (".", False)]
+
+
+def test_control_characters_in_generated_text_do_not_break_the_export():
+    [p] = paragraphs([Paragraph((Run("Vì độc lập nên $P(AB) = P(A) \x085 P(B)$ và x\x00y"),))])
+    assert "\x08" not in p.text and "\x00" not in p.text

@@ -39,6 +39,7 @@ def ingest_sources(path, client, embedder: Embedder, count_tokens=None):
     for s in load_sources(path):
         chunks = [dataclasses.replace(c, source_id=s["id"], official=s["official"], grade=s["grade"],
                                       exam_kind=s.get("exam_kind"))
-                  for c in chunk_source(s["doc_type"], path.parent / s["file"], count_tokens, grade=s["grade"])]
+                  for c in chunk_source(s["doc_type"], path.parent / s["file"], count_tokens, grade=s["grade"],
+                                          subject=s["subject"])]
         index_chunks(client, chunks, embedder)
         print(f"{s['id']}: {len(chunks)} chunks")

@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 
 import { api, download } from "@/api";
 import { useAuth } from "@/auth";
-import { keyed, MathText, QuestionStem, useAction } from "@/common";
+import { keyed, MathText, QuestionFigure, QuestionStem, useAction } from "@/common";
 import { Seal } from "@/components/Seal";
 import { Stepper } from "@/components/Stepper";
 import { ErrorState } from "@/components/states";
@@ -37,6 +37,7 @@ function PaperQuestion({ q, number, teacher }: Readonly<{ q: Question; number: n
       <div>
         <b>Câu {number}.</b> <QuestionStem stem={c.stem} table={c.table} />
       </div>
+      <QuestionFigure svg={c.figure_svg} caption={c.figure} />
       {c.type === "multiple_choice" && c.options && (
         <ol className={cn("grid gap-x-3", cols === 4 ? "grid-cols-4" : cols === 2 ? "grid-cols-2" : "grid-cols-1")}>
           {c.options.map((o, i) => (

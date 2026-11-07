@@ -116,3 +116,82 @@ def test_BUG_004_stored_questions_with_broken_latex_export_clean_formulas():
 def test_control_characters_in_generated_text_do_not_break_the_export():
     [p] = paragraphs([Paragraph((Run("Vì độc lập nên $P(AB) = P(A) \x085 P(B)$ và x\x00y"),))])
     assert "\x08" not in p.text and "\x00" not in p.text
+
+
+# ----- hình khối: SVG → PNG nhúng vào DOCX -----
+
+import logging  # noqa: E402
+import zipfile  # noqa: E402
+
+from docx.enum.text import WD_ALIGN_PARAGRAPH  # noqa: E402
+from docx.shared import Cm  # noqa: E402
+
+from app.domain.exam_document import Figure  # noqa: E402
+from app.domain.figure import FigureError, layout, render_svg  # noqa: E402
+
+SPEC = {"solid": "pyramid", "a": 3, "b": 4, "h": 5, "foot": "center"}
+FIGURE = Figure(render_svg(SPEC), "Hình chóp $S.ABCD$")
+
+
+def docx_of(*blocks) -> Document:
+    return Document(io.BytesIO(to_docx(list(blocks))))
+
+
+def media(doc: Document) -> list[str]:
+    buf = io.BytesIO()
+    doc.save(buf)
+    return [n for n in zipfile.ZipFile(buf).namelist() if n.startswith("word/media/")]
+
+
+def test_figure_becomes_one_inline_png_picture():
+    doc = docx_of(Paragraph((Run("Câu 1."),)), FIGURE)
+    assert len(doc.inline_shapes) == 1
+    assert [n.rsplit(".", 1)[-1] for n in media(doc)] == ["png"]
+
+
+def test_picture_keeps_the_figure_proportions_and_fits_the_page():
+    [shape] = docx_of(FIGURE).inline_shapes
+    box = layout(SPEC)
+    assert shape.width / shape.height == pytest.approx(box.width / box.height, rel=0.02)
+    assert 0 < shape.width <= Cm(12)
+
+
+def test_picture_paragraph_is_centered_and_the_caption_is_not_repeated():
+    doc = docx_of(FIGURE)
+    [p] = [p for p in doc.paragraphs if p._p.xpath(".//pic:pic")]
+    assert p.alignment == WD_ALIGN_PARAGRAPH.CENTER
+    assert "S.ABCD" not in p.text
+
+
+def test_two_figures_give_two_pictures():
+    assert len(docx_of(FIGURE, Paragraph((Run("giữa"),)), FIGURE).inline_shapes) == 2
+
+
+def test_figure_does_not_disturb_formulas_around_it():
+    doc = docx_of(Paragraph((Run(r"Cho $x^2$"),)), FIGURE, Paragraph((Run(r"Tính $\frac{1}{2}$"),)))
+    assert len(doc.inline_shapes) == 1
+    assert sum(len(maths(p._p)) for p in doc.paragraphs) == 2
+
+
+def test_png_failure_falls_back_to_the_text_caption_and_still_exports(monkeypatch, caplog):
+    def broken(svg):
+        raise FigureError("cairo lỗi")
+
+    monkeypatch.setattr(docx_export, "svg_to_png", broken)
+    with caplog.at_level(logging.WARNING):
+        doc = docx_of(FIGURE)
+    assert len(doc.inline_shapes) == 0
+    assert "Hình chóp $S.ABCD$" in [p.text for p in doc.paragraphs]
+    assert "cairo lỗi" in caplog.text
+
+
+def test_png_failure_with_no_caption_adds_no_empty_paragraph(monkeypatch):
+    monkeypatch.setattr(docx_export, "svg_to_png", lambda svg: (_ for _ in ()).throw(FigureError("x")))
+    doc = docx_of(Figure(render_svg(SPEC), ""))
+    assert len(doc.inline_shapes) == 0 and [p.text for p in doc.paragraphs] == []
+
+
+def test_unexpected_converter_crash_still_exports_the_exam(monkeypatch):
+    monkeypatch.setattr(docx_export, "svg_to_png", lambda svg: (_ for _ in ()).throw(OSError("no libcairo")))
+    doc = docx_of(Paragraph((Run("Câu 1."),)), FIGURE)
+    assert len(doc.inline_shapes) == 0 and doc.paragraphs[0].text == "Câu 1."

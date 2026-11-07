@@ -70,8 +70,13 @@ def test_pyramid_hides_the_base_back_and_left_edges():
     assert hidden(PYRAMID) == pairs("A-D", "C-D", "S-D")
 
 
-def test_flat_pyramid_shows_its_back_face_so_only_one_edge_hides():
-    assert hidden({"solid": "pyramid", "a": 3, "b": 4, "h": 0.5, "foot": "center"}) == pairs("A-D")
+def test_long_low_pyramid_shows_its_back_face_so_only_one_edge_hides():
+    # h > a/2 hides the left face, h < 0.177·b shows the back face: only AD has two hidden faces left
+    assert hidden({"solid": "pyramid", "a": 3, "b": 10, "h": 1.6, "foot": "center"}) == pairs("A-D")
+
+
+def test_very_flat_pyramid_hides_no_edge_because_every_slanted_face_faces_the_viewer():
+    assert hidden({"solid": "pyramid", "a": 3, "b": 4, "h": 0.5, "foot": "center"}) == set()
 
 
 def test_pyramid_over_vertex_a_hides_the_base_and_left_edges():
@@ -116,7 +121,7 @@ def solids():
             yield pytest.param({**base, "a": a, "b": b, "h": h}, id=f"{name}-{a}x{b}x{h}")
 
 
-@pytest.mark.parametrize("spec", solids())
+@pytest.mark.parametrize("spec", list(solids()))
 def test_every_line_and_label_is_inside_the_frame(spec):
     figure = layout(spec)
     for x, y in figure.points.values():
@@ -126,7 +131,7 @@ def test_every_line_and_label_is_inside_the_frame(spec):
         assert 0 <= x0 and x1 <= figure.width and 0 <= y0 and y1 <= figure.height
 
 
-@pytest.mark.parametrize("spec", solids())
+@pytest.mark.parametrize("spec", list(solids()))
 def test_no_two_labels_overlap(spec):
     boxes = [(label.name, label_box(label)) for label in layout(spec).labels]
     for i, (n1, (ax0, ay0, ax1, ay1)) in enumerate(boxes):

@@ -62,7 +62,7 @@ test.describe("hình khối trong đề", () => {
     await page.goto(`/exams/${examId}`);
     const figures = page.getByTestId("question-figure");
     await expect(figures.first()).toBeVisible();
-    expect(await figures.count(), "mock has box, pyramid and prism samples").toBeGreaterThanOrEqual(3);
+    expect(await figures.count(), "the mock geometry samples give several figures").toBeGreaterThanOrEqual(3);
 
     // The image is a real, decoded SVG (an <img>, so nothing in it can run as script) with the text description as alt.
     const first = figures.first();

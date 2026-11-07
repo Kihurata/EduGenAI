@@ -24,10 +24,10 @@ def heading_path(subject, grade, titles):
 
 @lru_cache(maxsize=1)
 def _tokenizer():
-    from transformers import AutoTokenizer  # installed with FlagEmbedding; slow import, keep out of unit tests
+    from tokenizers import Tokenizer  # a core dependency (no torch, unlike transformers): ingest needs it without the embed extra
 
-    return AutoTokenizer.from_pretrained("BAAI/bge-m3")
+    return Tokenizer.from_pretrained("BAAI/bge-m3")
 
 
 def bge_m3_token_count(text):
-    return len(_tokenizer().encode(text, add_special_tokens=False))
+    return len(_tokenizer().encode(text, add_special_tokens=False).ids)

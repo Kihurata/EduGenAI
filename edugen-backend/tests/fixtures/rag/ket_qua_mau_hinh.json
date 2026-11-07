@@ -45,7 +45,7 @@
   "o_ma_tran": {
    "chu_de": "hinh_hoc_khong_gian",
    "dang": "nhieu_lua_chon",
-   "muc_do": "Biet"
+   "muc_do": "Hieu"
   },
   "nguon": [
    "hh/PI/C2"
@@ -54,7 +54,7 @@
   "canh_bao": [],
   "cau_hoi": {
    "dang": "nhieu_lua_chon",
-   "muc_do": "Biet",
+   "muc_do": "Hieu",
    "de_bai": "Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình chữ nhật, $AB=3$, $AD=4$, $SA\\perp(ABCD)$ và $SA=5$. Thể tích khối chóp $S.ABCD$ bằng:",
    "phuong_an": [
     "$20$",
@@ -87,7 +87,7 @@
   "o_ma_tran": {
    "chu_de": "hinh_hoc_khong_gian",
    "dang": "nhieu_lua_chon",
-   "muc_do": "Biet"
+   "muc_do": "Van_dung"
   },
   "nguon": [
    "hh/PI/C3"
@@ -96,7 +96,7 @@
   "canh_bao": [],
   "cau_hoi": {
    "dang": "nhieu_lua_chon",
-   "muc_do": "Biet",
+   "muc_do": "Van_dung",
    "de_bai": "Cho lăng trụ đứng $ABC.A'B'C'$ có đáy $ABC$ vuông tại $A$, $AB=3$, $AC=4$, $AA'=5$. Thể tích khối lăng trụ bằng:",
    "phuong_an": [
     "$60$",

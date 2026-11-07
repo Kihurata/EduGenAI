@@ -2,7 +2,7 @@
 
 LaTeX `$...$` / `$$...$$` thành công thức Word (OMML): mọi công thức của đề gửi Pandoc một lần,
 lấy `m:oMath` ra chèn vào đúng chỗ. Công thức Pandoc không đọc được, hoặc Pandoc lỗi, thì giữ
-nguyên dạng chữ để đề vẫn xuất được.
+nguyên dạng chữ để đề vẫn xuất được. Hình khối (Figure) nhúng dạng PNG; không đổi được thì giữ mô tả chữ.
 """
 
 import copy
@@ -22,6 +22,7 @@ from docx.shared import Cm, Pt
 
 from app.domain.exam_document import (
     Block,
+    Figure,
     Heading,
     Item,
     PageBreak,
@@ -30,8 +31,10 @@ from app.domain.exam_document import (
     Table,
 )
 from app.rag.generation.latex import normalize_latex
+from app.services.figure_png import svg_to_png
 
 FONT = "Times New Roman"
+FIGURE_WIDTH_CM = 8
 MATH_RE = re.compile(r"\$\$(.+?)\$\$|\$([^$]+?)\$", re.DOTALL)
 
 log = logging.getLogger(__name__)
@@ -112,6 +115,20 @@ def _add_runs(paragraph, runs: tuple[Run, ...], equations: Equations) -> None:
         _add_text(paragraph, r.text, r.bold, equations)
 
 
+def _add_figure(doc, figure: Figure) -> None:
+    """Hình khối nhúng dạng PNG ở giữa trang; không đổi được ảnh (kể cả thiếu libcairo) thì giữ mô tả chữ, đề vẫn xuất được."""
+    try:
+        png = svg_to_png(figure.svg)
+    except Exception as e:  # noqa: BLE001 – FigureError hay OSError của Cairo: đều chỉ làm mất hình, không làm mất đề
+        log.warning("Không nhúng được hình, giữ mô tả chữ: %s", e)
+        if figure.caption:
+            doc.add_paragraph(figure.caption)
+        return
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run().add_picture(io.BytesIO(png), width=Cm(FIGURE_WIDTH_CM))
+
+
 def to_docx(blocks: list[Block]) -> bytes:
     formulas = [part for text in _texts(blocks) for part, is_math in split_math(text) if is_math]
     equations = _equations(list(dict.fromkeys(formulas)))
@@ -141,6 +158,8 @@ def to_docx(blocks: list[Block]) -> bytes:
                     for c, text in enumerate(row):
                         _add_text(table.cell(r, c).paragraphs[0], text, False, equations)
                 doc.add_paragraph()
+            case Figure():
+                _add_figure(doc, block)
             case PageBreak():
                 doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
     buf = io.BytesIO()

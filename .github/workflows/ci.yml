@@ -1,4 +1,5 @@
-# CI: checks commit messages on every push and PR; backend and frontend jobs run once those folders exist.
+# CI: checks commit messages, backend lint and tests, migrations on a fresh Postgres, the frontend build, the
+# production compose file, and builds both Docker images (not published yet, see deploy/README.md).
 # Unit and integration tests use fakes; no Gemini or Qdrant credentials are needed here.
 name: CI
 
@@ -71,3 +72,75 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run build
+
+  backend-migrations:
+    # Clean database every run: upgrade to head, downgrade to base, upgrade again.
+    needs: detect
+    if: needs.detect.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: edugen
+          POSTGRES_DB: edugen
+          POSTGRES_HOST_AUTH_METHOD: trust  # throwaway CI database; no credential in the repo
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U edugen -d edugen" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgresql+psycopg://edugen@localhost:5432/edugen
+    defaults:
+      run:
+        working-directory: edugen-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: edugen-backend/uv.lock
+      - run: uv python install 3.12
+      - run: uv sync --frozen --no-dev
+      - run: uv run alembic upgrade head
+      - run: uv run alembic downgrade base
+      - run: uv run alembic upgrade head
+
+  compose-config:
+    # The production compose file must parse and resolve with a complete .env (random dummy values here).
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deploy
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          rnd() { head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n'; }
+          printf 'DOMAIN=ci.example.com\nPOSTGRES_PASSWORD=%s\nJWT_SECRET=%s\n' "$(rnd)" "$(rnd)" > .env
+          printf 'QDRANT_URL=https://qdrant.invalid\nQDRANT_API_KEY=%s\n' "$(rnd)" >> .env
+          printf 'SEED_SCHOOL_CODE=ci\nSEED_SCHOOL_NAME=CI School\nSEED_ADMIN_EMAIL=ci@example.invalid\n' >> .env
+          printf 'SEED_ADMIN_NAME=CI Admin\nSEED_ADMIN_PASSWORD=%s\n' "$(rnd)" >> .env
+          docker compose -f docker-compose.prod.yml config -q
+
+  images:
+    # Proves both images build. Nothing is pushed: publishing to GHCR comes with the deploy job.
+    runs-on: ubuntu-latest
+    needs: [backend, frontend, backend-migrations, compose-config]
+    if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    strategy:
+      matrix:
+        include:
+          - name: backend
+            context: edugen-backend
+          - name: frontend
+            context: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: ${{ matrix.context }}
+          push: false
+          # Frontend calls the API on its own origin (Caddy routes /api to the backend).
+          build-args: ${{ matrix.name == 'frontend' && 'VITE_API_URL=' || '' }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}

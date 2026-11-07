@@ -1,0 +1,83 @@
+# Danh mục nguồn RAG (T-035, bước 1 của D-009). Nạp: uv run python -m app.rag.ingest --sources data/sources.yaml
+# file: tính từ thư mục này. doc_type: sgk (pages.md đã tiền xử lý) | exam (đề .json). Đề thi thêm exam_kind (tot_nghiep | dinh_ky_7991, D-017), year.
+# SGK cần data/parsed/<sách>/normalized/pages.md trên máy (không commit; xem scripts/rebuild_qdrant.py).
+sources:
+  - id: sgk-toan-12-kntt-tap-1
+    doc_type: sgk
+    file: parsed/sgk-toan-12-kntt-tap-1/normalized/pages.md
+    subject: toan
+    grade: 12
+    official: true
+    confidence: high
+  - id: sgk-toan-12-kntt-tap-2
+    doc_type: sgk
+    file: parsed/sgk-toan-12-kntt-tap-2/normalized/pages.md
+    subject: toan
+    grade: 12
+    official: true
+    confidence: high
+  - id: toan-tn-2025-0101
+    doc_type: exam
+    file: ../tests/rag/fixtures/toan-tn/toan-tn-2025-0101.json
+    subject: toan
+    grade: 12
+    official: true
+    confidence: high
+    exam_kind: tot_nghiep
+    year: 2025
+  - id: toan-tn-2025-tham-khao
+    doc_type: exam
+    file: ../tests/rag/fixtures/toan-tn/toan-tn-2025-tham-khao.json
+    subject: toan
+    grade: 12
+    official: true
+    confidence: high
+    exam_kind: tot_nghiep
+    year: 2025
+  - id: toan-tn-2026-0102
+    doc_type: exam
+    file: ../tests/rag/fixtures/toan-tn/toan-tn-2026-0102.json
+    subject: toan
+    grade: 12
+    official: true
+    confidence: high
+    exam_kind: tot_nghiep
+    year: 2026
+  # Đề định kỳ lớp 10–11 (Tailieuonthi, không chính thức; nhóm chép tay, chưa soát lại). Bản gốc: vault 06-testing/fixtures/toan-dinh-ky/.
+  # year: manifest bắt buộc nhưng không ghi vào chunk; là năm kết thúc năm học trong tên đề.
+  - id: toan-10-ck1-2025-kntt-tlot-de01
+    doc_type: exam
+    file: ../tests/rag/fixtures/toan-dinh-ky/toan-10-ck1-2025-kntt-tlot-de01.json
+    subject: toan
+    grade: 10
+    official: false
+    confidence: medium
+    exam_kind: dinh_ky_7991
+    year: 2025
+  - id: toan-10-ck2-2025-kntt-tlot-de01
+    doc_type: exam
+    file: ../tests/rag/fixtures/toan-dinh-ky/toan-10-ck2-2025-kntt-tlot-de01.json
+    subject: toan
+    grade: 10
+    official: false
+    confidence: medium
+    exam_kind: dinh_ky_7991
+    year: 2025
+  - id: toan-11-ck1-tlot-de01
+    doc_type: exam
+    file: ../tests/rag/fixtures/toan-dinh-ky/toan-11-ck1-tlot-de01.json
+    subject: toan
+    grade: 11
+    official: false
+    confidence: medium
+    exam_kind: dinh_ky_7991
+    year: 2025  # đề không ghi năm học: điền tạm, không ảnh hưởng chunk
+  - id: toan-11-gk2-2025-tlot-de01
+    doc_type: exam
+    file: ../tests/rag/fixtures/toan-dinh-ky/toan-11-gk2-2025-tlot-de01.json
+    subject: toan
+    grade: 11
+    official: false
+    confidence: medium
+    exam_kind: dinh_ky_7991
+    year: 2025

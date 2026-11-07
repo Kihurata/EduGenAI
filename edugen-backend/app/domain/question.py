@@ -15,7 +15,9 @@ cấu trúc không dựng được đề nên tính là câu bị loại. Câu h
       "check": {...} | null,                             # kiem_tra (SymPy), giữ nguyên
       "figure": "...",                                   # hinh, chỉ khi câu cần hình (mô tả bằng chữ)
       "table": [["...", ...], ...],                      # bang, chỉ khi câu cần bảng số liệu
+      "figure_spec": {"solid", "a", "b", "h", "foot"},   # hinh_ve, tham số hình khối để BE vẽ (domain/figure.py)
     }
+Thêm `figure_svg` (BE vẽ từ figure_spec, domain/figure.py:with_figure) không có khóa RAG nên không đi ngược về RAG.
 """
 
 import re
@@ -37,7 +39,7 @@ LEVEL_TO_RAG = {lv: k for k, lv in LEVEL_FROM_RAG.items()}
 OPTION_LETTERS = "ABCD"
 TRUE_FALSE_MARKS = {True: "Đ", False: "S"}
 SHORT_ANSWER_MAX_CHARS = 4  # phiếu trả lời ngắn có 4 ô (kể cả dấu "-" và ",")
-EXTRA_KEYS = (("hinh", "figure"), ("bang", "table"))  # tùy chọn, giữ nguyên khi có
+EXTRA_KEYS = (("hinh", "figure"), ("bang", "table"), ("hinh_ve", "figure_spec"))  # tùy chọn, giữ nguyên khi có
 
 
 _SEPARATOR_CELL = re.compile(r":?-+:?")

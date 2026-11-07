@@ -165,7 +165,7 @@ def test_confirm_rejects_non_grade_12_matrix_without_rewriting_its_grade(client,
     m = uploaded(client, teacher_headers)  # ma trận mẫu là lớp 10
     resp = client.post(f"{BASE}/{m['id']}/confirm", headers=teacher_headers)
     assert resp.status_code == 409
-    assert resp.json()["detail"] == "Bản demo hiện chỉ hỗ trợ Toán lớp 12. Ma trận này là lớp 10 nên chưa xác nhận được."
+    assert resp.json()["detail"] == "Bản demo hiện chỉ hỗ trợ đề lớp 12. Ma trận này là lớp 10 nên chưa xác nhận được."
     assert client.get(f"{BASE}/{m['id']}", headers=teacher_headers).json()["grade"] == 10
 
 

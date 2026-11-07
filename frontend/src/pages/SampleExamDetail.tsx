@@ -6,10 +6,10 @@ import { Link, useParams } from "react-router-dom";
 
 import { api } from "../api";
 import { Badge, ErrorBox, keyed, QuestionStem, useAction, usePolling } from "../common";
+import { subjectLabel, useSubjects } from "../subjects";
 import {
   EXAM_KINDS,
   LEVELS,
-  SUBJECT_LABEL,
   type DraftIssue,
   type DraftQuestion,
   type ExamDraft,
@@ -36,6 +36,7 @@ function withPart(q: DraftQuestion, part: Part): DraftQuestion {
 
 export default function SampleExamDetail() {
   const { id } = useParams();
+  const subjects = useSubjects();
   const [sample, setSample] = useState<SampleExam | null>(null);
   const [draft, setDraft] = useState<ExamDraft | null>(null);
   const [dirty, setDirty] = useState(false);
@@ -102,7 +103,7 @@ export default function SampleExamDetail() {
         <Badge status={sample.status} />
       </div>
       <p className="muted">
-        {SUBJECT_LABEL[sample.subject] ?? sample.subject} · lớp {sample.grade} · {sample.original_filename} · không chính
+        {subjectLabel(subjects, sample.subject)} · lớp {sample.grade} · {sample.original_filename} · không chính
         thức (đề trường tải lên)
       </p>
       {sample.status === "pending" && <p className="notice">Đang đọc đề thành bản nháp…</p>}

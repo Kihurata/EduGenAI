@@ -5,12 +5,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { api } from "../api";
 import { Badge, ErrorBox, formatTime, useAction, usePolling } from "../common";
-import { SUBJECT_LABEL, type SampleExam, type SubjectCode } from "../types";
+import { subjectLabel, useSubjects } from "../subjects";
+import type { SampleExam, SubjectCode } from "../types";
 
 export default function SampleExams() {
   const navigate = useNavigate();
   const [items, setItems] = useState<SampleExam[] | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const subjects = useSubjects();
   const [subject, setSubject] = useState<SubjectCode>("toan");
   const [grade, setGrade] = useState(12);
   const [title, setTitle] = useState("");
@@ -52,10 +54,10 @@ export default function SampleExams() {
         <div className="meta-row">
           <label>
             Môn
-            <select value={subject} onChange={(e) => setSubject(e.target.value as SubjectCode)}>
-              {Object.entries(SUBJECT_LABEL).map(([code, name]) => (
-                <option key={code} value={code}>
-                  {name}
+            <select value={subject} onChange={(e) => setSubject(e.target.value)}>
+              {(subjects ?? []).map((s) => (
+                <option key={s.code} value={s.code}>
+                  {s.label}
                 </option>
               ))}
             </select>
@@ -106,7 +108,7 @@ export default function SampleExams() {
                   <td>
                     <Link to={`/sample-exams/${s.id}`}>{s.title}</Link>
                   </td>
-                  <td>{SUBJECT_LABEL[s.subject] ?? s.subject}</td>
+                  <td>{subjectLabel(subjects, s.subject)}</td>
                   <td>{s.grade}</td>
                   <td>
                     <Badge status={s.status} />

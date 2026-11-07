@@ -10,6 +10,7 @@ import { ErrorState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { subjectLabel, useSubjects } from "@/subjects";
 import { PART_OF_TYPE, type Exam, type Question } from "@/types";
 
 import { FormError, LETTERS, mathOption, optionColumns, PAPER_FONT, PART_HEAD, PARTS, solutionSteps, teacherSteps } from "./lib";
@@ -111,7 +112,7 @@ function KeyTable({ head, rows }: Readonly<{ head: (string | number)[]; rows: (s
   );
 }
 
-function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: number): Block[] {
+function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: number, subject: string): Block[] {
   const partOf = (q: Question) => q.part || PART_OF_TYPE[q.content.type];
   const sorted = [...exam.questions].sort((a, b) => a.position - b.position);
   const blocks: Block[] = [
@@ -131,7 +132,7 @@ function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: nu
                 </td>
                 <td className="w-1/2 px-1">
                   <div className="font-bold uppercase">{exam.title}</div>
-                  <div className="font-bold">Môn: TOÁN – Lớp 12</div>
+                  <div className="font-bold uppercase">Môn: {subject || "…"} – Lớp {exam.grade ?? "…"}</div>
                   <div className="italic">Thời gian làm bài: {exam.duration_minutes} phút, không kể thời gian phát đề</div>
                 </td>
               </tr>
@@ -225,6 +226,7 @@ function paginate(blocks: Block[], heights: number[]): number[][] {
 export default function ExamExportPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const subjects = useSubjects();
   const [exam, setExam] = useState<Exam | null>(null);
   const [variant, setVariant] = useState<Variant>("student");
   const [zoom, setZoom] = useState("fit");
@@ -248,7 +250,7 @@ export default function ExamExportPage() {
 
   const teacher = variant === "teacher";
   const pageCount = pages?.length ?? 0;
-  const blocks = exam ? buildBlocks(exam, teacher, user?.school.name ?? "", pageCount) : [];
+  const blocks = exam ? buildBlocks(exam, teacher, user?.school.name ?? "", pageCount, subjectLabel(subjects, exam.subject)) : [];
 
   // Measure the hidden copy of every block, then split into A4 pages.
   useLayoutEffect(() => {

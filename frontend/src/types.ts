@@ -126,6 +126,8 @@ export interface Exam {
   owner_id: string;
   title: string;
   duration_minutes: number;
+  subject: string | null; // mã môn của ma trận
+  grade: number | null;
   status: ExamStatus;
   cells_done: number;
   cells_total: number;
@@ -150,8 +152,8 @@ export interface BankEntry {
 }
 
 // Đề mẫu GV tải lên (T-050): bản nháp theo schema app.rag.chunking.exam của BE.
-export type SubjectCode = "toan" | "ly" | "hoa";
-export const SUBJECT_LABEL: Record<SubjectCode, string> = { toan: "Toán", ly: "Vật lí", hoa: "Hoá học" };
+// Mã môn; danh sách và tên môn lấy từ API GET /subjects (subjects.ts), không ghi cứng ở đây (T-064).
+export type SubjectCode = string;
 export type Part = "I" | "II" | "III";
 // D-017: cùng bộ exam_kind với chỉ mục RAG và ma trận (T-055).
 export const EXAM_KINDS: Record<string, string> = { tot_nghiep: "Tốt nghiệp / thi thử", dinh_ky_7991: "Định kỳ (giữa kì, cuối kì)" };

@@ -17,13 +17,12 @@ from typing import Any
 
 import numpy as np
 
+from app.domain.figure.solids import BUILDERS, SOLIDS, Solid
+from app.domain.figure.spec import FEET, MAX_RATIO, FigureError, Spec, parse_spec
 from app.domain.question import Question
 
 log = logging.getLogger(__name__)
 
-SOLIDS = ("box", "prism", "pyramid")
-FEET = ("A", "center")
-MAX_RATIO = 10  # cạnh dài nhất / ngắn nhất; lệch hơn thì hình dẹt đến mức nhãn không đặt được
 DEPTH_SCALE, DEPTH_ANGLE = 0.5, math.radians(45)
 VIEW = np.array([DEPTH_SCALE * math.cos(DEPTH_ANGLE), DEPTH_SCALE * math.sin(DEPTH_ANGLE), -1.0])  # từ vật về phía mắt
 
@@ -34,10 +33,6 @@ CHAR_WIDTH = 8
 LABEL_OFFSET = 11  # tâm nhãn cách đỉnh ít nhất ngần này px
 LABEL_GAP = 1
 STROKE, DASH = 1.5, "5 4"
-
-
-class FigureError(ValueError):
-    """Spec hình không dùng được (hoặc không đổi được sang ảnh)."""
 
 
 @dataclass(frozen=True)
@@ -73,57 +68,10 @@ def label_box(label: Label) -> tuple[float, float, float, float]:
     return label.x - half_w, label.y - half_h, label.x + half_w, label.y + half_h
 
 
-# ----- kiểm spec -----
+# ----- cạnh thấy / khuất -----
 
 
-def _dim(spec: dict, key: str) -> float:
-    value = spec.get(key)
-    if isinstance(value, bool) or not isinstance(value, int | float) or not math.isfinite(value) or value <= 0:
-        raise FigureError(f"Kích thước '{key}' của hình phải là số dương")
-    return float(value)
-
-
-def _parse(spec: Any) -> tuple[str, float, float, float, str | None]:
-    if not isinstance(spec, dict):
-        raise FigureError("figure_spec phải là một object")
-    solid = spec.get("solid")
-    if solid not in SOLIDS:
-        raise FigureError(f"Chưa vẽ được hình {solid!r}, chỉ có {', '.join(SOLIDS)}")
-    a, b, h = (_dim(spec, k) for k in "abh")
-    if max(a, b, h) / min(a, b, h) > MAX_RATIO:
-        raise FigureError(f"Các cạnh lệch nhau quá {MAX_RATIO} lần, hình sẽ méo")
-    foot = spec.get("foot")
-    if solid == "pyramid":
-        foot = foot or "center"
-        if foot not in FEET:
-            raise FigureError(f"Chân đường cao phải là một trong {', '.join(FEET)}")
-    elif foot is not None:
-        raise FigureError("Chỉ hình chóp mới có chân đường cao")
-    return solid, a, b, h, foot
-
-
-# ----- tọa độ và mặt của từng khối -----
-
-Faces = list[tuple[str, ...]]
-
-
-def _build(solid: str, a: float, b: float, h: float, foot: str | None) -> tuple[dict[str, np.ndarray], Faces]:
-    if solid == "prism":  # đáy tam giác vuông tại A: AB theo x, AC theo chiều sâu
-        base = {"A": (0, 0, 0), "B": (a, 0, 0), "C": (0, 0, b)}
-    else:
-        base = {"A": (0, 0, 0), "B": (a, 0, 0), "C": (a, 0, b), "D": (0, 0, b)}
-    names = list(base)
-    ring = list(zip(names, names[1:] + names[:1]))
-    if solid == "pyramid":
-        base["S"] = (0, h, 0) if foot == "A" else (a / 2, h, b / 2)
-        faces = [tuple(names), *(("S", u, v) for u, v in ring)]
-    else:
-        base |= {f"{k}'": (x, h, z) for k, (x, _, z) in list(base.items())}
-        faces = [tuple(names), tuple(f"{k}'" for k in names), *((u, v, f"{v}'", f"{u}'") for u, v in ring)]
-    return {k: np.array(v, float) for k, v in base.items()}, faces
-
-
-def _edges(points: dict[str, np.ndarray], faces: Faces) -> tuple[Edge, ...]:
+def _edges(points: dict[str, np.ndarray], faces) -> tuple[Edge, ...]:
     centroid = np.mean(list(points.values()), axis=0)
     visible = []
     for face in faces:
@@ -178,9 +126,9 @@ def _place_labels(points: dict[str, np.ndarray]) -> list[Label]:
 
 
 def layout(spec: Any) -> Layout:
-    solid, a, b, h, foot = _parse(spec)
-    points, faces = _build(solid, a, b, h, foot)
-    edges = _edges(points, faces)
+    parsed = parse_spec(spec)
+    solid = BUILDERS[parsed.solid].build(parsed.a, parsed.b, parsed.h, parsed.foot)
+    points, edges = solid.points, _edges(solid.points, solid.faces)
     flat = {k: np.array(project(p)) for k, p in points.items()}
     xs, ys = zip(*flat.values())
     scale = SIZE / max(max(xs) - min(xs), max(ys) - min(ys))

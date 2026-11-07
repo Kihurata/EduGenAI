@@ -105,7 +105,7 @@ class Question(TypedDict):
     topic: str
     source_chunk_ids: list[str]
     options: NotRequired[dict[str, str]]  # multiple_choice
-    statements: NotRequired[list[dict]]  # true_false: [{label, text, answer, level?}]
+    statements: NotRequired[list[dict]]  # true_false: [{label, text, answer, explanation, level?}]
     answer: NotRequired[str]  # multiple_choice, short_answer
     figure: NotRequired[str]
     table: NotRequired[list[list[str]]]

@@ -270,11 +270,11 @@ def test_there_is_one_schema_per_question_type():
 
 @pytest.mark.parametrize("qtype", TYPES)
 def test_the_llm_output_examples_match_the_schemas(qtype):
-    """Keeps the fake replies used across these tests honest: only schema keys, and every key but figure/table."""
+    """Keeps the fake replies used across these tests honest: only schema keys, and every key but figure/table/figure_spec."""
     item = SCHEMAS[qtype]["properties"]["questions"]["items"]
 
     assert set(LLM_OUTPUT[qtype]) <= set(item["properties"])
-    assert set(item["required"]) - set(LLM_OUTPUT[qtype]) <= {"figure", "table"}
+    assert set(item["required"]) - set(LLM_OUTPUT[qtype]) <= {"figure", "table", "figure_spec"}
 
 
 def test_multiple_choice_answer_and_true_false_labels_are_enums():
@@ -443,3 +443,62 @@ def test_sgk_exercises_are_shown_apart_from_theory_as_difficulty_examples():
     theory_part, exercise_part = prompt.split("# Bài tập SGK")
     assert "t1" in theory_part and "b1" not in theory_part
     assert "Bài tập mẫu" in exercise_part and "không chép lại" in exercise_part
+
+
+# --- figure_spec: solid and its sizes, drawn by the backend instead of described in words -------------------------
+
+SPEC = {"solid": "pyramid", "a": 3, "b": 4, "h": 5, "foot": "center"}
+
+
+def _spec_schema(qtype):
+    item = SCHEMAS[qtype]["properties"]["questions"]["items"]
+    return item, item["properties"]["figure_spec"]["anyOf"]
+
+
+@pytest.mark.parametrize("qtype", TYPES)
+def test_schema_has_a_nullable_figure_spec_object(qtype):
+    item, any_of = _spec_schema(qtype)
+    [obj] = [o for o in any_of if o.get("type") == "object"]
+
+    assert "figure_spec" in item["required"]
+    assert {"type": "null"} in any_of and len(any_of) == 2
+    assert obj["properties"]["solid"] == {"type": "string", "enum": ["box", "prism", "pyramid"]}
+    assert {k: obj["properties"][k] for k in "abh"} == {k: {"type": "number"} for k in "abh"}
+    assert obj["properties"]["foot"] == {"anyOf": [{"type": "string", "enum": ["A", "center"]}, {"type": "null"}]}
+    assert set(obj["required"]) == set(obj["properties"]) == {"solid", "a", "b", "h", "foot"}
+    assert obj["additionalProperties"] is False
+
+
+def test_prompt_tells_the_llm_which_solids_it_can_ask_for_and_how_vertices_are_named():
+    for word in ("figure_spec", "box", "prism", "pyramid", "foot", "ABCD.A'B'C'D'", "ABC.A'B'C'", "S.ABCD"):
+        assert word in SYSTEM_PROMPT, word
+
+
+def test_prompt_keeps_the_text_description_as_a_fallback_next_to_the_spec():
+    assert "figure_spec" in SYSTEM_PROMPT and "figure" in SYSTEM_PROMPT
+    assert "mô tả" in SYSTEM_PROMPT.split("figure_spec", 1)[1]
+
+
+def test_the_no_rag_prompt_has_the_same_figure_rule():
+    assert "figure_spec" in NO_RAG_SYSTEM_PROMPT
+
+
+@pytest.mark.parametrize("qtype", TYPES)
+def test_null_figure_spec_is_dropped(qtype):
+    [q], _ = _generate(qtype, LLM_OUTPUT[qtype] | {"figure_spec": None})
+
+    assert "figure_spec" not in q
+
+
+@pytest.mark.parametrize("qtype", TYPES)
+def test_figure_spec_is_kept_as_the_llm_wrote_it_and_question_still_valid(qtype):
+    [q], _ = _generate(qtype, LLM_OUTPUT[qtype] | {"figure_spec": SPEC, "figure": FIGURE})
+
+    assert q["figure_spec"] == SPEC and q["figure"] == FIGURE
+    assert validate(q, RETRIEVED) == []
+
+
+def test_figure_spec_without_a_text_figure_is_still_kept():
+    [q], _ = _generate("multiple_choice", LLM_OUTPUT["multiple_choice"] | {"figure_spec": SPEC, "figure": None})
+
+    assert q["figure_spec"] == SPEC and "figure" not in q

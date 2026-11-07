@@ -17,7 +17,7 @@ from app.rag.dto import GenerationResult
 from app.rag.generation.llm import LLMError as RagLLMError
 from app.rag.storage.retrieve import TOPIC_QUERIES
 from app.services import rag_client
-from app.services.rag_client import LocalRag, from_rag_question, to_rag_cell
+from app.services.rag_client import LocalRag, from_rag_question, to_rag_cell, to_rag_question
 
 MC, TF, SA = QuestionType.multiple_choice, QuestionType.true_false, QuestionType.short_answer
 TOPIC = "Nguyên hàm và tích phân"  # = TOPICS["nguyen_ham_tich_phan"].name
@@ -133,6 +133,14 @@ def test_true_false_answers_become_dap_an_string():
     normalized, _ = parse_question(from_rag_question(rag_tf()), cell(TF, Level.hieu))
     assert normalized["answer"] == "ĐSĐĐ"
     assert [s["correct"] for s in normalized["statements"]] == [True, False, True, True]
+
+
+def test_true_false_statement_explanations_survive_both_adapter_directions():
+    q = rag_tf()
+    q["statements"] = [s | {"explanation": f"Vì {s['label']}"} for s in q["statements"]]
+    raw = from_rag_question(q)
+    assert [s["giai_thich"] for s in raw["y_dung_sai"]] == ["Vì a", "Vì b", "Vì c", "Vì d"]
+    assert [s["explanation"] for s in to_rag_question(raw)["statements"]] == ["Vì a", "Vì b", "Vì c", "Vì d"]
 
 
 def test_sympy_figure_and_table_are_kept():

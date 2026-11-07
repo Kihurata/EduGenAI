@@ -298,3 +298,32 @@ def test_content_units_reach_the_rag_cell():
                      level=Level.biet, count=1)  # fmt: skip
     assert to_rag_cell(with_unit)["content_unit"] == "Tích phân"
     assert "content_unit" not in to_rag_cell(cell()) and "statement_units" not in to_rag_cell(cell())
+
+
+# ----- hình khối: figure_spec của RAG ↔ hinh_ve của BE -----
+
+SPEC = {"solid": "box", "a": 3, "b": 4, "h": 5, "foot": None}
+
+
+def test_rag_figure_spec_becomes_hinh_ve():
+    assert from_rag_question(rag_mc(figure_spec=SPEC))["hinh_ve"] == SPEC
+
+
+@pytest.mark.parametrize("empty", [None, {}])
+def test_null_figure_spec_is_not_passed_on(empty):
+    assert "hinh_ve" not in from_rag_question(rag_mc(figure_spec=empty))
+
+
+def test_figure_spec_survives_rag_to_be_normalization():
+    normalized, errors = parse_question(from_rag_question(rag_mc(figure_spec=SPEC)), cell())
+    assert errors == []
+    assert normalized["figure_spec"] == SPEC
+
+
+def test_generate_cell_draws_the_figure_from_the_rag_spec():
+    spec = {"solid": "box", "a": 3, "b": 4, "h": 5, "foot": None}
+    run = generate_cell(cell(count=1), fake_rag(valid=[rag_mc(figure_spec=spec, figure="Hình hộp ABCD.A'B'C'D'")]))
+    [question] = run.questions
+    assert run.status is CellRunStatus.complete
+    assert question["figure_svg"].startswith("<svg")
+    assert question["figure"] == "Hình hộp ABCD.A'B'C'D'"

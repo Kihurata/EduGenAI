@@ -200,3 +200,34 @@ def test_stem_blocks_escaped_pipe_is_literal():
 def test_stem_blocks_pipes_inside_inline_and_display_math():
     stem = "| $|x|$ | $$|y|+1$$ |\n|---|---|\n| a | b |"
     assert stem_blocks({"stem": stem}) == [T([["$|x|$", "$$|y|+1$$"], ["a", "b"]])]
+
+
+# ----- hình khối: figure_spec (hinh_ve), tham số hình do LLM trả -----
+
+SPEC = {"solid": "pyramid", "a": 3, "b": 4, "h": 5, "foot": "center"}
+
+
+def test_figure_spec_is_kept_when_present():
+    question, errors = parse_question(broken(MC_RAW, hinh_ve=SPEC), cell(MC, B))
+    assert errors == []
+    assert question["figure_spec"] == SPEC
+
+
+@pytest.mark.parametrize("empty", [None, {}])
+def test_empty_figure_spec_is_left_out(empty):
+    question, _ = parse_question(MC_RAW | {"hinh_ve": empty}, cell(MC, B))
+    assert "figure_spec" not in question
+
+
+def test_question_without_figure_spec_has_no_such_key():
+    question, _ = parse_question(MC_RAW, cell(MC, B))
+    assert "figure_spec" not in question and "figure_svg" not in question
+
+
+def test_figure_spec_goes_back_to_rag_when_the_teacher_edits():
+    question, _ = parse_question(broken(MC_RAW, hinh_ve=SPEC), cell(MC, B))
+    assert to_rag(question)["hinh_ve"] == SPEC
+
+
+def test_the_derived_svg_never_goes_back_to_rag():
+    assert "figure_svg" not in str(to_rag({**parse_question(MC_RAW, cell(MC, B))[0], "figure_svg": "<svg/>"}))

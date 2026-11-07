@@ -129,7 +129,7 @@ def from_rag_question(q: Any) -> Any:
         raw["dap_an"] = "".join(TRUE_FALSE_MARKS.get(s.get("answer"), "?") for s in statements)
     elif statements is not None:
         raw["y_dung_sai"] = statements
-    for rag_key, be_key in (("figure", "hinh"), ("table", "bang")):
+    for rag_key, be_key in (("figure", "hinh"), ("table", "bang"), ("figure_spec", "hinh_ve")):
         if q.get(rag_key):
             raw[be_key] = q[rag_key]
     return raw

@@ -81,6 +81,20 @@ def test_sgk_text_and_heading_path_carry_the_manifest_grade(tmp_path):
     assert all(p["text"].startswith("Toán 11 > ") for p in points)
 
 
+def test_sgk_subject_comes_from_the_manifest(tmp_path):
+    """T-064: a Hóa book must be filtered as `hoa` and read "Hoá học 12 > ...", not be stored as Toán."""
+    client = memory_client()
+
+    ingest_sources(_manifest(tmp_path, [_sgk_entry(tmp_path, subject="hoa")]), client, FakeEmbedder(),
+                   count_tokens=count_words)
+
+    points = _points(client).values()
+    assert points
+    assert {p["subject"] for p in points} == {"hoa"}
+    assert {p["heading_path"].split(" > ")[0] for p in points} == {"Hoá học 12"}
+    assert all(p["text"].startswith("Hoá học 12 > ") for p in points)
+
+
 @pytest.mark.parametrize("entry, error", [
     ({"id": "x"}, "x: missing doc_type"),
     ({"doc_type": "video"}, "unknown doc_type 'video'"),

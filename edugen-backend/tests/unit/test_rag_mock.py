@@ -74,19 +74,31 @@ def test_from_files_keeps_every_question_in_file_order():
     assert len(both.questions) == len(SampleRag.from_file(SAMPLES).questions) + len(SampleRag.from_file(FIGURES).questions)
 
 
-def test_figure_samples_are_valid_multiple_choice_questions_with_a_spec_for_each_solid():
+SOLID_OF_LEVEL = {B: "box", H: "pyramid", VD: "prism"}  # mỗi mức một hình, để ô nào cũng có hình khác nhau
+
+
+def test_each_level_has_one_figure_sample_with_its_own_solid():
     rag = SampleRag.from_file(FIGURES)
-    valid, rejected = rag.generate(cell(MC, B, 3))
-    assert rejected == []
-    assert sorted(q["hinh_ve"]["solid"] for q in valid) == ["box", "prism", "pyramid"]
-    assert all(rag.validate(q, cell(MC, B, 3)) == [] for q in valid)
+    for level, solid in SOLID_OF_LEVEL.items():
+        valid, rejected = rag.generate(cell(MC, level, 1))
+        assert rejected == []
+        assert valid[0]["hinh_ve"]["solid"] == solid
+        assert rag.validate(valid[0], cell(MC, level, 1)) == []
 
 
 def test_figure_samples_get_an_svg_through_generate_cell():
-    [run] = [generate_cell(cell(MC, B, 3), SampleRag.from_file(FIGURES))]
-    assert run.status is CellRunStatus.complete
-    assert [q["figure_svg"][:4] for q in run.questions] == ["<svg"] * 3
-    assert all(q["figure"] for q in run.questions)  # mô tả chữ luôn đi kèm để dự phòng
+    for level in SOLID_OF_LEVEL:
+        run = generate_cell(cell(MC, level, 1), SampleRag.from_file(FIGURES))
+        assert run.status is CellRunStatus.complete
+        assert run.questions[0]["figure_svg"].startswith("<svg")
+        assert run.questions[0]["figure"]  # mô tả chữ luôn đi kèm để dự phòng
+
+
+def test_with_the_figure_file_first_every_mc_cell_starts_with_a_figure():
+    rag = SampleRag.from_files(FIGURES, SAMPLES)
+    for level, solid in SOLID_OF_LEVEL.items():
+        first, *rest = rag.generate(cell(MC, level, 2))[0]
+        assert first["hinh_ve"]["solid"] == solid and "hinh_ve" not in rest[0]
 
 
 def test_figure_sample_stems_use_the_fixed_vertex_names_of_the_drawing():

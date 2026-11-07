@@ -503,6 +503,8 @@ def test_figure_spec_without_a_text_figure_is_still_kept():
     [q], _ = _generate("multiple_choice", LLM_OUTPUT["multiple_choice"] | {"figure_spec": SPEC, "figure": None})
 
     assert q["figure_spec"] == SPEC and "figure" not in q
+
+
 # --- LaTeX commands survive the reply (fix/latex-corruption) --------------------------------------------------
 
 LATEX = r"$x \in A, x \ge 1, x \le 2, (-\infty; +\infty), \vec{k}, \frac{1}{2}, \theta, a \neq b, \to, \bar{x}$"
@@ -555,3 +557,17 @@ def test_a_reply_that_stays_corrupted_becomes_llm_error():
     bad = reply(dict(LLM_OUTPUT["short_answer"], stem=r"$x \thuộc A$"))
     with pytest.raises(LLMError):
         generate(_cell("short_answer"), THEORY, EXAMS, FakeLLM([bad] * 3))
+
+
+# Lý/Hóa and Vietnamese-style Toán LaTeX that the first allow-list rejected.
+LY_HOA_STYLE = (r"$x \leqslant 2$, $x \geqslant 1$, $2H_2 + O_2 \rightleftharpoons 2H_2O$, $A \xrightarrow{t^\circ} B$, "
+                r"$CO_2 \uparrow$, $BaSO_4 \downarrow$, $\boldsymbol{v}$, $\lvert x \rvert$, $\lbrace 1; 2 \rbrace$, "
+                r"$\overset{def}{=}$, $\widetilde{x}$, $\underbrace{a+b}_{s}$, $\mathsf{R}$, $\Re z$")
+
+
+def test_a_question_written_in_ly_hoa_or_vietnamese_style_latex_is_not_rejected():
+    q = dict(LLM_OUTPUT["short_answer"], stem=LY_HOA_STYLE)
+
+    [out] = generate(_cell("short_answer"), THEORY, EXAMS, FakeLLM([reply(q)]))
+
+    assert out["stem"] == LY_HOA_STYLE

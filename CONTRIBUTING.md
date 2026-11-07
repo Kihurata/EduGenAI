@@ -53,3 +53,18 @@ CI cũng kiểm tra lại mọi commit trên push và pull request.
 ## TDD
 
 Không viết code sản phẩm khi chưa có test đỏ yêu cầu nó. Commit `test(...)` đứng trước commit `feat(...)` hoặc `fix(...)` tương ứng. LLM, embedding và OCR dùng fake trong unit test; CI không gọi API trả phí.
+
+## Chạy test
+
+```bash
+cd edugen-backend
+uv run pytest -q                      # unit + integration, dùng fake, không tốn tiền API
+uv run pytest --list-suites           # các bộ test theo chức năng (tests/features.yaml)
+uv run pytest --suite F-03            # chỉ một chức năng
+uv run --env-file .env pytest -m acceptance   # luồng đầy đủ với mô hình thật
+uv run --env-file .env pytest -m eval         # đo chất lượng so với ngưỡng trên bộ dữ liệu vàng
+```
+
+- Test `acceptance` và `eval` bị loại khỏi lần chạy mặc định; chúng cần khóa API và chỉ mục Qdrant thật, và tự bỏ qua khi thiếu dữ liệu sách.
+- Chạy từ rẻ lên đắt và dừng khi tầng rẻ đã đỏ: test dùng fake, truy xuất Qdrant cục bộ, đo recall chỉ truy xuất, rồi mới đến gọi mô hình với vài ô mẫu. Không chạy cả đề hay nạp lại sách bằng Gemini chỉ để kiểm tra.
+- Thêm file test mới thì thêm vào `tests/features.yaml`; `tests/test_features_map.py` kiểm tra bản đồ luôn khớp với code.

@@ -11,7 +11,9 @@ import { Input, Select } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LEVELS, QUESTION_TYPES, TYPE_LABEL, type Accepted, type CellIn, type Level, type Matrix, type QuestionType } from "@/types";
 
-import { examTitleFromMatrix, FormError, OFFICIAL_COUNTS, POINTS, StatusChip, taClass, teacherSteps } from "./lib";
+import { useSubjects } from "@/subjects";
+
+import { examTitleFromMatrix, FormError, StatusChip, taClass, teacherSteps } from "./lib";
 
 const LV_SHORT: Record<Level, string> = { "Biết": "B", "Hiểu": "H", "Vận dụng": "VD" };
 const PART_COLS: { type: QuestionType; part: string; note: string }[] = [
@@ -118,8 +120,8 @@ const DEMO_GRADE = 12;
 
 function gradeMessage(grade: number | null) {
   return grade
-    ? `Bản demo hiện chỉ hỗ trợ Toán lớp ${DEMO_GRADE}. Ma trận này là lớp ${grade} nên chưa sinh đề được.`
-    : `Chưa xác định được lớp của ma trận. Bản demo hiện chỉ hỗ trợ Toán lớp ${DEMO_GRADE}.`;
+    ? `Bản demo hiện chỉ hỗ trợ đề lớp ${DEMO_GRADE}. Ma trận này là lớp ${grade} nên chưa sinh đề được.`
+    : `Chưa xác định được lớp của ma trận. Bản demo hiện chỉ hỗ trợ đề lớp ${DEMO_GRADE}.`;
 }
 
 export default function MatrixCheckPage() {
@@ -131,6 +133,7 @@ export default function MatrixCheckPage() {
   const [grade, setGrade] = useState<number | null>(null);
   const [dirty, setDirty] = useState(false);
   const [title, setTitle] = useState<string | null>(null);
+  const subjects = useSubjects();
   const [duration, setDuration] = useState(90);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [drawer, setDrawer] = useState<Drawer | null>(null);
@@ -161,6 +164,13 @@ export default function MatrixCheckPage() {
     </>
   );
 
+  // Cấu trúc đề theo môn của ma trận (GET /subjects, T-064): Toán 12/4/6, Lý/Hóa 18/4/6.
+  const subject = subjects?.find((s) => s.code === matrix?.subject) ?? null;
+  const subjectDuration = subject?.duration_minutes;
+  useEffect(() => {
+    if (subjectDuration) setDuration(subjectDuration);
+  }, [subjectDuration]);
+
   if (!matrix) {
     return (
       <section>
@@ -176,13 +186,18 @@ export default function MatrixCheckPage() {
     count: cells.filter((c) => c.type === t).reduce((s, c) => s + c.count, 0),
   }));
   const total = totals.reduce((s, t) => s + t.count, 0);
-  const points = totals.reduce((s, t) => s + t.count * POINTS[t.type], 0);
-  const structureOk = totals.every((t) => t.count === OFFICIAL_COUNTS[t.type]);
+  const official = subject?.question_counts;
+  const expected = (t: QuestionType) => official?.[t] ?? "?";
+  const expectedTotal = official ? QUESTION_TYPES.reduce((s, t) => s + official[t], 0) : "?";
+  const points = totals.reduce((s, t) => s + t.count * (subject?.points[t.type] ?? 0), 0);
+  const structureOk = !!official && totals.every((t) => t.count === official[t.type]);
   let confirmHint = "";
   const gradeOk = grade === DEMO_GRADE; // lớp đang chọn: bấm Xác nhận sẽ lưu lớp này trước
   if (!gradeOk) confirmHint = `${gradeMessage(grade)} Nếu ma trận thật là lớp 12, chọn lại Lớp 12 rồi bấm Xác nhận.`;
   else if (!dirty && matrix.status === "invalid") confirmHint = "Sửa hết lỗi trước";
-  else if (!structureOk) confirmHint = "Cấu trúc phải là 12 nhiều lựa chọn / 4 đúng-sai / 6 trả lời ngắn";
+  else if (!official) confirmHint = "Chưa xác định được môn của ma trận";
+  else if (!structureOk)
+    confirmHint = `Cấu trúc phải là ${official.multiple_choice} nhiều lựa chọn / ${official.true_false} đúng-sai / ${official.short_answer} trả lời ngắn`;
 
   const groups = groupCells(cells);
   const unitCount = groups.reduce((s, g) => s + g.rows.length, 0);
@@ -324,7 +339,7 @@ export default function MatrixCheckPage() {
             </label>
             <label className="text-sm">
               <span className="mb-1 block text-muted">Môn</span>
-              <Input value="Toán" readOnly disabled />
+              <Input value={subject?.label ?? matrix.subject ?? "Chưa rõ"} readOnly disabled />
             </label>
             <label className="text-sm">
               <span className="mb-1 block text-muted">Lớp</span>
@@ -432,11 +447,11 @@ export default function MatrixCheckPage() {
                   <tr>
                     <td className="border border-line px-3 py-2 font-medium">Số câu theo phần</td>
                     {totals.map((t) => {
-                      const ok = t.count === OFFICIAL_COUNTS[t.type];
+                      const ok = t.count === official?.[t.type];
                       return (
                         <td key={t.type} colSpan={3} className="border border-line px-1 py-2 text-center">
                           <Chip tone={ok ? "ok" : "bad"}>
-                            {t.count} / {OFFICIAL_COUNTS[t.type]} câu {ok && "✓"}
+                            {t.count} / {expected(t.type)} câu {ok && "✓"}
                           </Chip>
                         </td>
                       );
@@ -510,9 +525,9 @@ export default function MatrixCheckPage() {
       <div className="sticky bottom-0 z-10 mt-6 rounded-sm border border-line bg-surface">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 text-sm">
           <div className="flex flex-wrap items-center gap-5">
-            <Stat label="Tổng" value={`${total}/22 câu · ${points} điểm`} ok={structureOk} />
+            <Stat label="Tổng" value={`${total}/${expectedTotal} câu · ${points} điểm`} ok={structureOk} />
             {totals.map((t, k) => (
-              <Stat key={t.type} label={`Phần ${["I", "II", "III"][k]}`} value={`${t.count}/${OFFICIAL_COUNTS[t.type]}`} ok={t.count === OFFICIAL_COUNTS[t.type]} />
+              <Stat key={t.type} label={`Phần ${["I", "II", "III"][k]}`} value={`${t.count}/${expected(t.type)}`} ok={t.count === official?.[t.type]} />
             ))}
           </div>
           <div className="ml-auto flex flex-wrap items-end gap-2">

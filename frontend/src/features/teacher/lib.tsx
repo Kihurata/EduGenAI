@@ -74,10 +74,6 @@ export function useMatrixCells(matrixId: string | undefined): Record<string, Cel
 
 export const taClass = "w-full rounded-sm border border-line bg-surface px-3 py-2 text-sm text-ink";
 
-// Official THPT Toán structure (QĐ 764/2024): 12 + 4 + 6 questions, 10 points.
-export const OFFICIAL_COUNTS: Record<string, number> = { multiple_choice: 12, true_false: 4, short_answer: 6 };
-export const POINTS: Record<string, number> = { multiple_choice: 0.25, true_false: 1, short_answer: 0.5 };
-
 export const PARTS = [
   { part: "I", type: "multiple_choice" },
   { part: "II", type: "true_false" },

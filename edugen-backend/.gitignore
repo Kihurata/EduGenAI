@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+local.env
+marker_output/
+/storage/
+.code-review-graph/
+.claude/
+.vscode/
+.idea/
+# rag/
+*.pyc
+qdrant_data/
+data/*
+!data/sources.yaml
+.venv-marker/
+.venv-chandra/
+
+# Dữ liệu của scripts/dev_server.py
+/dev_data/

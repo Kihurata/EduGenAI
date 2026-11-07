@@ -15,11 +15,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
+from app.core.subjects import SUBJECTS as REGISTRY
 from app.models import School, Subject, User
 from app.models.enums import UserRole
 
-# Tên khớp dòng "Môn:" của ma trận (SUBJECT_CODES).
-SUBJECTS = {"toan": "Toán học", "ly": "Vật lí", "hoa": "Hoá học"}
+# Tên khớp dòng "Môn:" của ma trận; danh sách môn ở registry (D-020).
+SUBJECTS = {s.code: s.name for s in REGISTRY.values()}
 
 
 def normalize_email(email: str) -> str:

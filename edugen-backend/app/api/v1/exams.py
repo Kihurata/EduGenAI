@@ -77,6 +77,8 @@ class ExamOut(BaseModel):
     owner_id: uuid.UUID
     title: str
     duration_minutes: int
+    subject: str | None  # mã môn của ma trận (T-064), để bản xem trước ghi đúng môn
+    grade: int | None
     status: ExamStatus
     cells_done: int
     cells_total: int
@@ -89,7 +91,8 @@ class ExamOut(BaseModel):
         runs = sorted(e.cell_runs, key=lambda r: r.matrix_cell.sort_order)
         return cls(
             id=e.id, matrix_id=e.matrix_id, owner_id=e.owner_id, title=e.title,
-            duration_minutes=e.duration_minutes, status=e.status, cells_done=e.cells_done,
+            duration_minutes=e.duration_minutes, subject=e.matrix.subject.code if e.matrix.subject else None,
+            grade=e.matrix.grade, status=e.status, cells_done=e.cells_done,
             cells_total=e.cells_total, created_at=e.created_at,
             cell_runs=[
                 CellRunOut(

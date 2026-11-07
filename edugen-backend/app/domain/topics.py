@@ -10,6 +10,8 @@ import re
 import unicodedata
 from dataclasses import dataclass
 
+from app.core.subjects import SUBJECT_CODES, SUBJECTS
+
 DS, HH, TK = "dai_so_giai_tich", "hinh_hoc_do_luong", "thong_ke_xac_suat"
 
 
@@ -19,30 +21,31 @@ class Topic:
     strand: str
     name: str  # tên chương tiếng Việt như trong SGK
     subject: str = "toan"
+    grade: int | None = None  # lớp của chương (SGK KNTT)
 
 
 TOPICS: dict[str, Topic] = {
     t.code: t
     for t in (
-        Topic("ung_dung_dao_ham", DS, "Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số"),
-        Topic("vecto_khong_gian", HH, "Vectơ và hệ trục tọa độ trong không gian"),
-        Topic("thong_ke_phan_tan", TK, "Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm"),
-        Topic("nguyen_ham_tich_phan", DS, "Nguyên hàm và tích phân"),
-        Topic("toa_do_khong_gian", HH, "Phương pháp tọa độ trong không gian"),
-        Topic("xac_suat_co_dieu_kien", TK, "Xác suất có điều kiện"),
-        Topic("luong_giac", DS, "Hàm số lượng giác và phương trình lượng giác"),
-        Topic("day_so_cap_so", DS, "Dãy số. Cấp số cộng và cấp số nhân"),
-        Topic("thong_ke_trung_tam", TK, "Các số đặc trưng đo xu thế trung tâm của mẫu số liệu ghép nhóm"),
-        Topic("quan_he_song_song", HH, "Quan hệ song song trong không gian"),
-        Topic("mu_logarit", DS, "Hàm số mũ và hàm số lôgarit"),
-        Topic("quan_he_vuong_goc", HH, "Quan hệ vuông góc trong không gian"),
-        Topic("xac_suat_quy_tac", TK, "Các quy tắc tính xác suất"),
-        Topic("dao_ham", DS, "Đạo hàm"),
-        Topic("he_bat_phuong_trinh_bac_nhat_hai_an", DS, "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn"),
-        Topic("ham_so_bac_hai", DS, "Hàm số, đồ thị và ứng dụng"),
-        Topic("to_hop", DS, "Đại số tổ hợp"),
-        Topic("xac_suat_co_dien", TK, "Tính xác suất theo định nghĩa cổ điển"),
-        Topic("he_phuong_trinh_bac_nhat_ba_an", DS, "Hệ phương trình bậc nhất ba ẩn"),
+        Topic("ung_dung_dao_ham", DS, "Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số", grade=12),
+        Topic("vecto_khong_gian", HH, "Vectơ và hệ trục tọa độ trong không gian", grade=12),
+        Topic("thong_ke_phan_tan", TK, "Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm", grade=12),
+        Topic("nguyen_ham_tich_phan", DS, "Nguyên hàm và tích phân", grade=12),
+        Topic("toa_do_khong_gian", HH, "Phương pháp tọa độ trong không gian", grade=12),
+        Topic("xac_suat_co_dieu_kien", TK, "Xác suất có điều kiện", grade=12),
+        Topic("luong_giac", DS, "Hàm số lượng giác và phương trình lượng giác", grade=11),
+        Topic("day_so_cap_so", DS, "Dãy số. Cấp số cộng và cấp số nhân", grade=11),
+        Topic("thong_ke_trung_tam", TK, "Các số đặc trưng đo xu thế trung tâm của mẫu số liệu ghép nhóm", grade=11),
+        Topic("quan_he_song_song", HH, "Quan hệ song song trong không gian", grade=11),
+        Topic("mu_logarit", DS, "Hàm số mũ và hàm số lôgarit", grade=11),
+        Topic("quan_he_vuong_goc", HH, "Quan hệ vuông góc trong không gian", grade=11),
+        Topic("xac_suat_quy_tac", TK, "Các quy tắc tính xác suất", grade=11),
+        Topic("dao_ham", DS, "Đạo hàm", grade=11),
+        Topic("he_bat_phuong_trinh_bac_nhat_hai_an", DS, "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn", grade=10),
+        Topic("ham_so_bac_hai", DS, "Hàm số, đồ thị và ứng dụng", grade=10),
+        Topic("to_hop", DS, "Đại số tổ hợp", grade=10),
+        Topic("xac_suat_co_dien", TK, "Tính xác suất theo định nghĩa cổ điển", grade=10),
+        Topic("he_phuong_trinh_bac_nhat_ba_an", DS, "Hệ phương trình bậc nhất ba ẩn", grade=10),
     )
 }  # fmt: skip
 
@@ -89,14 +92,13 @@ _HOA = (
     ("nhom_ia_iia", "Nguyên tố nhóm IA và nhóm IIA", 12),
     ("kim_loai_chuyen_tiep", "Sơ lược về dãy kim loại chuyển tiếp thứ nhất và phức chất", 12),
 )
-_SCIENCE_GRADES = {code: grade for _, rows in (("ly", _LY), ("hoa", _HOA)) for code, _, grade in rows}
-TOPICS |= {code: Topic(code, subject, name, subject) for subject, rows in (("ly", _LY), ("hoa", _HOA))
-           for code, name, _ in rows}
+TOPICS |= {code: Topic(code, subject, name, subject, grade) for subject, rows in (("ly", _LY), ("hoa", _HOA))
+           for code, name, grade in rows}
 
 
 def topic_list_name(subject: str) -> str:
     """Tên ghi chú danh sách chủ đề trong vault, dùng trong thông báo lỗi."""
-    return "Toán topic list" if subject == "toan" else "Lý và Hóa topic list"
+    return SUBJECTS[subject].topic_list if subject in SUBJECTS else "danh sách chủ đề"
 
 
 def topics_for(subject: str) -> list[Topic]:
@@ -114,49 +116,30 @@ _BY_NAME: dict[str, list[Topic]] = {}
 for _t in TOPICS.values():
     _BY_NAME.setdefault(_key(_t.name), []).append(_t)
 
-# The matrix writer often shortens a chapter title to one of these labels.  Keep
+_TOPIC_GRADES = {t.code: t.grade for t in TOPICS.values() if t.grade is not None}
+
+# The matrix writer often shortens a chapter title to one of these labels, per subject.  Keep
 # these aliases here (rather than in the RAG vocabulary): they are input labels,
 # not additional index topics.
-_TOPIC_GRADES = {
-    # Toán 10
-    "he_bat_phuong_trinh_bac_nhat_hai_an": 10,
-    "ham_so_bac_hai": 10,
-    "to_hop": 10,
-    "xac_suat_co_dien": 10,
-    "he_phuong_trinh_bac_nhat_ba_an": 10,
-    # Toán 11
-    "luong_giac": 11,
-    "day_so_cap_so": 11,
-    "thong_ke_trung_tam": 11,
-    "quan_he_song_song": 11,
-    "mu_logarit": 11,
-    "quan_he_vuong_goc": 11,
-    "xac_suat_quy_tac": 11,
-    "dao_ham": 11,
-    # Toán 12
-    "ung_dung_dao_ham": 12,
-    "vecto_khong_gian": 12,
-    "thong_ke_phan_tan": 12,
-    "nguyen_ham_tich_phan": 12,
-    "toa_do_khong_gian": 12,
-    "xac_suat_co_dieu_kien": 12,
-} | _SCIENCE_GRADES
-
 _ALIASES = {
-    _key("Hàm số"): [("ham_so_bac_hai", 10)],
-    _key("Hàm số và đồ thị"): [("ham_so_bac_hai", 10)],
-    _key("Thống kê"): [("thong_ke_trung_tam", 11), ("thong_ke_phan_tan", 12)],
-    _key("Xác suất"): [("xac_suat_co_dien", 10)],
+    "toan": {
+        _key("Hàm số"): [("ham_so_bac_hai", 10)],
+        _key("Hàm số và đồ thị"): [("ham_so_bac_hai", 10)],
+        _key("Thống kê"): [("thong_ke_trung_tam", 11), ("thong_ke_phan_tan", 12)],
+        _key("Xác suất"): [("xac_suat_co_dien", 10)],
+    },
 }
+
+# "Toán 11 Chương I …", "Hóa học 12 Chương 1 …": any registered subject name (D-020), or "Lớp 12".
+_PREFIX_WORDS = sorted({*SUBJECT_CODES, *SUBJECTS, "lớp", "lop"}, key=len, reverse=True)
+_CHAPTER_PREFIX = re.compile(
+    rf"^(?:(?:{'|'.join(map(re.escape, _PREFIX_WORDS))}) (?:10|11|12) )?(?:chương|chuong) (?:[ivx]+|\d+)\s+"
+)
 
 
 def _without_chapter_prefix(key: str) -> str:
     """Remove the optional school/book/chapter decoration from a label."""
-    return re.sub(
-        r"^(?:(?:toán|toan|lớp|lop) (?:10|11|12) )?(?:chương|chuong) (?:[ivx]+|\d+)\s+",
-        "",
-        key,
-    )
+    return _CHAPTER_PREFIX.sub("", key)
 
 
 def topic_grade(topic: Topic, default: int) -> int:
@@ -178,8 +161,9 @@ def find_topic(text: str, grade: int | None = None, subject: str | None = None) 
     key = _key(text)
     candidates = [key, _without_chapter_prefix(key)]
     for candidate in candidates:
-        if candidate in _ALIASES and subject in (None, "toan"):  # aliases are Toán labels
-            for code, alias_grade in _ALIASES[candidate]:
+        aliases = _ALIASES.get(subject or "toan", {})  # None: older callers that only knew Toán
+        if candidate in aliases:
+            for code, alias_grade in aliases[candidate]:
                 if grade is None:
                     # Ambiguous shorthand must not silently select a grade.
                     continue

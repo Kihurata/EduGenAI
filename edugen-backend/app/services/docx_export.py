@@ -44,7 +44,7 @@ Equations = dict[str, object]  # LaTeX → phần tử m:oMath; thiếu khoá = 
 
 def split_math(text: str) -> list[tuple[str, bool]]:
     """Chuỗi → các đoạn (chữ, False) / (LaTeX không kèm dấu $, True), giữ thứ tự."""
-    text = normalize_latex(text)  # BUG-004: exams stored before the fix still export clean formulas
+    text = _clean(text)  # BUG-004: exams stored before the fix still export clean formulas
     parts: list[tuple[str, bool]] = []
     pos = 0
     for m in MATH_RE.finditer(text):
@@ -100,6 +100,11 @@ def _texts(blocks: list[Block]) -> list[str]:
     return texts
 
 
+def _clean(text: str) -> str:
+    """Mọi chữ ghi vào DOCX đi qua đây: ký tự điều khiển XML không hợp lệ (dán từ Word, NUL...) làm python-docx báo lỗi."""
+    return normalize_latex(text)
+
+
 def _add_text(paragraph, text: str, bold: bool, equations: Equations) -> None:
     for part, is_math in split_math(text):
         if not is_math:
@@ -122,7 +127,7 @@ def _add_figure(doc, figure: Figure) -> None:
     except Exception as e:  # noqa: BLE001 – FigureError hay OSError của Cairo: đều chỉ làm mất hình, không làm mất đề
         log.warning("Không nhúng được hình, giữ mô tả chữ: %s", e)
         if figure.caption:
-            doc.add_paragraph(figure.caption)
+            doc.add_paragraph(_clean(figure.caption))
         return
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -139,7 +144,7 @@ def to_docx(blocks: list[Block]) -> bytes:
     for block in blocks:
         match block:
             case Heading(level, text):
-                h = doc.add_heading(text, level=level)
+                h = doc.add_heading(_clean(text), level=level)
                 if level == 1:
                     h.alignment = WD_ALIGN_PARAGRAPH.CENTER
             case Paragraph(runs, center):

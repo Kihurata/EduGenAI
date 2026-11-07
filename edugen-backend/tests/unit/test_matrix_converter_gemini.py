@@ -129,3 +129,13 @@ def test_the_converter_is_always_gemini(monkeypatch, session_factory):
 def test_an_old_env_with_matrix_converter_and_marker_settings_still_starts():
     settings = Settings(_env_file=None, matrix_converter="marker", marker_config_path="marker_config.json", marker_timeout_seconds=5)
     assert not hasattr(settings, "matrix_converter") and not hasattr(settings, "marker_config_path")
+
+
+def test_missing_api_key_is_a_conversion_error_not_a_crash(tmp_path, monkeypatch):
+    for key in ("GEMINI_API_KEY", "GOOGLE_API_KEY", "GOOGLE_GENAI_USE_VERTEXAI"):
+        monkeypatch.delenv(key, raising=False)
+    conv = GeminiMatrixConverter("gemini-test")  # built in the upload request's dependency: must not raise
+    source = tmp_path / "ma_tran.png"
+    source.write_bytes(b"PNG anh")
+    with pytest.raises(ConversionError, match="GEMINI_API_KEY"):
+        conv.convert(source)

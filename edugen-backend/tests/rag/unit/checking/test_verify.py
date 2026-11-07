@@ -38,6 +38,15 @@ def test_negative_zero_value_is_written_as_zero():
 
 
 @pytest.mark.parametrize("expr, answer", [
+    ("Integral(abs(x**2 - 4), (x, 0, 3))", "7,67"),  # area between a curve and Ox, as the LLM writes it
+    ("max(2, 3) + min(1, 5)", "4"),
+    ("pow(2, 3)", "8"),
+])
+def test_python_abs_min_max_pow_mean_the_sympy_functions(expr, answer):
+    assert verify(expr, answer).status == "verified"
+
+
+@pytest.mark.parametrize("expr, answer", [
     ("1/0", "1"),              # complex infinity
     ("oo", "1"),
     ("sqrt(-1)", "1"),         # not real

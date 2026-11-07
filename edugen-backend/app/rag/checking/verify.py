@@ -18,6 +18,9 @@ _NAMESPACE = {name: getattr(sympy, name) for name in sympy.__all__} | {"__builti
 # The LLM also writes Python's comb and round. round passes the value through: verify() rounds half up to the
 # answer's places, while Python/SymPy round half to even.
 _NAMESPACE |= {"comb": sympy.binomial, "round": lambda x, ndigits=None: x}
+# Python's abs/min/max/pow are gone with the built-ins; without these, abs(...) parses as an unknown function and an
+# area like Integral(abs(f), ...) is "unverifiable" although it is right.
+_NAMESPACE |= {"abs": sympy.Abs, "min": sympy.Min, "max": sympy.Max, "pow": sympy.Pow}
 
 
 def _unverifiable(answer, reason):

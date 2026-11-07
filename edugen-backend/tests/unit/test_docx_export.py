@@ -17,7 +17,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 from docx.shared import Cm
 
-from app.domain.exam_document import Figure, Paragraph, Run, Table
+from app.domain.exam_document import Figure, Heading, Paragraph, Run, Table
 from app.domain.figure import FigureError, layout, render_svg
 from app.services import docx_export
 from app.services.docx_export import split_math, to_docx
@@ -123,6 +123,18 @@ def test_control_characters_in_generated_text_do_not_break_the_export():
     assert "\x08" not in p.text and "\x00" not in p.text
 
 
+@pytest.mark.parametrize("dirty", ["Đề\x0b thi\x00 giữa kỳ", "Đề thi\x0c\x1f giữa kỳ"])
+def test_control_characters_in_a_heading_do_not_break_the_export(dirty):
+    [h] = [p for p in paragraphs([Heading(1, dirty)]) if p.text]
+    assert h.text.startswith("Đề") and h.text.endswith("giữa kỳ")
+    assert not any(c in h.text for c in "\x00\x0b\x1f")
+
+
+def test_control_characters_in_a_table_cell_do_not_break_the_export():
+    doc = Document(io.BytesIO(to_docx([Table((("Chủ\x0b đề", "Số\x00 câu"),))])))
+    assert [c.text for c in doc.tables[0].rows[0].cells] == ["Chủ đề", "Số câu"]
+
+
 # ----- hình khối: SVG → PNG nhúng vào DOCX -----
 
 SPEC = {"solid": "pyramid", "a": 3, "b": 4, "h": 5, "foot": "center"}
@@ -191,3 +203,9 @@ def test_unexpected_converter_crash_still_exports_the_exam(monkeypatch):
     monkeypatch.setattr(docx_export, "svg_to_png", lambda svg: (_ for _ in ()).throw(OSError("no libcairo")))
     doc = docx_of(Paragraph((Run("Câu 1."),)), FIGURE)
     assert len(doc.inline_shapes) == 0 and doc.paragraphs[0].text == "Câu 1."
+
+
+def test_control_characters_in_the_caption_fallback_do_not_break_the_export(monkeypatch):
+    monkeypatch.setattr(docx_export, "svg_to_png", lambda svg: (_ for _ in ()).throw(FigureError("x")))
+    doc = docx_of(Figure(render_svg(SPEC), "Hình\x0b chóp\x00 S.ABCD"))
+    assert [p.text for p in doc.paragraphs] == ["Hình chóp S.ABCD"]

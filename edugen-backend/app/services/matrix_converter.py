@@ -43,20 +43,28 @@ class GeminiMatrixConverter:
     """Gửi ảnh/PDF ma trận cho Gemini, nhận JSON theo MATRIX_SCHEMA (D-016) để matrix_extract đọc. Không cần torch."""
 
     def __init__(self, model: str, client=None, timeout_seconds: float = 120, retry_model: str | None = None) -> None:
-        if client is None:
-            from google import genai
-
-            client = genai.Client(http_options={"timeout": int(timeout_seconds * 1000)})
-        self.client, self.model = client, model
+        self._client, self._timeout_seconds, self.model = client, timeout_seconds, model
         # Lần đọc lại dùng model mạnh hơn: bản lite hay lệch cột ở bảng nhiều phần/mức (vd Phần III chỉ có Hiểu, VD).
         self.retry_model = retry_model or model
         self.usage: list[dict] = []
 
+    @property
+    def client(self):
+        """Dựng lúc đọc file, không phải lúc khởi tạo: thiếu khoá thì job báo lỗi cho GV thay vì upload trả 500."""
+        if self._client is None:
+            from google import genai
+
+            try:
+                self._client = genai.Client(http_options={"timeout": int(self._timeout_seconds * 1000)})
+            except ValueError as exc:
+                raise ConversionError("Máy chủ chưa cấu hình GEMINI_API_KEY để Gemini đọc ma trận") from exc
+        return self._client
     def _ask(self, source: Path, mime: str, prompt: str, model: str | None = None) -> str:
         from google.genai import errors, types
 
+        client = self.client  # ConversionError nếu thiếu khoá, không bị gói thành lỗi mạng bên dưới
         try:
-            response = self.client.models.generate_content(
+            response = client.models.generate_content(
                 model=model or self.model,
                 contents=[types.Part.from_bytes(data=source.read_bytes(), mime_type=mime), prompt],
                 config={"temperature": 0, "max_output_tokens": 32768, "response_mime_type": "application/json",

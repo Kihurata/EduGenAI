@@ -1,5 +1,6 @@
 """Ma trận của GV: tải lên (job marker nền) → xem/sửa ô → xác nhận."""
 
+import json
 import uuid
 from datetime import UTC, datetime
 from typing import Annotated
@@ -27,11 +28,11 @@ from app.api.deps import (
 from app.api.v1.schemas import Accepted, IssueOut
 from app.db.session import get_session_factory
 from app.domain.exam_structure import STATEMENTS_PER_TRUE_FALSE
-from app.domain.matrix_reader import ParsedCell
+from app.domain.matrix_reader import ParsedCell, read_matrix
 from app.models import ExamMatrix, MatrixCell, User
 from app.models.enums import LEVEL_ORDER, Level, MatrixStatus, QuestionType
 from app.services.matrix_converter import MatrixConverter, get_matrix_converter
-from app.services.matrix_jobs import process_matrix, update_cells
+from app.services.matrix_jobs import apply_parsed, process_matrix, update_cells
 from app.services.storage import LocalStorage, get_storage
 
 DEMO_GRADE = 12  # bản demo chỉ sinh đề Toán lớp 12; không tự đổi lớp của ma trận
@@ -39,6 +40,24 @@ DEMO_GRADE = 12  # bản demo chỉ sinh đề Toán lớp 12; không tự đổ
 router = APIRouter(prefix="/matrices", tags=["matrices"])
 
 ACCEPTED_TYPES = {"image/png": ".png", "image/jpeg": ".jpg", "application/pdf": ".pdf"}
+
+
+def _is_json_upload(file: UploadFile) -> bool:
+    """File JSON ma trận: trình duyệt có thể gửi application/json hoặc octet-stream, nên xét cả đuôi file."""
+    return file.content_type == "application/json" or (file.filename or "").lower().endswith(".json")
+
+
+def _json_text(data: bytes) -> str:
+    """Kiểm file JSON có đúng dạng ma trận (object có mảng `rows`) trước khi lưu."""
+    try:
+        parsed = json.loads(data.decode("utf-8-sig"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "File không phải JSON hợp lệ (UTF-8)") from exc
+    if not isinstance(parsed, dict) or not isinstance(parsed.get("rows"), list) or not parsed["rows"]:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT, 'File JSON ma trận cần có mảng "rows" với ít nhất một hàng'
+        )
+    return json.dumps(parsed, ensure_ascii=False)
 
 
 class CellIn(BaseModel):
@@ -153,19 +172,28 @@ async def upload_matrix(
     storage: Annotated[LocalStorage, Depends(get_storage)],
     converter: Annotated[MatrixConverter, Depends(get_matrix_converter)],
 ) -> Accepted:
-    ext = ACCEPTED_TYPES.get(file.content_type or "")
+    is_json = _is_json_upload(file)
+    ext = ".json" if is_json else ACCEPTED_TYPES.get(file.content_type or "")
     if ext is None:
-        raise HTTPException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, "Chỉ nhận ảnh PNG/JPG hoặc file PDF")
+        raise HTTPException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, "Chỉ nhận ảnh PNG/JPG, file PDF hoặc file JSON ma trận")
     data = await read_upload(file)
+    json_text = _json_text(data) if is_json else None
     matrix_id = uuid.uuid4()
     key = f"matrices/{matrix_id}/source{ext}"
     storage.save(key, data)
     matrix = ExamMatrix(
         id=matrix_id, school_id=user.school_id, owner_id=user.id,
-        source_filename=file.filename or f"ma_tran{ext}", source_mime_type=file.content_type,
+        source_filename=file.filename or f"ma_tran{ext}",
+        source_mime_type="application/json" if is_json else file.content_type,
         source_storage_key=key,
     )  # fmt: skip
     db.add(matrix)
+    if json_text is not None:
+        # JSON đã có cấu trúc: đọc ngay, không gọi Gemini/marker, không cần job nền.
+        matrix.markdown = json_text
+        apply_parsed(db, matrix, read_matrix(json_text))
+        db.commit()
+        return Accepted(id=matrix_id, status=matrix.status.value)
     db.commit()
     background.add_task(process_matrix, factory, matrix_id, converter, storage)
     return Accepted(id=matrix_id, status=MatrixStatus.uploaded.value)

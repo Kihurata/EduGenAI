@@ -1,0 +1,18 @@
+# Tóm tắt: những thứ không đưa vào image Backend: môi trường ảo, secret (.env), dữ liệu máy cá nhân (index Qdrant,
+# file tải lên, DB dev), test, notebook và kết quả thử nghiệm.
+.venv
+.env
+.env.*
+!.env.example
+qdrant_data
+storage
+dev_data
+output
+notebooks
+tests
+docs
+data
+scripts
+**/__pycache__
+**/*.pyc
+.pytest_cache

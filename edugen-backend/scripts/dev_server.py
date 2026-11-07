@@ -1,4 +1,4 @@
-"""Chạy BE để thử frontend trên máy, không cần Postgres, dịch vụ RAG hay marker.
+"""Chạy BE để thử frontend trên máy, không cần Postgres, dịch vụ RAG hay khoá Gemini.
 
     uv run python scripts/dev_server.py            # http://localhost:8000, /docs
     uv run python scripts/dev_server.py --reset    # xoá DB + file đã lưu, seed lại
@@ -9,9 +9,9 @@
   mỗi lần chạy.
 - RAG: giả lập từ `tests/fixtures/rag/ket_qua_mau_hinh.json` (đứng trước, để ô nào cũng bắt đầu bằng câu có hình) và `ket_qua_mau.json` (câu mẫu lặp lại, không phải câu sinh
   thật; file hình có hình hộp, chóp, lăng trụ để thử luồng vẽ hình). Không cần khoá LLM hay Qdrant.
-- Ma trận: có `marker_single` thì chạy marker thật; không thì ảnh tải lên phải trùng (theo nội dung)
-  một ảnh trong `--matrix-dir`, và BE đọc file `.md` cùng tên cạnh ảnh đó. Thêm đề mẫu = thêm cặp
-  `ten.png` + `ten.md` (markdown marker đã xuất) vào thư mục này.
+- Ma trận: có GEMINI_API_KEY (hoặc GOOGLE_API_KEY) trong môi trường thì Gemini đọc thật; không thì ảnh
+  tải lên phải trùng (theo nội dung) một ảnh trong `--matrix-dir`, và BE đọc file `.md` cùng tên cạnh ảnh
+  đó. Thêm đề mẫu = thêm cặp `ten.png` + `ten.md` (nội dung ma trận đã trích) vào thư mục này.
 """
 
 import argparse
@@ -41,7 +41,7 @@ from app.models.enums import UserRole
 from app.seed import seed
 from app.services.matrix_converter import (
     ConversionError,
-    MarkerConverter,
+    GeminiMatrixConverter,
     get_matrix_converter,
 )
 from app.services.rag_client import get_rag_client
@@ -71,7 +71,7 @@ class PresetConverter:
     def convert(self, source: Path) -> str:
         md = self.markdown.get(hashlib.sha256(source.read_bytes()).hexdigest())
         if md is None:
-            raise ConversionError("Máy dev chưa cài marker: chỉ nhận ảnh ma trận mẫu trong thư mục dev")
+            raise ConversionError("Máy dev chưa có GEMINI_API_KEY: chỉ nhận ảnh ma trận mẫu trong thư mục dev")
         return md.read_text(encoding="utf-8")
 
 
@@ -121,11 +121,11 @@ def main() -> None:
     seed_demo(factory, password)
     storage = LocalStorage(data_dir / "storage")
     rag = SampleRag.from_files(*args.samples)
-    if shutil.which("marker_single"):
-        converter = MarkerConverter(settings.marker_config_path, timeout=settings.marker_timeout_seconds)
+    if os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"):
+        converter = GeminiMatrixConverter(settings.matrix_gemini_model, retry_model=settings.matrix_gemini_retry_model)
     else:
         converter = PresetConverter(args.matrix_dir.resolve())
-        print(f"marker chưa cài → dùng {len(converter.markdown)} ma trận mẫu trong {args.matrix_dir}")
+        print(f"Chưa có GEMINI_API_KEY → dùng {len(converter.markdown)} ma trận mẫu trong {args.matrix_dir}")
 
     app.dependency_overrides.update({
         get_session_factory: lambda: factory,

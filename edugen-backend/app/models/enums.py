@@ -21,12 +21,12 @@ class IngestStatus(str, enum.Enum):
 
 
 class MatrixStatus(str, enum.Enum):
-    uploaded = "uploaded"  # đã lưu ảnh/PDF, chờ job marker
-    converting = "converting"  # marker đang chạy
+    uploaded = "uploaded"  # đã lưu ảnh/PDF, chờ job đọc ma trận
+    converting = "converting"  # Gemini đang đọc file
     parsed = "parsed"  # parse được, khớp hàng tổng, chờ GV xác nhận
     invalid = "invalid"  # có lỗi parse hoặc lệch tổng, GV phải sửa ô
     confirmed = "confirmed"  # GV đã xác nhận, được sinh đề
-    failed = "failed"  # marker lỗi
+    failed = "failed"  # đọc file lỗi
 
 
 class QuestionType(str, enum.Enum):

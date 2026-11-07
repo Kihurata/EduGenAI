@@ -61,11 +61,11 @@ job, and a deploy job, when the VM exists. Until then, build locally with `docke
 - Logs: `docker compose -f docker-compose.prod.yml logs -f backend`.
 - Restore a backup: `gunzip -c backups/<file>.sql.gz | docker compose -f docker-compose.prod.yml exec -T db psql -U edugen -d edugen`.
 
-## Matrix conversion (temporary)
+## Matrix conversion
 
-The image has no torch, so `marker` cannot run. Production uses `MATRIX_CONVERTER=gemini` (needs PR #35): Gemini reads
-the matrix image/PDF into the same markdown marker produces. The team still has to choose marker or Gemini; switching is
-the `MATRIX_CONVERTER` value plus, for marker, an image built with the `ocr` extra.
+Gemini is the only matrix reader (D-014): it turns the uploaded image/PDF into JSON, so the image needs no torch or
+marker. It uses `GEMINI_API_KEY` and `MATRIX_GEMINI_MODEL`. An old `.env` that still sets `MATRIX_CONVERTER` or
+`MARKER_*` keeps working; those values are ignored.
 
 ## Hardening in the compose file
 

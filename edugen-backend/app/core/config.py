@@ -36,10 +36,7 @@ class Settings(BaseSettings):
 
     # File ma trận, đề mẫu, DOCX xuất ra (sau này đổi sang S3/MinIO).
     storage_dir: str = "storage"
-    marker_config_path: str = "marker_config.json"
-    marker_timeout_seconds: float = 600.0
-    # Bộ chuyển ảnh/PDF ma trận: marker (OCR cục bộ, cần extra ocr) hoặc gemini (tạm, gọi Gemini đọc ảnh).
-    matrix_converter: Literal["marker", "gemini"] = "gemini"  # team chốt dùng Gemini (marker giữ làm dự phòng)
+    # Ảnh/PDF ma trận chỉ đọc bằng Gemini (D-014, D-016); MATRIX_CONVERTER/MARKER_* cũ trong .env bị bỏ qua (extra="ignore").
     matrix_gemini_model: str = "gemini-3.5-flash-lite"
     # Đọc lại khi lần đầu lệch (12/4/6, cột Tổng): model mạnh hơn, chỉ tốn khi cần; trống = dùng lại model trên
     matrix_gemini_retry_model: str | None = "gemini-3.8-flash"

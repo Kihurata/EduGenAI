@@ -13,7 +13,7 @@ from app.models.types import pg_enum
 
 
 class ExamMatrix(UUIDPkMixin, TimestampMixin, Base):
-    """Ma trận GV tải lên dạng ảnh/PDF: file gốc → markdown (marker) → các ô.
+    """Ma trận GV tải lên dạng ảnh/PDF: file gốc → JSON (Gemini, D-016) → các ô.
 
     Môn, lớp, tên đọc từ phần đầu ma trận nên null tới khi parse xong.
     """
@@ -36,7 +36,7 @@ class ExamMatrix(UUIDPkMixin, TimestampMixin, Base):
     status: Mapped[MatrixStatus] = mapped_column(
         pg_enum(MatrixStatus, "matrix_status"), default=MatrixStatus.uploaded
     )
-    # Output marker, giữ lại để parse lại khi parser đổi mà không phải chạy marker.
+    # Kết quả đọc file (JSON Gemini; ma trận cũ: bảng HTML), giữ để parse lại khi parser đổi mà không gọi lại Gemini.
     markdown: Mapped[str | None] = mapped_column(Text)
     parse_issues: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB)
     error_message: Mapped[str | None] = mapped_column(Text)

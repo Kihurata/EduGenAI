@@ -5,7 +5,7 @@
 - Ghi usage để tính chi phí (mỗi lần gọi một dòng).
 - Kết quả lệch cấu trúc/tổng thì gọi thêm đúng một lần kèm chỗ lệch; chỉ lệch chủ đề chưa có mã thì không gọi lại.
 - Lỗi API, mạng/quá giờ, trả về không phải JSON ma trận, loại file lạ → ConversionError tiếng Việt.
-- MATRIX_CONVERTER chọn bộ chuyển: marker hoặc gemini (mặc định); giá trị khác bị từ chối khi khởi động.
+- Chỉ còn bộ chuyển Gemini (D-014): MATRIX_CONVERTER/MARKER_* cũ trong .env bị bỏ qua, không làm sập khởi động.
 """
 
 import json
@@ -14,11 +14,10 @@ from types import SimpleNamespace
 
 import pytest
 from google.genai import errors
-from pydantic import ValidationError
 
 from app.core.config import Settings
 from app.services import matrix_converter
-from app.services.matrix_converter import ConversionError, GeminiMatrixConverter, MarkerConverter
+from app.services.matrix_converter import ConversionError, GeminiMatrixConverter
 from app.services.matrix_schema import MATRIX_SCHEMA
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "matrix_extract"
@@ -110,21 +109,6 @@ def test_unknown_file_type_is_rejected_before_calling_gemini(tmp_path):
     assert models.calls == []
 
 
-def test_setting_picks_the_converter(monkeypatch, session_factory):
-    monkeypatch.setattr(matrix_converter.settings, "matrix_converter", "marker")
-    assert isinstance(matrix_converter.get_matrix_converter(session_factory), MarkerConverter)
-    monkeypatch.setattr(matrix_converter.settings, "matrix_converter", "gemini")
-    monkeypatch.setattr(matrix_converter.settings, "matrix_cache_enabled", False)
-    monkeypatch.setattr(matrix_converter, "GeminiMatrixConverter", lambda model, retry_model: ("gemini", model, retry_model))
-    s = matrix_converter.settings
-    assert matrix_converter.get_matrix_converter(session_factory) == ("gemini", s.matrix_gemini_model, s.matrix_gemini_retry_model)
-
-
-def test_unknown_converter_name_fails_at_startup():
-    with pytest.raises(ValidationError):
-        Settings(matrix_converter="tesseract")
-
-
 def test_the_retry_uses_the_stronger_model_when_one_is_set(tmp_path):
     """flash-lite đọc lệch bảng phức tạp; lần đọc lại dùng model mạnh hơn (vẫn tối đa 2 lần gọi)."""
     models = FakeModels((BAD, GOOD), None)
@@ -133,6 +117,18 @@ def test_the_retry_uses_the_stronger_model_when_one_is_set(tmp_path):
     source.write_bytes(b"png")
     assert conv.convert(source) == GOOD
     assert [c["model"] for c in models.calls] == ["lite", "strong"]
+
+
+def test_the_converter_is_always_gemini(monkeypatch, session_factory):
+    monkeypatch.setattr(matrix_converter.settings, "matrix_cache_enabled", False)
+    monkeypatch.setattr(matrix_converter, "GeminiMatrixConverter", lambda model, retry_model: ("gemini", model, retry_model))
+    s = matrix_converter.settings
+    assert matrix_converter.get_matrix_converter(session_factory) == ("gemini", s.matrix_gemini_model, s.matrix_gemini_retry_model)
+
+
+def test_an_old_env_with_matrix_converter_and_marker_settings_still_starts():
+    settings = Settings(_env_file=None, matrix_converter="marker", marker_config_path="marker_config.json", marker_timeout_seconds=5)
+    assert not hasattr(settings, "matrix_converter") and not hasattr(settings, "marker_config_path")
 
 
 def test_missing_api_key_is_a_conversion_error_not_a_crash(tmp_path, monkeypatch):

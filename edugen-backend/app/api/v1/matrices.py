@@ -1,4 +1,4 @@
-"""Ma trận của GV: tải lên (job marker nền) → xem/sửa ô → xác nhận."""
+"""Ma trận của GV: tải lên (job nền, Gemini đọc file) → xem/sửa ô → xác nhận."""
 
 import json
 import uuid
@@ -189,7 +189,7 @@ async def upload_matrix(
     )  # fmt: skip
     db.add(matrix)
     if json_text is not None:
-        # JSON đã có cấu trúc: đọc ngay, không gọi Gemini/marker, không cần job nền.
+        # JSON đã có cấu trúc: đọc ngay, không gọi Gemini, không cần job nền.
         matrix.markdown = json_text
         apply_parsed(db, matrix, read_matrix(json_text))
         db.commit()

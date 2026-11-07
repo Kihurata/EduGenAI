@@ -1,5 +1,6 @@
 # CI: checks commit messages, backend lint and tests, migrations on a fresh Postgres, the frontend build, the
-# production compose file, and builds both Docker images (not published yet, see deploy/README.md).
+# production compose file, and builds both Docker images. A push to main also publishes the images to GHCR and,
+# once DEPLOY_ENABLED is set, deploys them to the VM (deploy/README.md).
 # Unit and integration tests use fakes; no Gemini or Qdrant credentials are needed here.
 name: CI
 
@@ -122,10 +123,13 @@ jobs:
           docker compose -f docker-compose.prod.yml config -q
 
   images:
-    # Proves both images build. Nothing is pushed: publishing to GHCR comes with the deploy job.
+    # PRs: prove both images build. Push to main: also publish to GHCR as :main and :sha-<commit>.
     runs-on: ubuntu-latest
     needs: [backend, frontend, backend-migrations, compose-config]
     if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    permissions:
+      contents: read
+      packages: write
     strategy:
       matrix:
         include:
@@ -136,11 +140,79 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - if: github.event_name == 'push'
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: ${{ matrix.context }}
-          push: false
+          push: ${{ github.event_name == 'push' }}
           # Frontend calls the API on its own origin (Caddy routes /api to the backend).
           build-args: ${{ matrix.name == 'frontend' && 'VITE_API_URL=' || '' }}
+          # Links the GHCR package to this repo, so the deploy job's GITHUB_TOKEN may pull it.
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          # Tags only on push: a PR's ref_name ("32/merge") is not a valid image tag. GHCR names must be lowercase.
+          tags: >-
+            ${{ github.event_name == 'push' && format('ghcr.io/kihurata/edugenai/{0}:{1},ghcr.io/kihurata/edugenai/{0}:sha-{2}',
+            matrix.name, github.ref_name, github.sha) || '' }}
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+
+  deploy:
+    # Push to main -> the VM pulls this commit's images and restarts, then the public /health must answer.
+    # Off until the repo variable DEPLOY_ENABLED=true and secrets VM_HOST, VM_USER, VM_SSH_KEY are set.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    needs: [images]
+    environment: production
+    permissions:
+      contents: read
+      packages: read  # the VM pulls the GHCR images with this job's short-lived token
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy compose files to the VM
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: deploy/docker-compose.prod.yml,deploy/Caddyfile,deploy/backup.sh
+          target: edugen
+          strip_components: 1
+      - name: Back up, pull and restart
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          envs: GHCR_USER,GHCR_TOKEN
+          script: |
+            set -e
+            cd edugen
+            # Dump the database before new migrations run; skipped on a VM where the db is not up yet.
+            if [ -n "$(docker compose -f docker-compose.prod.yml ps -q --status running db)" ]; then sh ./backup.sh; fi
+            sed -i "s/^TAG=.*/TAG=sha-${{ github.sha }}/" .env
+            # Log in only for the pull; the token expires with the job and is removed from the VM right after.
+            trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            docker compose -f docker-compose.prod.yml pull
+            docker logout ghcr.io
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker image prune -f
+      - name: Smoke test
+        run: |
+          for i in $(seq 1 30); do
+            curl -fsS "https://${{ vars.DOMAIN }}/health" && exit 0
+            sleep 5
+          done
+          echo "health check failed after deploy" >&2
+          exit 1

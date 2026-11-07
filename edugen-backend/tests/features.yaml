@@ -49,7 +49,7 @@ features:
     title: Exam matrix setup
     acceptance_test: TC-009
     tasks: [T-015, T-016, T-017, T-018, T-027, T-054]
-    test_cases: [TC-008, TC-009, TC-020, TC-021]
+    test_cases: [TC-008, TC-009, TC-020, TC-021, TC-032]
     pending: [TC-008]
     unit:
       - tests/unit/test_exam_structure.py
@@ -63,12 +63,14 @@ features:
       - tests/api/test_demo_matrix.py   # demo Toán 12 fixture + scripts/create_demo_matrix.py
       - tests/unit/test_topics.py
       - tests/unit/test_topics_subjects.py   # T-050 Lý/Hóa topic codes (D-013)
+      - tests/unit/test_subject_registry.py   # T-064 / D-020: subject registry (TC-032)
       - tests/unit/test_cell.py
       - tests/unit/test_enums.py
       - tests/unit/test_generation.py
       - tests/rag/unit/test_matrix_fixtures.py   # T-027
     integration:
       - tests/api/test_matrices.py
+      - tests/api/test_subjects.py   # T-064: GET /subjects, exam subject/grade (TC-032)
       - tests/api/test_exams.py
       - tests/api/test_exam_build.py   # TC-009: matrix → 22-question exam, numbered per part
 

@@ -10,7 +10,7 @@ def validate(question, retrieved_ids):
     """-> error messages, shown to the teacher as-is; retrieved_ids None = teacher edit (no retrieval to check)."""
     rules = _RULES_BY_TYPE.get(question.get("type"))
     type_errors = rules(question) if rules else [f"unknown question type {question.get('type')!r}"]
-    return _citation_errors(question, retrieved_ids) + type_errors
+    return _citation_errors(question, retrieved_ids) + _table_errors(question) + type_errors
 
 
 def _citation_errors(question, retrieved_ids):
@@ -19,6 +19,14 @@ def _citation_errors(question, retrieved_ids):
     if retrieved_ids is not None:
         errors += [f"cites chunk {c} that was not retrieved" for c in cited if c not in retrieved_ids]
     return errors
+
+
+def _table_errors(question):
+    """Rows of different lengths shift columns in the exam file (the variation table's y' / y rows), so ask again."""
+    rows = question.get("table")
+    if rows and len({len(r) for r in rows}) > 1:
+        return [f"table rows must all have the same number of cells, got {[len(r) for r in rows]}"]
+    return []
 
 
 def _multiple_choice_errors(question):

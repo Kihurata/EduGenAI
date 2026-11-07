@@ -126,7 +126,7 @@ def from_rag_question(q: Any) -> Any:
         raw["phuong_an"] = [options.get(k) for k in OPTION_LETTERS] if isinstance(options, dict) else options
     statements = q.get("statements")
     if isinstance(statements, list) and all(isinstance(s, dict) for s in statements):
-        raw["y_dung_sai"] = [{"noi_dung": s.get("text"), "dung": s.get("answer"), "giai_thich": ""} for s in statements]
+        raw["y_dung_sai"] = [{"noi_dung": s.get("text"), "dung": s.get("answer"), "giai_thich": s.get("explanation") or ""} for s in statements]
         raw["dap_an"] = "".join(TRUE_FALSE_MARKS.get(s.get("answer"), "?") for s in statements)
     elif statements is not None:
         raw["y_dung_sai"] = statements
@@ -159,7 +159,8 @@ def to_rag_question(raw: dict[str, Any]) -> dict[str, Any]:
     items = raw.get("y_dung_sai")
     if isinstance(items, list):
         q["statements"] = [
-            {"label": label, "text": i.get("noi_dung"), "answer": i.get("dung")} if isinstance(i, dict) else i
+            {"label": label, "text": i.get("noi_dung"), "answer": i.get("dung"), "explanation": i.get("giai_thich") or ""}
+            if isinstance(i, dict) else i
             for label, i in zip(STATEMENT_LABELS, items, strict=False)
         ]  # fmt: skip
     else:
@@ -288,10 +289,11 @@ def _build_rag() -> tuple[RagGenerate, RagIndex, RagDelete]:
     Thiếu LLM chỉ làm sinh câu lỗi, nạp đề không cần LLM nên vẫn chạy.
     """
     from app.rag.embedding import make_embedder
-    from app.rag.storage.qdrant import check_index, default_client
+    from app.rag.storage.qdrant import check_index, default_client, warn_if_empty
 
     client, embedder = default_client(), make_embedder()
     check_index(client, embedder)  # an index built for the other embedder would retrieve nonsense silently
+    warn_if_empty(client)
     return wire_rag(client, embedder)
 
 

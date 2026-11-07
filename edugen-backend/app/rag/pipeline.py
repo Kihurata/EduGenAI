@@ -78,9 +78,10 @@ def make_generator(client=None, embedder: Embedder | None = None, llm: LLM | Non
         client = default_client()
     if embedder is None:
         from app.rag.embedding import make_embedder
-        from app.rag.storage.qdrant import check_index
+        from app.rag.storage.qdrant import check_index, warn_if_empty
         embedder = make_embedder()
         check_index(client, embedder)
+        warn_if_empty(client)
     if llm is None:
         from app.rag.generation.llm import make_llm
         llm = make_llm()

@@ -33,7 +33,7 @@ def _chunk_lines(chunks):
 def test_real_sgk_chunks_lose_and_repeat_no_line(book):
     if not book.exists():
         pytest.skip(f"no {book.relative_to(BACKEND)} (data/ is gitignored)")
-    pytest.importorskip("transformers", reason="bge-m3 tokenizer not installed: uv sync --extra embed")
+    pytest.importorskip("tokenizers", reason="bge-m3 tokenizer not installed: uv sync")
     pages = read_pages_md(book)
 
     chunks = chunk_theory(pages, source=f"{book.parents[1].name}.pdf")

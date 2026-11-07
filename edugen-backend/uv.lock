@@ -829,6 +829,7 @@ dependencies = [
     { name = "qdrant-client" },
     { name = "sqlalchemy" },
     { name = "sympy" },
+    { name = "tokenizers" },
 ]
 
 [package.optional-dependencies]
@@ -868,6 +869,7 @@ requires-dist = [
     { name = "qdrant-client" },
     { name = "sqlalchemy", specifier = ">=2.0" },
     { name = "sympy" },
+    { name = "tokenizers" },
 ]
 provides-extras = ["ocr", "embed"]
 

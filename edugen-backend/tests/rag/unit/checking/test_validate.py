@@ -26,6 +26,13 @@ def _short(answer, **over):
     return q | over
 
 
+def test_table_rows_must_have_the_same_number_of_cells():
+    variation = [["x", "-∞", "0", "+∞"], ["y'", "", "+", "0", "-"], ["y", "", "↗", "3", "↘"]]
+    assert validate(_mc(table=variation), RETRIEVED)
+    assert validate(_mc(table=[["x", "0", "1"], ["y", "", "1"]]), RETRIEVED) == []
+    assert validate(_mc(), RETRIEVED) == []
+
+
 # --- existing behaviour ----------------------------------------------------------------------------------------
 
 def test_valid_questions_have_no_errors():

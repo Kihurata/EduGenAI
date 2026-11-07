@@ -14,9 +14,9 @@ SYSTEM_PROMPT = """Bạn là giáo viên ra đề thi tốt nghiệp THPT môn T
 - Viết câu hỏi bằng tiếng Việt, công thức bằng LaTeX trong $...$.
 - Chỉ dùng kiến thức trong các đoạn tài liệu được cung cấp. Mỗi câu phải ghi source_chunk_ids là ID các đoạn tài liệu đã dùng.
 - Trắc nghiệm: 4 phương án A, B, C, D, đúng một phương án.
-- Đúng/Sai: đúng 4 ý a, b, c, d, mỗi ý có đáp án true (Đúng) hoặc false (Sai).
+- Đúng/Sai: đúng 4 ý a, b, c, d, mỗi ý có đáp án true (Đúng) hoặc false (Sai) và explanation giải thích ngắn vì sao ý đó đúng hoặc sai.
 - Trả lời ngắn: đáp án là số, tối đa 4 kí tự kể cả dấu "-" và dấu phẩy thập phân (ví dụ 12, -1,5, 0,25); làm tròn nếu cần và ghi rõ cách làm tròn trong đề.
-- Câu cần hình vẽ: mô tả hình trong figure đủ chi tiết để vẽ lại (các điểm, hình, nhãn, độ dài đã cho); câu cần bảng số liệu: ghi bảng trong table, mỗi hàng là một danh sách ô. Câu không cần thì để figure, table là null.
+- Câu cần hình vẽ: mô tả hình trong figure đủ chi tiết để vẽ lại (các điểm, hình, nhãn, độ dài đã cho); câu cần bảng số liệu: ghi bảng trong table, mỗi hàng là một danh sách ô và mọi hàng phải có cùng số ô (ô trống ghi ""). Bảng biến thiên: hàng x, rồi hàng y', rồi hàng y, mỗi cột là một mốc hoặc một khoảng của x; ví dụ [["x","-∞","0","2","+∞"],["y'","","+","0","-"],["y","","↗","3","↘"]]. Câu không cần thì để figure, table là null.
 - Hình hộp chữ nhật, lăng trụ đứng đáy tam giác vuông, hình chóp đáy chữ nhật: ghi tham số vào figure_spec để máy vẽ hình, và vẫn ghi mô tả bằng chữ trong figure (dùng khi máy không vẽ được). figure_spec gồm solid (box, prism hoặc pyramid) và a, b, h là các độ dài dương: box là hình hộp chữ nhật AB = a, AD = b, AA' = h; prism là lăng trụ đứng có đáy ABC vuông tại A, AB = a, AC = b, chiều cao h; pyramid là chóp đáy chữ nhật AB = a, AD = b, chiều cao h. foot chỉ dùng cho pyramid: "A" nếu SA vuông góc với đáy, "center" nếu chân đường cao là tâm đáy; hình khác thì foot là null. Tên đỉnh cố định: hình hộp ABCD.A'B'C'D', lăng trụ ABC.A'B'C', hình chóp S.ABCD; đề bài phải dùng đúng các tên này. Hình khác hoặc câu không cần hình thì figure_spec là null.
 - Trả lời ngắn: ghi vào sympy.expr một biểu thức SymPy có giá trị đúng bằng đáp số trước khi làm tròn, viết theo cú pháp Python (lũy thừa dùng **, không dùng ^); được dùng Rational, sqrt, pi, Integral, diff, binomial, factorial; không chứa biến tự do (ví dụ Rational(3, 2), sqrt(2)*pi, Integral(x**2, (x, 0, 1))). Biểu thức phải tính ra đáp số từ dữ kiện của đề (ví dụ diff, solve, Integral, phép tính trên số liệu đã cho), không ghi thẳng đáp số.
 - Trắc nghiệm: nếu phương án đúng là một số thì ghi sympy.expr như trên, nếu không thì để sympy.expr là null.
@@ -84,6 +84,7 @@ _ITEMS = {
     "true_false": _object(_COMMON | {
         "statements": {"type": "array", "items": _object({
             "label": {"type": "string", "enum": list("abcd")}, "text": _STR, "answer": {"type": "boolean"},
+            "explanation": _STR,
         })},
     }),
     # The 4-box limit can't be expressed (no maxLength/pattern); validate() checks it.

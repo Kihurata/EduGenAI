@@ -283,6 +283,7 @@ def test_multiple_choice_answer_and_true_false_labels_are_enums():
 
     assert mc["answer"]["enum"] == list("ABCD")
     assert tf["statements"]["items"]["properties"]["label"]["enum"] == list("abcd")
+    assert "explanation" in tf["statements"]["items"]["required"]  # each statement explains itself (BE solution text)
 
 
 # --- stress ----------------------------------------------------------------------------------------------------

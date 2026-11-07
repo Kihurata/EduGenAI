@@ -133,7 +133,22 @@ def _read_questions(raw: str) -> list[dict]:
         raise LLMError(error) from e
     if not isinstance(questions, list) or not all(isinstance(q, dict) for q in questions):
         raise LLMError(error)
+    if _has_corrupt_latex(questions):
+        raise LLMError("LLM reply has a corrupted LaTeX command (non-ASCII in a LaTeX command name, or a control character)")
     return questions
+
+
+# A model slip, not LaTeX: a non-ASCII letter glued to a command (`\thuộc`), or a backspace/form feed/vertical tab left
+# where `\b`, `\f`, `\v` was read as a JSON escape. Ask again instead of showing it to the teacher.
+_CORRUPT_LATEX = re.compile(r"\\[A-Za-z]+[^\x00-\x7f]|[\x08\x0b\x0c]")
+
+
+def _has_corrupt_latex(value):
+    if isinstance(value, str):
+        return bool(_CORRUPT_LATEX.search(value))
+    if isinstance(value, dict):
+        value = value.values()
+    return isinstance(value, (list, tuple, type({}.values()))) and any(_has_corrupt_latex(v) for v in value)
 
 
 # One backslash escape in the model's JSON: \uXXXX, or one other character (with re.S, `.` also takes the second backslash of a pair).

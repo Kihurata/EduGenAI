@@ -27,6 +27,7 @@ from app.core.config import settings
 from app.core.errors import LLMError
 from app.domain.cell import Cell
 from app.domain.question import (
+    EXTRA_KEYS,
     LEVEL_FROM_RAG,
     LEVEL_TO_RAG,
     OPTION_LETTERS,
@@ -129,9 +130,9 @@ def from_rag_question(q: Any) -> Any:
         raw["dap_an"] = "".join(TRUE_FALSE_MARKS.get(s.get("answer"), "?") for s in statements)
     elif statements is not None:
         raw["y_dung_sai"] = statements
-    for rag_key, be_key in (("figure", "hinh"), ("table", "bang"), ("figure_spec", "hinh_ve")):
+    for raw_key, rag_key in EXTRA_KEYS:  # khóa tùy chọn: RAG đặt tên tiếng Anh, BE tiếng Việt không dấu
         if q.get(rag_key):
-            raw[be_key] = q[rag_key]
+            raw[raw_key] = q[rag_key]
     return raw
 
 

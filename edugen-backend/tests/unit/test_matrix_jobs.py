@@ -1,10 +1,10 @@
 """Job nền xử lý ma trận: uploaded → converting → parsed | invalid | failed.
 
 Đầu ra mong muốn:
-- Trong lúc marker chạy, ma trận ở trạng thái converting (frontend hỏi lại thấy được).
+- Trong lúc Gemini đọc file, ma trận ở trạng thái converting (frontend hỏi lại thấy được).
 - Parse được và khớp hàng tổng → parsed, lưu markdown, môn/lớp/tên và các ô theo thứ tự.
 - Có lỗi parse/lệch tổng, hoặc môn chưa có trong hệ thống → invalid, lưu parse_issues.
-- Marker lỗi → failed kèm error_message; không ném lỗi ra ngoài job.
+- Đọc file lỗi → failed kèm error_message; không ném lỗi ra ngoài job.
 """
 
 import uuid
@@ -116,11 +116,11 @@ def test_editing_cells_of_a_matrix_without_subject_is_an_issue(db, session_facto
 
 def test_converter_failure_marks_matrix_failed(db, session_factory, tmp_path):
     matrix, storage = setup(db, tmp_path)
-    conv = FakeConverter(session_factory, error=ConversionError("marker quá thời gian"))
+    conv = FakeConverter(session_factory, error=ConversionError("Gemini không phản hồi"))
     process_matrix(session_factory, matrix.id, conv, storage)
     m = reload(session_factory, matrix.id)
     assert m.status == MatrixStatus.failed
-    assert "marker quá thời gian" in m.error_message
+    assert "Gemini không phản hồi" in m.error_message
 
 
 def test_unexpected_converter_error_marks_matrix_failed(db, session_factory, tmp_path):

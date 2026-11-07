@@ -62,7 +62,6 @@ services:
       APP_ENV: prod
       LLM_PROVIDER: gemini  # an ANTHROPIC_API_KEY in .env must not silently switch the generator to Claude
       EMBEDDER: gemini
-      MATRIX_CONVERTER: gemini  # temporary until the team decides marker vs Gemini (the image has no marker/torch)
       QDRANT_URL: ${QDRANT_URL:?set QDRANT_URL in .env (Qdrant Cloud)}  # the image has no local index
       QDRANT_API_KEY: ${QDRANT_API_KEY:?set QDRANT_API_KEY in .env (Qdrant Cloud)}
       DATABASE_URL: postgresql+psycopg://edugen:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/edugen

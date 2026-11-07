@@ -1,20 +1,15 @@
-"""Ảnh/PDF ma trận → markdown bằng marker (xem docs/marker.md), hoặc → JSON bằng Gemini (D-016).
+"""Ảnh/PDF ma trận → JSON bằng Gemini (D-014, D-016).
 
-Marker chạy ~2 phút mỗi ảnh nên chỉ gọi trong job nền (services/matrix_jobs.py). Unit test
-dùng converter giả, không bao giờ chạy marker thật.
+Gọi Gemini mất vài chục giây mỗi file nên chỉ gọi trong job nền (services/matrix_jobs.py). Unit test
+dùng converter giả, không bao giờ gọi Gemini thật.
 """
 
 import hashlib
 import json
 import logging
-import os
-import subprocess
-import tempfile
-from collections.abc import Callable
 from pathlib import Path
 from typing import Annotated, Protocol
 
-from dotenv import dotenv_values
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -30,55 +25,11 @@ log = logging.getLogger(__name__)
 
 
 class ConversionError(Exception):
-    """Marker không chuyển được file; thông báo hiển thị cho giáo viên."""
+    """Không đọc được file ma trận; thông báo hiển thị cho giáo viên."""
 
 
 class MatrixConverter(Protocol):
     def convert(self, source: Path) -> str: ...
-
-
-class MarkerConverter:
-    """Chạy `marker_single` với marker_config.json (bắt buộc html_tables_in_markdown)."""
-
-    def __init__(
-        self,
-        config_path: str | Path,
-        env_file: str | Path | None = ".env",
-        timeout: float = 600,
-        run: Callable[..., subprocess.CompletedProcess] = subprocess.run,
-    ) -> None:
-        self.config_path = str(config_path)
-        self.env_file = env_file
-        self.timeout = timeout
-        self._run = run  # test truyền runner giả
-
-    def _env(self) -> dict[str, str]:
-        # GOOGLE_API_KEY, SURYA_INFERENCE_BACKEND, LLAMA_CPP_BINARY nằm trong .env.
-        extra = dotenv_values(self.env_file) if self.env_file and Path(self.env_file).exists() else {}
-        return os.environ | {k: v for k, v in extra.items() if v is not None}
-
-    def convert(self, source: Path) -> str:
-        with tempfile.TemporaryDirectory(prefix="marker_") as out:
-            cmd = [
-                "marker_single", str(source),
-                "--config_json", self.config_path,
-                "--output_dir", out,
-            ]  # fmt: skip
-            try:
-                result = self._run(
-                    cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
-                    timeout=self.timeout, env=self._env(),
-                )  # fmt: skip
-            except subprocess.TimeoutExpired as exc:
-                raise ConversionError("Marker chạy quá thời gian cho phép") from exc
-            except FileNotFoundError as exc:
-                raise ConversionError("Máy chủ chưa cài marker (uv sync --extra ocr)") from exc
-            if result.returncode != 0:
-                raise ConversionError(f"Marker lỗi: {(result.stderr or '')[-500:].strip()}")
-            outputs = sorted(Path(out).rglob("*.md"))
-            if not outputs:
-                raise ConversionError("Marker không sinh file markdown nào")
-            return outputs[0].read_text(encoding="utf-8")
 
 
 _MIME = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".pdf": "application/pdf"}
@@ -204,11 +155,9 @@ class CachedMatrixConverter:
 
 
 def get_matrix_converter(factory: Annotated[sessionmaker, Depends(get_session_factory)]) -> MatrixConverter:
-    """Dependency cho FastAPI; test override bằng converter giả. MATRIX_CONVERTER=marker|gemini."""
-    if settings.matrix_converter == "gemini":
-        converter = GeminiMatrixConverter(settings.matrix_gemini_model, retry_model=settings.matrix_gemini_retry_model)
-        if settings.matrix_cache_enabled:
-            key = matrix_cache_key(settings.matrix_gemini_model, settings.matrix_gemini_retry_model)
-            return CachedMatrixConverter(converter, factory, key)
-        return converter
-    return MarkerConverter(settings.marker_config_path, timeout=settings.marker_timeout_seconds)
+    """Dependency cho FastAPI; test override bằng converter giả."""
+    converter = GeminiMatrixConverter(settings.matrix_gemini_model, retry_model=settings.matrix_gemini_retry_model)
+    if settings.matrix_cache_enabled:
+        key = matrix_cache_key(settings.matrix_gemini_model, settings.matrix_gemini_retry_model)
+        return CachedMatrixConverter(converter, factory, key)
+    return converter

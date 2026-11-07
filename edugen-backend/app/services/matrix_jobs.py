@@ -1,6 +1,6 @@
 """Job nền xử lý ma trận: uploaded → converting → parsed | invalid | failed.
 
-API trả matrix_id ngay sau khi lưu file; job này chạy marker, đọc ma trận và lưu các ô để
+API trả matrix_id ngay sau khi lưu file; job này gọi Gemini đọc file, đọc ma trận và lưu các ô để
 GV xem lại. Lỗi parse/lệch tổng không chặn job mà thành parse_issues (trạng thái invalid).
 """
 

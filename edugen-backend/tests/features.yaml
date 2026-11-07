@@ -5,7 +5,7 @@
 # Rules
 # - Entries are a test file (`tests/x/test_y.py`) or one test (`tests/x/test_y.py::test_name`).
 #   The most specific entry wins, so a whole file can sit under one feature and single tests under another.
-# - Levels: unit = no network/DB server, fakes only; integration = FastAPI app + SQLite + fake RAG/marker;
+# - Levels: unit = no network/DB server, fakes only; integration = FastAPI app + SQLite + fake RAG/Gemini;
 #   acceptance = full feature flow with real models (outer TDD loop, `@pytest.mark.acceptance`);
 #   eval = model quality vs a threshold on a golden set (`@pytest.mark.eval`).
 # - `tasks` / `test_cases` mirror the vault notes (05-tasks/, 06-testing/test-cases/); `pending` lists TC notes
@@ -56,8 +56,7 @@ features:
       - tests/unit/test_matrix_reader.py
       - tests/unit/test_matrix_extract.py   # T-054 / D-016: ma trận từ JSON Gemini (TC-020, TC-021)
       - tests/unit/test_matrix_json.py   # matrix image → standard JSON + rag_cells
-      - tests/unit/test_matrix_converter.py
-      - tests/unit/test_matrix_converter_gemini.py   # Gemini converter → JSON (D-016, MATRIX_CONVERTER=gemini)
+      - tests/unit/test_matrix_converter_gemini.py   # Gemini converter → JSON (D-014, D-016)
       - tests/unit/test_matrix_cache.py   # cache JSON Gemini theo SHA-256 file
       - tests/unit/test_matrix_jobs.py
       - tests/api/test_demo_matrix.py   # demo Toán 12 fixture + scripts/create_demo_matrix.py

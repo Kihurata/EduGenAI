@@ -5,7 +5,7 @@
 - File khác byte, hoặc cache_key khác (đổi prompt/schema/model) → miss.
 - Kết quả còn lệch (`_problems` không rỗng) không được lưu; ConversionError đi thẳng ra ngoài, không lưu.
 - Lỗi DB (tra hoặc lưu) không làm hỏng upload; ghi trùng do upload song song bị bỏ qua.
-- get_matrix_converter chỉ bọc Gemini khi MATRIX_CACHE_ENABLED bật; marker không bao giờ bị bọc.
+- get_matrix_converter chỉ bọc Gemini khi MATRIX_CACHE_ENABLED bật.
 """
 
 import json
@@ -19,7 +19,6 @@ from app.services import matrix_converter
 from app.services.matrix_converter import (
     CachedMatrixConverter,
     ConversionError,
-    MarkerConverter,
     matrix_cache_key,
 )
 
@@ -128,15 +127,8 @@ def test_cache_key_has_boundaries_and_default_retry():
 
 def test_factory_wraps_gemini_only_when_enabled(monkeypatch, session_factory):
     s = matrix_converter.settings
-    monkeypatch.setattr(s, "matrix_converter", "gemini")
     monkeypatch.setattr(matrix_converter, "GeminiMatrixConverter", lambda model, retry_model: FakeConverter())
     monkeypatch.setattr(s, "matrix_cache_enabled", True)
     assert isinstance(matrix_converter.get_matrix_converter(session_factory), CachedMatrixConverter)
     monkeypatch.setattr(s, "matrix_cache_enabled", False)
     assert isinstance(matrix_converter.get_matrix_converter(session_factory), FakeConverter)
-
-
-def test_marker_is_never_wrapped(monkeypatch, session_factory):
-    monkeypatch.setattr(matrix_converter.settings, "matrix_converter", "marker")
-    monkeypatch.setattr(matrix_converter.settings, "matrix_cache_enabled", True)
-    assert isinstance(matrix_converter.get_matrix_converter(session_factory), MarkerConverter)

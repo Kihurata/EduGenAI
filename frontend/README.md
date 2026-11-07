@@ -8,7 +8,7 @@ React 19 + Vite + TypeScript, gọi thẳng REST API của `edugen-backend` (`/a
 Cần Node 20+ và `uv` (cho BE).
 
 ```bash
-# 1. BE dev: SQLite + RAG giả lập + tài khoản seed sẵn, không cần Postgres/marker
+# 1. BE dev: SQLite + RAG giả lập + tài khoản seed sẵn, không cần Postgres
 cd edugen-backend
 uv run python scripts/dev_server.py          # http://localhost:8000 ; --reset để xoá dữ liệu
 
@@ -21,7 +21,7 @@ npm run dev                                  # http://localhost:5173
 Đăng nhập: `gv@nd.vn` (giáo viên) hoặc `admin@nd.vn` (admin), mật khẩu BE dev in ra console lúc chạy (lưu ở
 `edugen-backend/dev_data/password.txt`; muốn tự đặt thì set `EDUGEN_DEV_PASSWORD` trước lần chạy đầu hoặc `--reset`).
 
-- Chưa cài marker thì BE dev chỉ nhận ảnh ma trận mẫu có sẵn markdown, ví dụ
+- Chưa có GEMINI_API_KEY thì BE dev chỉ nhận ảnh ma trận mẫu có sẵn markdown, ví dụ
   `edugen-backend/tests/fixtures/matrices/ktgk_hk1_toan10.png`. Thêm ma trận mẫu: đặt cặp `ten.png` + `ten.md`
   vào thư mục đó (hoặc `--matrix-dir`).
 - Câu hỏi đến từ RAG giả lập (`tests/fixtures/rag/ket_qua_mau.json`) nên lặp lại; chưa phải câu RAG sinh thật.

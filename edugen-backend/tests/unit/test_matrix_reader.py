@@ -141,7 +141,7 @@ def test_grade_outside_10_12_is_issue():
 def test_pipe_table_without_html_is_issue():
     parsed = parse_matrix_markdown(TITLE + "| TT | Chủ đề |\n|---|---|\n| 1 | A |\n")
     assert parsed.cells == []
-    assert "html_tables_in_markdown" in messages(parsed.issues)
+    assert "Không tìm thấy bảng ma trận" in messages(parsed.issues)
 
 
 # ----- Ô nhiều lựa chọn / trả lời ngắn -----

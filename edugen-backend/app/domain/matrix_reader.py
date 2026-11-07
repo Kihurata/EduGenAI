@@ -1,6 +1,6 @@
-"""Đọc ma trận đề từ markdown do marker sinh (docs/marker.md).
+"""Đọc ma trận đề đã lưu: JSON do Gemini trích (matrix_extract, D-016) hoặc markdown + bảng HTML của ma trận cũ.
 
-Marker chạy với html_tables_in_markdown nên bảng là HTML giữ rowspan/colspan: nhờ đó phân
+Ma trận tải lên trước D-016 lưu bảng HTML giữ rowspan/colspan: nhờ đó phân
 biệt được ô gộp dọc (gán cho cả chủ đề) với ô thường. Mọi chỗ không đọc được hoặc lệch hàng
 tổng đều thành MatrixIssue để giáo viên sửa ở bước xem lại; không ném lỗi, không đoán.
 """
@@ -381,7 +381,7 @@ def _true_false_cell(group: _TrueFalseGroup, parsed: ParsedMatrix) -> ParsedCell
 
 def parse_matrix_markdown(markdown: str) -> ParsedMatrix:
     """Đọc phần đầu và bảng; lỗi của từng ô nằm trong `issues`, không đối chiếu hàng tổng."""
-    if markdown.lstrip().startswith("{"):  # JSON do Gemini trích (D-016); markdown của marker không bao giờ mở bằng {
+    if markdown.lstrip().startswith("{"):  # JSON do Gemini trích (D-016); ma trận cũ (markdown + bảng HTML) không bao giờ mở bằng {
         # import muộn: matrix_extract dùng lại các kiểu ở đây
         from app.domain.matrix_extract import parse_extracted_matrix
 
@@ -391,7 +391,7 @@ def parse_matrix_markdown(markdown: str) -> ParsedMatrix:
     _read_title(markdown if table_at < 0 else markdown[:table_at], parsed)
     if table_at < 0:
         parsed.issues.append(MatrixIssue(
-            "Không tìm thấy bảng HTML; chạy marker với html_tables_in_markdown (xem docs/marker.md)"
+            "Không tìm thấy bảng ma trận (bảng HTML hoặc JSON Gemini); hãy tải lại file ma trận"
         ))  # fmt: skip
         return parsed
 

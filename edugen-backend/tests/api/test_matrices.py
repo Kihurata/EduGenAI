@@ -51,14 +51,14 @@ def test_only_images_and_pdf_are_accepted(client, teacher_headers):
     assert upload(client, teacher_headers, "mt.pdf", b"", "application/pdf").status_code == 400
 
 
-def test_marker_failure_is_visible(client, teacher_headers, converter, monkeypatch):
+def test_conversion_failure_is_visible(client, teacher_headers, converter, monkeypatch):
     def broken(source):
-        raise ConversionError("Marker lỗi: hết bộ nhớ")
+        raise ConversionError("Gemini không đọc được ma trận: hết hạn mức")
 
     monkeypatch.setattr(converter, "convert", broken)
     m = uploaded(client, teacher_headers)
     assert m["status"] == "failed"
-    assert "hết bộ nhớ" in m["error_message"]
+    assert "hết hạn mức" in m["error_message"]
 
 
 def test_unexpected_matrix_error_hides_raw_message(client, teacher_headers, converter, monkeypatch):

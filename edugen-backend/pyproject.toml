@@ -28,9 +28,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-ocr = [
-    "marker-pdf>=2.1.0",
-]
 # bge-m3 embedder only (EMBEDDER=bge-m3, pulls torch); the default gemini embedder and SGK ingest do not need it
 embed = [
     "FlagEmbedding",

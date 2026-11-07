@@ -1,0 +1,194 @@
+{
+  "subject": "Toán",
+  "name": "Demo Toan 12 (tải lên)",
+  "rows": [
+    {
+      "unit_name": "Nguyên hàm và tích phân",
+      "grade": 12,
+      "topic_code": null,
+      "multiple_choice": {
+        "biet": 4,
+        "hieu": 1,
+        "van_dung": 0
+      },
+      "true_false_statements": {
+        "biet": 2,
+        "hieu": 2,
+        "van_dung": 0
+      },
+      "short_answer": {
+        "biet": 0,
+        "hieu": 0,
+        "van_dung": 0
+      },
+      "true_false_items": [
+        {
+          "cau": "C4",
+          "y": "a",
+          "level": "biet"
+        },
+        {
+          "cau": "C4",
+          "y": "b",
+          "level": "biet"
+        },
+        {
+          "cau": "C4",
+          "y": "c",
+          "level": "hieu"
+        },
+        {
+          "cau": "C4",
+          "y": "d",
+          "level": "hieu"
+        }
+      ]
+    },
+    {
+      "unit_name": "Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
+      "grade": 12,
+      "topic_code": null,
+      "multiple_choice": {
+        "biet": 2,
+        "hieu": 1,
+        "van_dung": 0
+      },
+      "true_false_statements": {
+        "biet": 2,
+        "hieu": 2,
+        "van_dung": 0
+      },
+      "short_answer": {
+        "biet": 0,
+        "hieu": 0,
+        "van_dung": 0
+      },
+      "true_false_items": [
+        {
+          "cau": "C3",
+          "y": "a",
+          "level": "biet"
+        },
+        {
+          "cau": "C3",
+          "y": "b",
+          "level": "biet"
+        },
+        {
+          "cau": "C3",
+          "y": "c",
+          "level": "hieu"
+        },
+        {
+          "cau": "C3",
+          "y": "d",
+          "level": "hieu"
+        }
+      ]
+    },
+    {
+      "unit_name": "Vectơ và hệ trục tọa độ trong không gian",
+      "grade": 12,
+      "topic_code": null,
+      "multiple_choice": {
+        "biet": 1,
+        "hieu": 1,
+        "van_dung": 0
+      },
+      "true_false_statements": {
+        "biet": 0,
+        "hieu": 0,
+        "van_dung": 0
+      },
+      "short_answer": {
+        "biet": 0,
+        "hieu": 0,
+        "van_dung": 0
+      },
+      "true_false_items": []
+    },
+    {
+      "unit_name": "Phương pháp tọa độ trong không gian",
+      "grade": 12,
+      "topic_code": null,
+      "multiple_choice": {
+        "biet": 1,
+        "hieu": 1,
+        "van_dung": 0
+      },
+      "true_false_statements": {
+        "biet": 0,
+        "hieu": 0,
+        "van_dung": 0
+      },
+      "short_answer": {
+        "biet": 0,
+        "hieu": 0,
+        "van_dung": 0
+      },
+      "true_false_items": []
+    },
+    {
+      "unit_name": "Xác suất có điều kiện",
+      "grade": 12,
+      "topic_code": null,
+      "multiple_choice": {
+        "biet": 0,
+        "hieu": 0,
+        "van_dung": 0
+      },
+      "true_false_statements": {
+        "biet": 4,
+        "hieu": 4,
+        "van_dung": 0
+      },
+      "short_answer": {
+        "biet": 6,
+        "hieu": 0,
+        "van_dung": 0
+      },
+      "true_false_items": [
+        {
+          "cau": "C1",
+          "y": "a",
+          "level": "biet"
+        },
+        {
+          "cau": "C1",
+          "y": "b",
+          "level": "biet"
+        },
+        {
+          "cau": "C1",
+          "y": "c",
+          "level": "hieu"
+        },
+        {
+          "cau": "C1",
+          "y": "d",
+          "level": "hieu"
+        },
+        {
+          "cau": "C2",
+          "y": "a",
+          "level": "biet"
+        },
+        {
+          "cau": "C2",
+          "y": "b",
+          "level": "biet"
+        },
+        {
+          "cau": "C2",
+          "y": "c",
+          "level": "hieu"
+        },
+        {
+          "cau": "C2",
+          "y": "d",
+          "level": "hieu"
+        }
+      ]
+    }
+  ]
+}

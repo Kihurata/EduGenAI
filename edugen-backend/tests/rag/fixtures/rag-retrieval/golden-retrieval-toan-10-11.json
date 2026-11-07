@@ -1,0 +1,161 @@
+[
+ {
+  "id": "sgk10-he_bat_phuong_trinh_bac_nhat_hai_an",
+  "cell": {
+   "subject": "toan",
+   "grade": 10,
+   "topic": "dai_so_giai_tich/he_bat_phuong_trinh_bac_nhat_hai_an",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Bất phương trình bậc nhất hai ẩn",
+   "Hệ bất phương trình bậc nhất hai ẩn"
+  ]
+ },
+ {
+  "id": "sgk10-ham_so_bac_hai",
+  "cell": {
+   "subject": "toan",
+   "grade": 10,
+   "topic": "dai_so_giai_tich/ham_so_bac_hai",
+   "type": "short_answer"
+  },
+  "expected_lessons": [
+   "Hàm số bậc hai",
+   "Dấu của tam thức bậc hai"
+  ]
+ },
+ {
+  "id": "sgk10-to_hop",
+  "cell": {
+   "subject": "toan",
+   "grade": 10,
+   "topic": "dai_so_giai_tich/to_hop",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Quy tắc đếm",
+   "Hoán vị, chỉnh hợp và tổ hợp"
+  ]
+ },
+ {
+  "id": "sgk10-xac_suat_co_dien",
+  "cell": {
+   "subject": "toan",
+   "grade": 10,
+   "topic": "thong_ke_xac_suat/xac_suat_co_dien",
+   "type": "short_answer"
+  },
+  "expected_lessons": [
+   "Biến cố và định nghĩa cổ điển của xác suất",
+   "Thực hành tính xác suất theo định nghĩa cổ điển"
+  ]
+ },
+ {
+  "id": "sgk11-luong_giac",
+  "cell": {
+   "subject": "toan",
+   "grade": 11,
+   "topic": "dai_so_giai_tich/luong_giac",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Hàm số lượng giác",
+   "Phương trình lượng giác cơ bản"
+  ]
+ },
+ {
+  "id": "sgk11-day_so_cap_so",
+  "cell": {
+   "subject": "toan",
+   "grade": 11,
+   "topic": "dai_so_giai_tich/day_so_cap_so",
+   "type": "short_answer"
+  },
+  "expected_lessons": [
+   "Dãy số",
+   "Cấp số cộng",
+   "Cấp số nhân"
+  ]
+ },
+ {
+  "id": "sgk11-thong_ke_trung_tam",
+  "cell": {
+   "subject": "toan",
+   "grade": 11,
+   "topic": "thong_ke_xac_suat/thong_ke_trung_tam",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Mẫu số liệu ghép nhóm",
+   "Các số đặc trưng đo xu thế trung tâm"
+  ]
+ },
+ {
+  "id": "sgk11-quan_he_song_song",
+  "cell": {
+   "subject": "toan",
+   "grade": 11,
+   "topic": "hinh_hoc_do_luong/quan_he_song_song",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Hai đường thẳng song song",
+   "Đường thẳng và mặt phẳng song song",
+   "Hai mặt phẳng song song"
+  ]
+ },
+ {
+  "id": "sgk11-mu_logarit",
+  "cell": {
+   "subject": "toan",
+   "grade": 11,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "type": "short_answer"
+  },
+  "expected_lessons": [
+   "Hàm số mũ và hàm số lôgarit",
+   "Lôgarit"
+  ]
+ },
+ {
+  "id": "sgk11-quan_he_vuong_goc",
+  "cell": {
+   "subject": "toan",
+   "grade": 11,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Phép chiếu vuông góc. Góc giữa đường thẳng và mặt phẳng",
+   "Khoảng cách",
+   "Thể tích"
+  ]
+ },
+ {
+  "id": "sgk11-xac_suat_quy_tac",
+  "cell": {
+   "subject": "toan",
+   "grade": 11,
+   "topic": "thong_ke_xac_suat/xac_suat_quy_tac",
+   "type": "true_false"
+  },
+  "expected_lessons": [
+   "Công thức cộng xác suất",
+   "Công thức nhân xác suất"
+  ]
+ },
+ {
+  "id": "sgk11-dao_ham",
+  "cell": {
+   "subject": "toan",
+   "grade": 11,
+   "topic": "dai_so_giai_tich/dao_ham",
+   "type": "multiple_choice"
+  },
+  "expected_lessons": [
+   "Định nghĩa và ý nghĩa của đạo hàm",
+   "Các quy tắc tính đạo hàm"
+  ]
+ }
+]

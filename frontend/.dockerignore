@@ -1,0 +1,5 @@
+# Tóm tắt: không đưa thư viện đã cài và bản build trên máy cá nhân vào image frontend (image tự cài và tự build).
+node_modules
+dist
+*.tsbuildinfo
+.env.local

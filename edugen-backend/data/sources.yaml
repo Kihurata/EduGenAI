@@ -16,6 +16,34 @@ sources:
     grade: 12
     official: true
     confidence: high
+  - id: sgk-toan-10-kntt-tap-1
+    doc_type: sgk
+    file: parsed/sgk-toan-10-kntt-tap-1/normalized/pages.md
+    subject: toan
+    grade: 10
+    official: true
+    confidence: high
+  - id: sgk-toan-10-kntt-tap-2
+    doc_type: sgk
+    file: parsed/sgk-toan-10-kntt-tap-2/normalized/pages.md
+    subject: toan
+    grade: 10
+    official: true
+    confidence: high
+  - id: sgk-toan-11-kntt-tap-1
+    doc_type: sgk
+    file: parsed/sgk-toan-11-kntt-tap-1/normalized/pages.md
+    subject: toan
+    grade: 11
+    official: true
+    confidence: high
+  - id: sgk-toan-11-kntt-tap-2
+    doc_type: sgk
+    file: parsed/sgk-toan-11-kntt-tap-2/normalized/pages.md
+    subject: toan
+    grade: 11
+    official: true
+    confidence: high
   - id: toan-tn-2025-0101
     doc_type: exam
     file: ../tests/rag/fixtures/toan-tn/toan-tn-2025-0101.json

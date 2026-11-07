@@ -503,3 +503,35 @@ def test_figure_spec_without_a_text_figure_is_still_kept():
     [q], _ = _generate("multiple_choice", LLM_OUTPUT["multiple_choice"] | {"figure_spec": SPEC, "figure": None})
 
     assert q["figure_spec"] == SPEC and "figure" not in q
+# --- LaTeX commands survive the reply (fix/latex-corruption) --------------------------------------------------
+
+LATEX = r"$x \in A, x \ge 1, x \le 2, (-\infty; +\infty), \vec{k}, \frac{1}{2}, \theta, a \neq b, \to, \bar{x}$"
+
+
+@pytest.mark.parametrize("encode", [
+    lambda q: reply(q),                               # valid JSON: backslashes already doubled
+    lambda q: reply(q).replace("\\\\", "\\"),         # model wrote a single backslash
+], ids=["escaped", "single-backslash"])
+def test_latex_commands_in_the_reply_reach_the_question_unchanged(encode):
+    q = dict(LLM_OUTPUT["short_answer"], stem=LATEX)
+
+    [out] = generate(_cell("short_answer"), THEORY, EXAMS, FakeLLM([encode(q)]))
+
+    assert out["stem"] == LATEX
+
+
+@pytest.mark.parametrize("bad", [r"$x \thuộc A$", "$\x0bec{k}$", "$a \x08 b$"])
+def test_a_reply_with_a_corrupted_latex_command_is_asked_again(bad):
+    good = dict(LLM_OUTPUT["short_answer"], stem=LATEX)
+    corrupted = dict(LLM_OUTPUT["short_answer"], stem=bad)
+    llm = FakeLLM([reply(corrupted), reply(good)])
+
+    [out] = generate(_cell("short_answer"), THEORY, EXAMS, llm)
+
+    assert out["stem"] == LATEX and len(llm.calls) == 2
+
+
+def test_a_reply_that_stays_corrupted_becomes_llm_error():
+    bad = reply(dict(LLM_OUTPUT["short_answer"], stem=r"$x \thuộc A$"))
+    with pytest.raises(LLMError):
+        generate(_cell("short_answer"), THEORY, EXAMS, FakeLLM([bad] * 3))

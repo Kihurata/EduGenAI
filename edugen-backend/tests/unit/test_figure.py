@@ -249,3 +249,14 @@ def test_a_changed_spec_replaces_the_old_svg():
     old = with_figure(QUESTION | {"figure_spec": PYRAMID})
     new = with_figure(old | {"figure_spec": {**PYRAMID, "h": 2}})
     assert new["figure_svg"] == render_svg({**PYRAMID, "h": 2}) != old["figure_svg"]
+
+
+def test_overlap_check_keeps_a_gap_between_labels():
+    from app.domain.figure import _covers, _overlaps
+
+    assert _overlaps((0, 0, 10, 10), [(5, 5, 15, 15)])
+    assert _overlaps((0, 0, 10, 10), [(10.5, 0, 20, 10)])  # chạm sát: thiếu khe hở
+    assert not _overlaps((0, 0, 10, 10), [(12, 0, 20, 10)])
+    assert not _overlaps((0, 0, 10, 10), [])
+    assert _covers((0, 0, 10, 10), (5, 5)) and _covers((0, 0, 10, 10), (10.5, 5))
+    assert not _covers((0, 0, 10, 10), (12, 5))

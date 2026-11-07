@@ -1,7 +1,7 @@
 """Workflow ④: sinh câu cho từng ô.
 
 Mỗi ô gọi RAG đúng một lần; câu RAG trả về được kiểm lại cấu trúc (domain/question.py),
-câu sai cấu trúc tính là bị loại. Ô thiếu câu không được tự bù (giáo viên quyết định ở bước
+câu sai cấu trúc tính là bị loại. Câu có `figure_spec` được vẽ `figure_svg`; spec hỏng chỉ mất hình, câu không bị loại. Ô thiếu câu không được tự bù (giáo viên quyết định ở bước
 duyệt); ô lỗi LLM không chặn các ô khác. Lỗi lập trình (không phải LLMError) vẫn nổi lên.
 """
 
@@ -11,6 +11,7 @@ from typing import Protocol
 
 from app.core.errors import LLMError
 from app.domain.cell import Cell
+from app.domain.figure import with_figure
 from app.domain.question import Question, split_questions
 from app.models.enums import CellRunStatus
 
@@ -38,7 +39,7 @@ def generate_cell(cell: Cell, rag: QuestionGenerator) -> CellRun:
     except LLMError as exc:
         return CellRun(cell, CellRunStatus.error, error=str(exc))
     valid, malformed = split_questions(valid, cell)
-    valid = valid[: cell.count]  # RAG trả dư thì bỏ phần dư
+    valid = [with_figure(q) for q in valid[: cell.count]]  # RAG trả dư thì bỏ phần dư; chỉ vẽ hình câu được giữ
     status = CellRunStatus.complete if len(valid) == cell.count else CellRunStatus.short
     return CellRun(cell, status, valid, len(rejected) + len(malformed))
 

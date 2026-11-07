@@ -8,6 +8,20 @@ import { stemBlocks } from "./lib/table";
 // chỉ phần công thức đi qua KaTeX (trust: false mặc định).
 const MATH = /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/g;
 
+// Hình khối BE đã vẽ sẵn (`figure_svg`, app/domain/figure.py) hiện bằng <img> data URL: ảnh SVG không chạy được script,
+// nên không cần dangerouslySetInnerHTML. `caption` (mô tả chữ `figure`) làm alt; không có SVG thì không hiện gì.
+export function QuestionFigure({ svg, caption }: Readonly<{ svg?: string; caption?: string }>) {
+  if (!svg) return null;
+  return (
+    <img
+      data-testid="question-figure"
+      className="my-2 h-auto max-w-full bg-white"
+      src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`}
+      alt={caption || "Hình vẽ"}
+    />
+  );
+}
+
 // Đề bài + bảng (trường `table` hoặc bảng markdown trong đề) thành bảng thật; ô vẫn render công thức.
 export function QuestionStem({ stem, table }: Readonly<{ stem: string; table?: unknown }>) {
   return (

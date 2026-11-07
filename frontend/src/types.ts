@@ -98,6 +98,9 @@ export interface QuestionContent {
   solution: string;
   citations: unknown[];
   check: unknown;
+  figure?: string; // mô tả chữ của hình
+  figure_spec?: unknown; // tham số hình khối do RAG trả; BE vẽ figure_svg từ đây
+  figure_svg?: string; // SVG do BE vẽ, chỉ để xem; luôn được tính lại khi lưu câu
   [key: string]: unknown;
 }
 

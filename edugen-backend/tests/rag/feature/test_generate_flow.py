@@ -39,7 +39,7 @@ def _small_index():
 
 
 def _run(qtype, *questions, **cell_extra):
-    llm = FakeLLM([reply(*questions)])
+    llm = FakeLLM([reply(*questions), reply()])  # reply(): the one re-ask after a rejection brings nothing new
     return generate_for_cell(_small_index(), FakeEmbedder(), cell(qtype, topic=DAO_HAM_OLD, **cell_extra), llm), llm
 
 
@@ -395,7 +395,8 @@ def test_toxic_question_is_rejected_and_regenerated_once():
     assert [q["stem"] for q in valid] == [LLM_OUTPUT["multiple_choice"]["stem"]]
     assert [e for r in rejected for e in r["errors"]] == ["toxic_content: đồ ngu"]
     assert len(llm.calls) == 2
-    assert "Viết 1 câu" in llm.calls[1]["prompt"]  # only the toxic ones are asked again
+    assert "Viết 1 câu" in llm.calls[1]["prompt"]  # only the missing ones are asked again
+    assert "đồ ngu" not in llm.calls[1]["prompt"].lower()  # the reason is sent back, never the offensive words
 
 
 def test_still_toxic_after_regeneration_stays_rejected():
@@ -407,9 +408,38 @@ def test_still_toxic_after_regeneration_stays_rejected():
     assert len(llm.calls) == 2  # one regeneration, no loop
 
 
+# --- every rejection is asked for again once, with the reasons (TC-004 / TC-016 eval: 70% / 50% before) ----------
+
+def test_rejected_question_is_asked_again_once_with_its_errors_and_the_kept_stems():
+    good = LLM_OUTPUT["short_answer"] | {"stem": "Câu giữ lại"}
+    too_long = LLM_OUTPUT["short_answer"] | {"stem": "Câu dài", "answer": "17450", "sympy": {"expr": "17450 + 0*x"}}
+    llm = FakeLLM([reply(good, too_long), reply(LLM_OUTPUT["short_answer"])])
+
+    valid, rejected = generate_for_cell(_small_index(), FakeEmbedder(),
+                                        cell("short_answer", count=2, topic=DAO_HAM_OLD), llm)
+
+    assert [q["stem"] for q in valid] == ["Câu giữ lại", LLM_OUTPUT["short_answer"]["stem"]]
+    assert [r["question"]["stem"] for r in rejected] == ["Câu dài"]
+    again = llm.calls[1]["prompt"]
+    assert "Viết 1 câu" in again
+    assert "short_answer '17450' does not fit the 4 answer-sheet boxes" in again
+    assert "- Câu giữ lại" in again  # the replacement must not repeat what was kept
+
+
+def test_no_re_ask_when_the_cell_is_already_full():
+    extra = LLM_OUTPUT["multiple_choice"] | {"stem": "thừa", "answer": "E"}
+    llm = FakeLLM([reply(LLM_OUTPUT["multiple_choice"], extra)])
+
+    valid, rejected = generate_for_cell(_small_index(), FakeEmbedder(), cell(topic=DAO_HAM_OLD), llm)
+
+    assert len(valid) == 1 and len(rejected) == 1
+    assert len(llm.calls) == 1
+
+
 # --- BUG-005: a question repeating one already in the exam (or in the same reply) is rejected ------------------
 
 ASYMPTOTE = r"Tìm tiệm cận đứng của đồ thị hàm số $y=\frac{2x-1}{x+1}$."
+HORIZONTAL = r"Cho hàm số $y = \dfrac{3x - 2}{x + 1}$. Tiệm cận ngang của đồ thị hàm số đã cho có phương trình là"
 
 
 def _with_stems(*stems):
@@ -423,34 +453,38 @@ def _with_stems(*stems):
 ])
 def test_BUG_005_question_repeating_an_earlier_stem_of_the_exam_is_rejected(again):
     """e81f6617 Q2 / Q11 / Q12: one question, only the options shuffled."""
-    llm = FakeLLM([reply(*_with_stems(again))])
+    llm = FakeLLM([reply(*_with_stems(again)), reply(*_with_stems(again))])
 
     valid, rejected = generate_for_cell(*_small_index_and_embedder(), cell("multiple_choice", topic=DAO_HAM_OLD),
                                         llm, previous_stems=[ASYMPTOTE])
 
     assert valid == []
-    assert rejected[0]["errors"] == ["repeats a question already in the exam"]
+    assert [r["errors"] for r in rejected] == [["repeats a question already in the exam"]] * 2  # asked once more
 
 
 def test_BUG_005_two_copies_in_one_reply_keep_only_the_first():
-    llm = FakeLLM([reply(*_with_stems(ASYMPTOTE, ASYMPTOTE))])
+    other = r"Tìm tiệm cận ngang của đồ thị hàm số $y=\frac{3x+5}{x-4}$."
+    llm = FakeLLM([reply(*_with_stems(ASYMPTOTE, ASYMPTOTE)), reply(*_with_stems(other))])
 
     valid, rejected = generate_for_cell(*_small_index_and_embedder(),
                                         cell("multiple_choice", count=2, topic=DAO_HAM_OLD), llm)
 
-    assert [q["stem"] for q in valid] == [ASYMPTOTE]
+    assert [q["stem"] for q in valid] == [ASYMPTOTE, other]  # the copy is replaced by a new question
     assert [r["errors"] for r in rejected] == [["repeats a question already in the exam"]]
+    assert f"- {ASYMPTOTE}" in llm.calls[1]["prompt"]
 
 
 @pytest.mark.parametrize("other", [
     r"Tìm tiệm cận ngang của đồ thị hàm số $y=\frac{3x+5}{x-4}$.",  # same topic, another question
     "Tính $f'(2)$.",  # short stems only count as repeats when identical
+    # TC-004 eval: same template, another function and asymptote; 90% alike as text, not the same question
+    r"Cho hàm số $y = \dfrac{3 - x}{x + 2}$. Tiệm cận đứng của đồ thị hàm số đã cho có phương trình là",
 ])
 def test_BUG_005_different_questions_are_kept(other):
     llm = FakeLLM([reply(*_with_stems(other))])
 
     valid, rejected = generate_for_cell(*_small_index_and_embedder(), cell("multiple_choice", topic=DAO_HAM_OLD),
-                                        llm, previous_stems=[ASYMPTOTE, "Tính $f'(1)$."])
+                                        llm, previous_stems=[ASYMPTOTE, "Tính $f'(1)$.", HORIZONTAL])
 
     assert len(valid) == 1 and rejected == []
 

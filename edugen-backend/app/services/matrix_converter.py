@@ -4,19 +4,29 @@ Marker chạy ~2 phút mỗi ảnh nên chỉ gọi trong job nền (services/ma
 dùng converter giả, không bao giờ chạy marker thật.
 """
 
+import hashlib
 import json
+import logging
 import os
 import subprocess
 import tempfile
 from collections.abc import Callable
 from pathlib import Path
-from typing import Protocol
+from typing import Annotated, Protocol
 
 from dotenv import dotenv_values
+from fastapi import Depends
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
+from app.db.session import get_session_factory
 from app.domain.matrix_reader import read_matrix
+from app.models.matrix import MatrixConversion
 from app.services.matrix_schema import MATRIX_SCHEMA, PROMPT
+
+log = logging.getLogger(__name__)
 
 
 class ConversionError(Exception):
@@ -134,8 +144,71 @@ class GeminiMatrixConverter:
         return retry if len(_problems(retry)) < len(problems) else first
 
 
-def get_matrix_converter() -> MatrixConverter:
+def matrix_cache_key(model: str, retry_model: str | None) -> str:
+    """Đổi prompt, schema hay model thì khoá đổi theo, cache cũ tự mất hiệu lực."""
+    # Mã hoá có cấu trúc để ("ab","c") và ("a","bc") không trùng khoá
+    raw = json.dumps(
+        {"prompt": PROMPT, "schema": MATRIX_SCHEMA, "model": model, "retry_model": retry_model or model},
+        sort_keys=True,
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(raw.encode()).hexdigest()
+
+
+class CachedMatrixConverter:
+    """Bọc một converter: file giống hệt từng byte (SHA-256) đã đọc sạch thì trả JSON đã lưu, khỏi gọi Gemini.
+
+    Lỗi DB không được làm hỏng upload nên chỉ ghi cảnh báo rồi chạy như không có cache.
+    """
+
+    def __init__(self, inner: MatrixConverter, session_factory: sessionmaker, cache_key: str) -> None:
+        self.inner, self.session_factory, self.cache_key = inner, session_factory, cache_key
+
+    @property
+    def usage(self) -> list[dict]:
+        return self.inner.usage  # type: ignore[attr-defined]
+
+    def _lookup(self, sha: str) -> str | None:
+        try:
+            with self.session_factory() as session:
+                return session.scalar(
+                    select(MatrixConversion.output).where(
+                        MatrixConversion.source_sha256 == sha, MatrixConversion.cache_key == self.cache_key
+                    )
+                )
+        except Exception:
+            log.warning("Không tra được cache ma trận, gọi converter", exc_info=True)
+            return None
+
+    def _store(self, sha: str, output: str) -> None:
+        try:
+            with self.session_factory() as session:
+                session.add(MatrixConversion(source_sha256=sha, cache_key=self.cache_key, output=output))
+                try:
+                    session.commit()
+                except IntegrityError:  # upload song song đã lưu cùng file
+                    session.rollback()
+        except Exception:
+            log.warning("Không lưu được cache ma trận", exc_info=True)
+
+    def convert(self, source: Path) -> str:
+        sha = hashlib.sha256(source.read_bytes()).hexdigest()
+        cached = self._lookup(sha)
+        if cached is not None:
+            log.info("Ma trận cache hit %s", sha[:12])
+            return cached
+        output = self.inner.convert(source)
+        if not _problems(output):
+            self._store(sha, output)
+        return output
+
+
+def get_matrix_converter(factory: Annotated[sessionmaker, Depends(get_session_factory)]) -> MatrixConverter:
     """Dependency cho FastAPI; test override bằng converter giả. MATRIX_CONVERTER=marker|gemini."""
     if settings.matrix_converter == "gemini":
-        return GeminiMatrixConverter(settings.matrix_gemini_model, retry_model=settings.matrix_gemini_retry_model)
+        converter = GeminiMatrixConverter(settings.matrix_gemini_model, retry_model=settings.matrix_gemini_retry_model)
+        if settings.matrix_cache_enabled:
+            key = matrix_cache_key(settings.matrix_gemini_model, settings.matrix_gemini_retry_model)
+            return CachedMatrixConverter(converter, factory, key)
+        return converter
     return MarkerConverter(settings.marker_config_path, timeout=settings.marker_timeout_seconds)

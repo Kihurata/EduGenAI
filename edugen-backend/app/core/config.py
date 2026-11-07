@@ -43,6 +43,8 @@ class Settings(BaseSettings):
     matrix_gemini_model: str = "gemini-3.5-flash-lite"
     # Đọc lại khi lần đầu lệch (12/4/6, cột Tổng): model mạnh hơn, chỉ tốn khi cần; trống = dùng lại model trên
     matrix_gemini_retry_model: str | None = "gemini-3.8-flash"
+    # Cùng file ma trận (giống hệt từng byte) tải lại thì dùng JSON đã lưu, không gọi Gemini; chỉ lưu kết quả sạch.
+    matrix_cache_enabled: bool = True
     # Bộ đọc đề GV tải lên (T-055, D-016 sửa đổi 2026-11-07): gemini gửi thẳng PDF/ảnh; text lấy chữ rồi gọi make_llm.
     draft_extractor: Literal["gemini", "text"] = "gemini"
     draft_gemini_model: str = "gemini-3.5-flash-lite"

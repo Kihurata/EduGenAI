@@ -2,11 +2,11 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, SmallInteger, String, Text
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, SmallInteger, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base, TimestampMixin, UUIDPkMixin
+from app.db.base import Base, CreatedAtMixin, TimestampMixin, UUIDPkMixin
 from app.models.catalog import Subject
 from app.models.enums import Level, MatrixStatus, QuestionType
 from app.models.types import pg_enum
@@ -76,3 +76,17 @@ class MatrixCell(UUIDPkMixin, Base):
     competency_codes: Mapped[list[str]] = mapped_column(JSONB, default=list)
 
     matrix: Mapped[ExamMatrix] = relationship(back_populates="cells")
+
+
+class MatrixConversion(UUIDPkMixin, CreatedAtMixin, Base):
+    """Cache JSON Gemini đã đọc từ một file ma trận: khoá = SHA-256 byte file + cache_key (prompt/schema/model).
+
+    Dùng chung mọi trường; chỉ lưu kết quả sạch (xem CachedMatrixConverter).
+    """
+
+    __tablename__ = "matrix_conversions"
+    __table_args__ = (UniqueConstraint("source_sha256", "cache_key"),)
+
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    cache_key: Mapped[str] = mapped_column(String(64))
+    output: Mapped[str] = mapped_column(Text)

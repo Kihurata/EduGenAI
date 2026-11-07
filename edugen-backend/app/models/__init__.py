@@ -2,7 +2,7 @@
 
 from app.models.catalog import School, Subject
 from app.models.exam import Exam, ExamBankEntry, ExamCellRun, ExamExport, ExamQuestion
-from app.models.matrix import ExamMatrix, MatrixCell
+from app.models.matrix import ExamMatrix, MatrixCell, MatrixConversion
 from app.models.sample_exam import SampleExam
 from app.models.user import RefreshToken, User
 
@@ -14,6 +14,7 @@ __all__ = [
     "ExamMatrix",
     "ExamQuestion",
     "MatrixCell",
+    "MatrixConversion",
     "RefreshToken",
     "SampleExam",
     "School",

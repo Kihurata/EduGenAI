@@ -1,0 +1,193 @@
+# Tóm tắt: bản đồ test theo chức năng (F-##) trong vault Hackathon2026-Doc. Mỗi test thuộc đúng một
+# chức năng và một mức (unit / integration / acceptance / eval). Chạy theo bộ: `uv run pytest --suite F-03`;
+# xem các bộ: `--list-suites`; theo mức: `-m unit`. Thêm file test mới thì thêm vào đây (tests/test_features_map.py kiểm tra).
+#
+# Rules
+# - Entries are a test file (`tests/x/test_y.py`) or one test (`tests/x/test_y.py::test_name`).
+#   The most specific entry wins, so a whole file can sit under one feature and single tests under another.
+# - Levels: unit = no network/DB server, fakes only; integration = FastAPI app + SQLite + fake RAG/marker;
+#   acceptance = full feature flow with real models (outer TDD loop, `@pytest.mark.acceptance`);
+#   eval = model quality vs a threshold on a golden set (`@pytest.mark.eval`).
+# - `tasks` / `test_cases` mirror the vault notes (05-tasks/, 06-testing/test-cases/); `pending` lists TC notes
+#   with no code test yet.
+
+features:
+  F-01:
+    title: Source document management
+    acceptance_test: TC-001
+    tasks: [T-002, T-003, T-004, T-005, T-011, T-022, T-023, T-024, T-032, T-033, T-034, T-035]
+    test_cases: [TC-001, TC-005, TC-017]
+    pending: [TC-018]
+    unit:
+      - tests/rag/unit/test_smoke.py
+      - tests/rag/unit/test_parse.py
+      - tests/rag/unit/chunking/test_theory.py
+      - tests/rag/unit/chunking/test_exam.py
+      - tests/rag/unit/chunking/test_chunk_file.py
+      - tests/rag/unit/chunking/test_fixed.py   # T-003 baseline for the T-007 comparison
+      - tests/rag/unit/embedding/test_bge_m3.py
+      - tests/rag/unit/embedding/test_gemini_bm25.py
+      - tests/rag/unit/storage/test_qdrant.py
+    integration:
+      - tests/rag/feature/test_ingest_flow.py
+      - tests/rag/feature/test_ingest_sources.py   # T-035
+      - tests/api/test_sample_exams.py
+      - tests/unit/test_exam_draft.py   # T-050 review rules for uploaded exam drafts
+      - tests/unit/test_draft_extractor.py   # T-050 PDF/DOCX/JSON → draft (fake LLM)
+      - tests/unit/test_draft_extractor_gemini.py   # T-055 TC-025/026 PDF/ảnh gửi thẳng Gemini, xoá đáp án tự điền (Gemini giả)
+      - tests/unit/test_rag_ingest_local.py
+      - tests/unit/test_rag_delete.py   # T-046 Backend deletes Qdrant points with the school / sample exam
+      - tests/unit/test_bank_rag_json.py
+      - tests/unit/test_rag_mock.py::test_sample_rag_ingest_is_immediately_done
+    acceptance:
+      - tests/rag/feature/acceptance/test_ingest.py
+    eval:
+      - tests/rag/feature/eval/test_index_coverage.py
+      - tests/rag/feature/eval/test_sgk_chunking.py   # T-024 / T-032
+
+  F-02:
+    title: Exam matrix setup
+    acceptance_test: TC-009
+    tasks: [T-015, T-016, T-017, T-018, T-027, T-054]
+    test_cases: [TC-008, TC-009, TC-020, TC-021]
+    pending: [TC-008]
+    unit:
+      - tests/unit/test_exam_structure.py
+      - tests/unit/test_matrix_reader.py
+      - tests/unit/test_matrix_extract.py   # T-054 / D-016: ma trận từ JSON Gemini (TC-020, TC-021)
+      - tests/unit/test_matrix_json.py   # matrix image → standard JSON + rag_cells
+      - tests/unit/test_matrix_converter.py
+      - tests/unit/test_matrix_converter_gemini.py   # Gemini converter → JSON (D-016, MATRIX_CONVERTER=gemini)
+      - tests/unit/test_matrix_jobs.py
+      - tests/api/test_demo_matrix.py   # demo Toán 12 fixture + scripts/create_demo_matrix.py
+      - tests/unit/test_topics.py
+      - tests/unit/test_topics_subjects.py   # T-050 Lý/Hóa topic codes (D-013)
+      - tests/unit/test_cell.py
+      - tests/unit/test_enums.py
+      - tests/unit/test_generation.py
+      - tests/rag/unit/test_matrix_fixtures.py   # T-027
+    integration:
+      - tests/api/test_matrices.py
+      - tests/api/test_exams.py
+      - tests/api/test_exam_build.py   # TC-009: matrix → 22-question exam, numbered per part
+
+  F-03:
+    title: RAG question generation
+    acceptance_test: TC-002
+    tasks: [T-006, T-007, T-008, T-009, T-010, T-025, T-026, T-028, T-029, T-030, T-034, T-036, T-038, T-039, T-040]
+    test_cases: [TC-002, TC-003, TC-004, TC-006, TC-014]
+    unit:
+      - tests/rag/unit/storage/test_retrieve.py
+      - tests/rag/unit/storage/test_retrieve_school_isolation.py
+      - tests/rag/unit/storage/test_retrieve_teacher_isolation.py
+      - tests/rag/unit/storage/test_delete_school_points.py   # T-046 delete a school's points, never shared ones
+      - tests/rag/unit/storage/test_retrieve_preferences.py   # T-034
+      - tests/rag/unit/storage/test_lookup.py
+      - tests/rag/unit/generation/test_generate.py
+      - tests/rag/unit/generation/test_latex.py   # BUG-004: chuẩn hoá LaTeX sau khi sinh
+      - tests/rag/unit/generation/test_subject_prompt.py   # T-050 prompt per subject
+      - tests/rag/unit/generation/test_guardrails.py   # T-038
+      - tests/rag/unit/generation/test_cost.py   # T-039
+      - tests/rag/unit/generation/test_llm.py
+      - tests/rag/unit/checking/test_validate.py
+      - tests/rag/unit/checking/test_checks.py
+      - tests/rag/unit/checking/test_toxic.py   # T-038
+      - tests/rag/unit/test_evaluate.py
+      - tests/rag/unit/test_vocab.py
+      - tests/rag/unit/test_contract.py
+      - tests/rag/unit/test_fake.py
+      - tests/unit/test_question.py
+      - tests/unit/test_rag_mock.py
+    integration:
+      - tests/rag/feature/test_generate_flow.py
+      - tests/rag/feature/test_contract_flow.py
+      - tests/unit/test_rag_local.py   # BE calls app.rag in process (no HTTP)
+      - tests/unit/test_rag_warmup.py   # RAG dựng lúc startup ở luồng nền
+      - tests/unit/test_env_isolation.py   # test thường không thấy khoá .env (CLAUDE.md quy tắc 9)
+    acceptance:
+      - tests/rag/feature/acceptance/test_generate.py
+    eval:
+      - tests/rag/feature/eval/test_retrieval.py
+      - tests/rag/feature/eval/test_chunking_comparison.py   # T-007 2x2
+      - tests/rag/feature/eval/test_generation.py::test_TC_004_generated_questions_pass_validators
+
+  F-04:
+    title: SymPy answer verification
+    acceptance_test:
+    tasks: [T-014, T-031]
+    test_cases: [TC-015, TC-016]
+    unit:
+      - tests/rag/unit/checking/test_verify.py
+      - tests/rag/unit/checking/test_check_answer.py
+      - tests/rag/unit/generation/test_sympy_prompt.py
+    integration:
+      - tests/rag/feature/test_generate_flow.py::test_short_answer_verified_by_sympy_is_kept
+      - tests/rag/feature/test_generate_flow.py::test_short_answer_sympy_disagrees_is_rejected_with_both_values
+      - tests/rag/feature/test_generate_flow.py::test_validation_and_sympy_errors_are_both_reported
+      - tests/rag/feature/test_generate_flow.py::test_multiple_choice_null_sympy_expr_is_dropped_in_the_flow
+    eval:
+      - tests/rag/feature/eval/test_generation.py::test_TC_016_generated_numeric_answers_match_sympy
+
+  F-05:
+    title: Teacher review
+    acceptance_test: TC-010
+    tasks: [T-019]
+    test_cases: [TC-010]
+    integration:
+      - tests/api/test_review.py   # TC-010: edit / delete / regenerate / fill / approve endpoints
+      - tests/rag/feature/test_review_flow.py   # the RAG side of review: citations + re-check of edits
+
+  F-06:
+    title: Exam export
+    acceptance_test: TC-011
+    tasks: [T-021]
+    test_cases: [TC-011]
+    unit:
+      - tests/unit/test_exam_document.py
+      - tests/unit/test_docx_export.py   # LaTeX → Word equations (OMML) via Pandoc
+    integration:
+      - tests/api/test_exam_export.py   # TC-011: 2025 mã 0101 → DOCX, official key + matrix table
+      - tests/api/test_exams.py::test_export_student_and_teacher_docx
+      - tests/api/test_exams.py::test_only_approved_exam_is_exported
+
+  F-07:
+    title: Exam bank   # was "Question bank"; the team chose a bank of official exams (vault F-07)
+    acceptance_test: TC-012
+    tasks: [T-020]
+    test_cases: [TC-012]
+    integration:
+      - tests/api/test_bank.py
+
+  F-08:
+    title: Teacher accounts   # P2, no feature note in the vault yet
+    unit:
+      - tests/unit/test_security_and_seed.py
+    integration:
+      - tests/api/test_auth_and_admin.py
+      - tests/api/test_security_hardening.py
+      - tests/api/test_auth_sessions.py
+      - tests/api/test_school_scope.py   # T-045 school comes from the token's user, never from the request
+
+  F-17:
+    title: Constraint-based geometry figures
+    acceptance_test: TC-007
+    tasks: [T-012, T-013]
+    test_cases: [TC-007]
+    pending: [TC-007]   # cut for 6/11
+
+  F-18:
+    title: Deploy and operations
+    tasks: [T-041, T-042, T-043]
+    pending: [T-042 smoke on the real server]
+
+  platform:
+    title: DB schema, file storage, RAG stage boundaries, and this test map
+    unit:
+      - tests/unit/test_db_schema.py
+      - tests/unit/test_migrations.py
+      - tests/unit/test_storage.py
+      - tests/api/test_health.py
+      - tests/unit/test_app_entrypoint.py
+      - tests/rag/unit/test_dto.py
+      - tests/rag/unit/test_architecture.py
+      - tests/test_features_map.py

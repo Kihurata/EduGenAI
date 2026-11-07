@@ -177,6 +177,11 @@ features:
     tasks: [T-012, T-013]
     test_cases: [TC-007]
     pending: [TC-007]   # cut for 6/11
+    unit:
+      - tests/unit/test_figure.py   # spec → coordinates → SGK-style SVG (box, prism, pyramid)
+      - tests/unit/test_figure_png.py   # SVG → PNG for DOCX
+    integration:
+      - tests/api/test_exam_figure.py   # RAG spec → figure_svg → edit → DOCX picture
 
   F-18:
     title: Deploy and operations

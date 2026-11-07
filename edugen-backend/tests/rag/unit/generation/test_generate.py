@@ -503,3 +503,71 @@ def test_figure_spec_without_a_text_figure_is_still_kept():
     [q], _ = _generate("multiple_choice", LLM_OUTPUT["multiple_choice"] | {"figure_spec": SPEC, "figure": None})
 
     assert q["figure_spec"] == SPEC and "figure" not in q
+
+
+# --- LaTeX commands survive the reply (fix/latex-corruption) --------------------------------------------------
+
+LATEX = r"$x \in A, x \ge 1, x \le 2, (-\infty; +\infty), \vec{k}, \frac{1}{2}, \theta, a \neq b, \to, \bar{x}$"
+
+
+@pytest.mark.parametrize("encode", [
+    lambda q: reply(q),                               # valid JSON: backslashes already doubled
+    lambda q: reply(q).replace("\\\\", "\\"),         # model wrote a single backslash
+], ids=["escaped", "single-backslash"])
+def test_latex_commands_in_the_reply_reach_the_question_unchanged(encode):
+    q = dict(LLM_OUTPUT["short_answer"], stem=LATEX)
+
+    [out] = generate(_cell("short_answer"), THEORY, EXAMS, FakeLLM([encode(q)]))
+
+    assert out["stem"] == LATEX
+
+
+SGK_STYLE = (r"Cho $\overrightarrow{AB} = \vec{u}$, $\lim_{x \to +\infty} \dfrac{1}{x} = 0$, "
+             r"$\int_0^1 \left(x^2 + \cos x\right)\,dx$, $\widehat{BAC} = 60^\circ$, $A \cap B \subset \mathbb{R}$, "
+             r"$\begin{cases} x \ge 1 \\ y \le 2 \end{cases}$, $\Delta = b^2 - 4ac$, $\alpha \in \mathrm{Z}$")
+
+
+def test_a_question_written_in_sgk_style_latex_is_not_rejected():
+    q = dict(LLM_OUTPUT["short_answer"], stem=SGK_STYLE)
+
+    [out] = generate(_cell("short_answer"), THEORY, EXAMS, FakeLLM([reply(q)]))
+
+    assert out["stem"] == SGK_STYLE
+
+
+@pytest.mark.parametrize("bad", [r"$x \thuộc A$", r"$a \berge b$", r"$(1; +\bullet)$", r"$\5\k$",
+                                 "$\x0bec{k}$", "$a \x08 b$"])
+def test_a_reply_with_a_corrupted_latex_command_is_asked_again(bad, caplog):
+    good = dict(LLM_OUTPUT["short_answer"], stem=LATEX)
+    corrupted = dict(LLM_OUTPUT["short_answer"], explanation=bad)
+    llm = FakeLLM([reply(corrupted), reply(good)])
+
+    with caplog.at_level("WARNING"):
+        [out] = generate(_cell("short_answer"), THEORY, EXAMS, llm)
+
+    assert out["stem"] == LATEX and len(llm.calls) == 2
+    assert "rejected" in caplog.text
+
+
+def test_system_prompt_says_to_keep_latex_command_names_in_english():
+    assert r"\in" in SYSTEM_PROMPT and "không dịch" in SYSTEM_PROMPT
+
+
+def test_a_reply_that_stays_corrupted_becomes_llm_error():
+    bad = reply(dict(LLM_OUTPUT["short_answer"], stem=r"$x \thuộc A$"))
+    with pytest.raises(LLMError):
+        generate(_cell("short_answer"), THEORY, EXAMS, FakeLLM([bad] * 3))
+
+
+# Lý/Hóa and Vietnamese-style Toán LaTeX that the first allow-list rejected.
+LY_HOA_STYLE = (r"$x \leqslant 2$, $x \geqslant 1$, $2H_2 + O_2 \rightleftharpoons 2H_2O$, $A \xrightarrow{t^\circ} B$, "
+                r"$CO_2 \uparrow$, $BaSO_4 \downarrow$, $\boldsymbol{v}$, $\lvert x \rvert$, $\lbrace 1; 2 \rbrace$, "
+                r"$\overset{def}{=}$, $\widetilde{x}$, $\underbrace{a+b}_{s}$, $\mathsf{R}$, $\Re z$")
+
+
+def test_a_question_written_in_ly_hoa_or_vietnamese_style_latex_is_not_rejected():
+    q = dict(LLM_OUTPUT["short_answer"], stem=LY_HOA_STYLE)
+
+    [out] = generate(_cell("short_answer"), THEORY, EXAMS, FakeLLM([reply(q)]))
+
+    assert out["stem"] == LY_HOA_STYLE

@@ -1,0 +1,447 @@
+{
+ "id": "toan-tn-2026-0102",
+ "exam": "Kỳ thi tốt nghiệp THPT năm 2026",
+ "subject": "toan",
+ "ma_de": "0102",
+ "duration_min": 90,
+ "source_exam": "Ảnh chụp đề in (nguồn Báo Giáo dục và Thời đại, đăng lại trên Cổng xaydungchinhsach.chinhphu.vn, 11/6/2026): https://xaydungchinhsach.chinhphu.vn/thi-tot-nghiep-thpt-2026-de-thi-mon-toan-vua-suc-co-tinh-phan-hoa-ro-ret-119260611164121523.htm",
+ "source_key": "Đáp án chính thức Bộ GD&ĐT (bản PDF có dấu Bộ, đăng trên Cổng xaydungchinhsach.chinhphu.vn ngày 20/6/2026)",
+ "images": [
+  "sources/2026/0102-trang1.jpg",
+  "sources/2026/0102-trang2.jpg",
+  "sources/2026/0102-trang3.jpg",
+  "sources/2026/0102-trang4.jpg"
+ ],
+ "official": true,
+ "confidence": "cao",
+ "topic_labels": "nhóm tự gán (không chính thức)",
+ "level_labels": "nhóm tự gán (toan-matrix/derived-tn-2026-0102.yaml), không chính thức, độ tin cậy medium",
+ "questions": [
+  {
+   "part": "I",
+   "cau": 1,
+   "topic": "hinh_hoc_do_luong/vecto_khong_gian",
+   "stem": "Cho hình lập phương $ABCD.A'B'C'D'$ (xem hình dưới). Vectơ nào sau đây bằng vectơ $\\overrightarrow{AD}$?",
+   "figure": "Hình lập phương $ABCD.A'B'C'D'$.",
+   "options": {
+    "A": "$\\overrightarrow{AB}$",
+    "B": "$\\overrightarrow{AA'}$",
+    "C": "$\\overrightarrow{CD}$",
+    "D": "$\\overrightarrow{B'C'}$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/dao_ham",
+   "stem": "Cho các hàm số $y=f(x)$ và $y=g(x)$ có đạo hàm trên tập số thực $\\mathbb{R}$ thỏa mãn $f'(x)=2x$ và $g'(x)=x^2$. Đạo hàm của hàm số $y=f(x)+g(x)$ là",
+   "options": {
+    "A": "$4x$",
+    "B": "$2x+x^2$",
+    "C": "$2+2x$",
+    "D": "$2+x^2$"
+   },
+   "answer": "B",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 3,
+   "topic": "hinh_hoc_do_luong/toa_do_vecto",
+   "stem": "Trong không gian với hệ tọa độ $Oxyz$, cho hai điểm $A(2;3;1)$ và $B(4;1;1)$. Vectơ $\\overrightarrow{AB}$ có tọa độ là",
+   "options": {
+    "A": "$(3;2;1)$",
+    "B": "$(-2;2;0)$",
+    "C": "$(6;4;2)$",
+    "D": "$(2;-2;0)$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 4,
+   "topic": "dai_so_giai_tich/nguyen_ham",
+   "stem": "Cho $\\int f(x)\\,dx=\\sin x+C$. Phát biểu nào sau đây là đúng?",
+   "options": {
+    "A": "$\\int[2+f(x)]\\,dx=2x-\\sin x+C$",
+    "B": "$\\int[2+f(x)]\\,dx=2x+\\sin x+C$",
+    "C": "$\\int[2+f(x)]\\,dx=2x+\\cos x+C$",
+    "D": "$\\int[2+f(x)]\\,dx=2x-\\cos x+C$"
+   },
+   "answer": "B",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 5,
+   "topic": "dai_so_giai_tich/cap_so_nhan",
+   "stem": "Cho cấp số nhân $(u_n)$ có số hạng đầu $u_1$ và công bội $q$ với $u_1\\neq0, q>1$. Số hạng $u_3$ là",
+   "options": {
+    "A": "$u_3=u_1\\cdot q^3$",
+    "B": "$u_3=u_1+2q$",
+    "C": "$u_3=u_1\\cdot q^2$",
+    "D": "$u_3=u_1+3q$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 6,
+   "topic": "dai_so_giai_tich/phuong_trinh_logarit",
+   "stem": "Nghiệm của phương trình $\\log_3(3x)=2$ là",
+   "options": {
+    "A": "$x=2$",
+    "B": "$x=3$",
+    "C": "$x=\\dfrac{8}{3}$",
+    "D": "$x=\\dfrac{2}{3}$"
+   },
+   "answer": "B",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 7,
+   "topic": "dai_so_giai_tich/cap_so_cong",
+   "stem": "Cho cấp số cộng $(u_n)$ có $u_1=-2$ và công sai $d=3$. Giá trị của $u_2$ bằng",
+   "options": {
+    "A": "$1$",
+    "B": "$-1$",
+    "C": "$-6$",
+    "D": "$-5$"
+   },
+   "answer": "A",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 8,
+   "topic": "dai_so_giai_tich/nguyen_ham",
+   "stem": "Hàm số $F(x)=5x^3$ là một nguyên hàm của hàm số nào sau đây?",
+   "options": {
+    "A": "$f_2(x)=5x^2$",
+    "B": "$f_4(x)=5x^4$",
+    "C": "$f_3(x)=15x^2$",
+    "D": "$f_1(x)=\\dfrac{5x^4}{4}$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 9,
+   "topic": "thong_ke_xac_suat/bien_co_doc_lap",
+   "stem": "Cho hai biến cố độc lập $A$ và $B$ có xác suất thỏa mãn $P(A)=0{,}3$ và $P(B)=0{,}6$. Giá trị của $P(AB)$ bằng",
+   "options": {
+    "A": "$0{,}9$",
+    "B": "$0{,}3$",
+    "C": "$0{,}18$",
+    "D": "$0{,}5$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 10,
+   "topic": "dai_so_giai_tich/he_bat_phuong_trinh",
+   "stem": "Cặp số nào sau đây là nghiệm của hệ bất phương trình $\\begin{cases}x+y-2<0\\\\x-y+2>0\\end{cases}$?",
+   "options": {
+    "A": "$(1;0)$",
+    "B": "$(0;3)$",
+    "C": "$(-3;0)$",
+    "D": "$(1;2)$"
+   },
+   "answer": "A",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 11,
+   "topic": "thong_ke_xac_suat/trung_vi_ghep_nhom",
+   "stem": "Khảo sát thời gian (đơn vị: phút) học trực tuyến trong một ngày của 42 học sinh, người ta thu được mẫu số liệu ghép nhóm như sau. Trung vị của mẫu số liệu trên thuộc nhóm nào sau đây?",
+   "table": [
+    [
+     "Thời gian học trực tuyến",
+     "[10;20)",
+     "[20;30)",
+     "[30;40)",
+     "[40;50)",
+     "[50;60)",
+     "[60;70)"
+    ],
+    [
+     "Số học sinh",
+     "5",
+     "7",
+     "15",
+     "6",
+     "5",
+     "4"
+    ]
+   ],
+   "options": {
+    "A": "$[40;50)$",
+    "B": "$[20;30)$",
+    "C": "$[30;40)$",
+    "D": "$[50;60)$"
+   },
+   "answer": "C",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 12,
+   "topic": "dai_so_giai_tich/tiem_can",
+   "stem": "Cho hàm số $y=\\dfrac{ax+b}{cx+d}$ $(c\\neq0, ad-bc\\neq0)$ có bảng biến thiên như hình dưới đây. Đường tiệm cận đứng của đồ thị hàm số đã cho có phương trình là",
+   "figure": "Bảng biến thiên: $y'>0$ trên $(-\\infty;1)$ và $(1;+\\infty)$; $y$ tăng từ $-2$ đến $+\\infty$ khi $x\\to1^-$, tăng từ $-\\infty$ đến $-2$ khi $x\\to1^+$.",
+   "options": {
+    "A": "$x=-2$",
+    "B": "$y=1$",
+    "C": "$y=-2$",
+    "D": "$x=1$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "II",
+   "cau": 1,
+   "topic": "dai_so_giai_tich/tich_phan_thuc_te",
+   "stem": "Một hệ thống pin năng lượng mặt trời gồm các tấm pin được kết nối với một bộ lưu trữ điện. Trong thời gian mặt trời chiếu sáng của một ngày, năng lượng điện thu được từ các tấm pin được lưu trong bộ lưu trữ điện. Gọi $F(t)$ là năng lượng điện (kWh) lưu trữ được kể từ thời điểm hệ thống bắt đầu hoạt động đến thời điểm $t$, trong đó $t$ là thời gian tính theo giờ $(0\\leq t\\leq12)$ và thời điểm hệ thống bắt đầu hoạt động ứng với $t=0$. Biết rằng $F(0)=0$. Tốc độ lưu trữ năng lượng điện (kW) của hệ thống này là hàm số $f(t)=F'(t)$ với $0\\leq t\\leq12$. Số liệu ghi nhận được ở một ngày cụ thể trong năm cho thấy $f(t)=-0{,}15t^2+1{,}8t$ với $0\\leq t\\leq12$.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "$F(t)=-0{,}05t^3+0{,}9t^2$ với $0\\leq t\\leq12$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Năng lượng điện (kWh) lưu trữ được kể từ thời điểm $t=a$ đến thời điểm $t=b$ $(0\\leq a<b\\leq12)$ là $\\int_a^b f(t)\\,dt$.",
+     "answer": true
+    },
+    {
+     "label": "c",
+     "text": "Năng lượng điện lưu trữ được kể từ thời điểm $t=1$ đến thời điểm $t=5$ nhỏ hơn $15{,}3$ kWh.",
+     "answer": false
+    },
+    {
+     "label": "d",
+     "text": "Năng lượng điện lưu trữ được kể từ thời điểm $t=1$ đến thời điểm $t=9$ gấp hai lần năng lượng điện lưu trữ được kể từ thời điểm $t=1$ đến thời điểm $t=5$.",
+     "answer": false
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Hiểu",
+    "Hiểu",
+    "Hiểu"
+   ],
+   "level": "Hiểu"
+  },
+  {
+   "part": "II",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/ung_dung_dao_ham",
+   "stem": "Cho hàm số $f(x)=\\dfrac{1}{3}x^3-2x^2+3x+8$.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Đạo hàm của hàm số đã cho là $f'(x)=x^2-4x+3$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Phương trình $f'(x)=0$ có tập nghiệm là $S=\\{1;3\\}$.",
+     "answer": true
+    },
+    {
+     "label": "c",
+     "text": "Hàm số đã cho nghịch biến trên khoảng $(1;3)$.",
+     "answer": true
+    },
+    {
+     "label": "d",
+     "text": "Giá trị cực tiểu của hàm số đã cho bằng $\\dfrac{28}{3}$.",
+     "answer": false
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Biết",
+    "Hiểu",
+    "Hiểu"
+   ],
+   "level": "Hiểu"
+  },
+  {
+   "part": "II",
+   "cau": 3,
+   "topic": "thong_ke_xac_suat/xac_suat_co_dieu_kien",
+   "stem": "Nhằm đưa ra cảnh báo sớm về tình trạng sức khỏe của cư dân, người ta sử dụng một ứng dụng trí tuệ nhân tạo để sàng lọc nguy cơ mắc bệnh dựa trên hồ sơ y tế được lưu trữ. Khi phát hiện nguy cơ mắc bệnh, ứng dụng này sẽ gửi cảnh báo để giúp người dân đi khám bệnh kịp thời. Người ta dùng ứng dụng này để tầm soát nguy cơ mắc một loại bệnh. Kết quả thu được khi quét thử nghiệm hồ sơ y tế của 10000 người như sau: Có 1000 người nhận được cảnh báo và 9000 người còn lại không nhận được cảnh báo từ ứng dụng. Trong số 1000 người nhận được cảnh báo thì có 600 người có bệnh và 400 người không có bệnh. Trong số 9000 người không nhận được cảnh báo thì có 200 người có bệnh và 8800 người không có bệnh. Chọn ngẫu nhiên một người trong số 10000 người nói trên.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Xác suất để người đó không nhận được cảnh báo từ ứng dụng bằng $0{,}9$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Xác suất để người đó không có bệnh, biết rằng người đó không nhận được cảnh báo từ ứng dụng, lớn hơn $0{,}97$.",
+     "answer": true
+    },
+    {
+     "label": "c",
+     "text": "Xác suất để người đó không có bệnh bằng $0{,}9$.",
+     "answer": false
+    },
+    {
+     "label": "d",
+     "text": "Xác suất để người đó không nhận được cảnh báo từ ứng dụng, biết rằng người đó không có bệnh, lớn hơn $0{,}95$.",
+     "answer": true
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Hiểu",
+    "Hiểu",
+    "Vận dụng"
+   ],
+   "level": "Vận dụng"
+  },
+  {
+   "part": "II",
+   "cau": 4,
+   "topic": "hinh_hoc_do_luong/toa_do_ung_dung",
+   "stem": "Trong không gian xét hệ tọa độ $Oxyz$ có một đơn vị dài trên các trục tương ứng với 10 mét trên thực tế. Một mục tiêu cần được bảo vệ có vị trí ở gốc tọa độ $O$. Người ta thiết lập một vành đai bảo vệ quanh mục tiêu theo một đường tròn tâm $O$ có bán kính bằng 6 đơn vị (tương ứng 60 mét trên thực tế) nằm trong mặt phẳng $(Oxy)$. Một máy bay không người lái (được coi như một hạt) bay theo một đường thẳng từ vị trí $M(2;11;3)$ đến vị trí $N(14;2;3)$. Tại mỗi vị trí của máy bay, khoảng cách từ máy bay đến vành đai bảo vệ là độ dài ngắn nhất của các đoạn thẳng nối từ vị trí đó đến một điểm bất kì trên vành đai.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "$\\overrightarrow{MN}=(12;-9;0)$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Phương trình tham số của đường thẳng $MN$ là $\\begin{cases}x=2+4t\\\\y=11-3t\\\\z=0\\end{cases}$ với $t\\in\\mathbb{R}$.",
+     "answer": false
+    },
+    {
+     "label": "c",
+     "text": "Trong quá trình bay từ $M$ đến $N$, khoảng cách ngắn nhất từ máy bay đến vành đai bảo vệ là 100 mét.",
+     "answer": false
+    },
+    {
+     "label": "d",
+     "text": "Trong quá trình bay từ $M$ đến $N$, khoảng cách từ máy bay đến vành đai bảo vệ là ngắn nhất khi máy bay ở vị trí có tọa độ là $(6;8;3)$.",
+     "answer": true
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Hiểu",
+    "Vận dụng",
+    "Vận dụng"
+   ],
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 1,
+   "topic": "dai_so_giai_tich/the_tich_khoi_tron_xoay",
+   "stem": "Để chế tác một hạt cườm, người ta lấy một khối vật thể có dạng một khối tròn xoay được tạo thành khi quay hình phẳng giới hạn bởi trục $Ox$ và nửa trên của elip $\\dfrac{x^2}{1{,}5^2}+\\dfrac{y^2}{1^2}=1$ (một đơn vị dài trên mỗi trục tọa độ tương ứng với một xăng-ti-mét trong thực tế) quanh trục $Ox$; sau đó khoan dọc theo trục xoay (xem hình dưới). Lỗ khoan có dạng hình trụ với bán kính $0{,}1$ cm và có trục nằm trên trục xoay. Phần còn lại sau khi khoan là hạt cườm, có dạng một khối tròn xoay. Thể tích của hạt cườm đó bằng bao nhiêu xăng-ti-mét khối (không làm tròn kết quả các phép tính trung gian, chỉ làm tròn kết quả cuối cùng đến hàng phần trăm)?",
+   "figure": "Khối elipxoit tròn xoay quanh $Ox$, khoan lỗ hình trụ bán kính 0,1 dọc trục; phần còn lại giới hạn bởi elip và đường $y=0{,}1$.",
+   "rounding": "hàng phần trăm",
+   "answer": "6,19",
+   "answer_value": 6.19,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 2,
+   "topic": "hinh_hoc_do_luong/khoang_cach",
+   "stem": "Cho hình lập phương $ABCD.MNPQ$ có cạnh bằng 14. Gọi $E$ là trung điểm của đoạn thẳng $AB$. Khoảng cách từ điểm $P$ đến mặt phẳng $(MED)$ bằng bao nhiêu (không làm tròn kết quả các phép tính trung gian, chỉ làm tròn kết quả cuối cùng đến hàng phần mười)?",
+   "rounding": "hàng phần mười",
+   "answer": "17,1",
+   "answer_value": 17.1,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 3,
+   "topic": "thong_ke_xac_suat/to_hop",
+   "stem": "Trong một trò chơi bạn Bình cần vượt qua một thử thách. Theo yêu cầu của thử thách, Bình cần điền tất cả 15 số thuộc tập hợp $\\{1;2;3;4;5;6;7;8;9;11;12;13;16;17;21\\}$ vào 15 ô vuông trong hình dưới thỏa mãn đồng thời ba điều kiện sau:\n– Mỗi ô điền đúng một số và mỗi số chỉ được sử dụng một lần;\n– Hiệu hai số ở hai ô bất kì khác nhau trên cùng một hàng không chia hết cho 5;\n– Hiệu hai số ở hai ô bất kì khác nhau trên cùng một cột không chia hết cho 5.\nHai cách điền gọi là giống nhau nếu số điền ở mỗi ô tương ứng trong 15 ô là giống nhau (không tính đến thứ tự điền các số vào 15 ô vuông). Gọi $H$ là số cách điền khác nhau để bạn Bình vượt qua được thử thách. Giá trị của $\\dfrac{H}{10}$ bằng bao nhiêu?",
+   "figure": "Bảng hình bậc thang: Hàng 1 có 5 ô (Cột 1–5), Hàng 2 có 4 ô (Cột 1–4), Hàng 3 có 3 ô, Hàng 4 có 2 ô, Hàng 5 có 1 ô (Cột 1).",
+   "answer": "3456",
+   "answer_value": 3456.0,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 4,
+   "topic": "dai_so_giai_tich/ham_so_thuc_te",
+   "stem": "Một công ty nông sản có công suất chế biến không quá 180 tấn nguyên liệu một tháng. Nếu công ty chế biến $x$ tấn nguyên liệu trong một tháng $(1\\leq x\\leq180)$ thì chi phí sản xuất và doanh thu lần lượt là $C(x)=0{,}002x^3+30x+20$ (triệu đồng) và $R(x)=90x$ (triệu đồng). Lợi nhuận lớn nhất mà công ty đạt được trong một tháng là bao nhiêu triệu đồng?",
+   "answer": "3980",
+   "answer_value": 3980.0,
+   "level": "Hiểu"
+  },
+  {
+   "part": "III",
+   "cau": 5,
+   "topic": "dai_so_giai_tich/he_phuong_trinh_bac_nhat",
+   "stem": "Một nông trại cung cấp rau quả cho siêu thị A với số liệu bán hàng của bốn ngày trong tuần được ghi lại trong bảng sau. Biết rằng đơn giá theo ki-lô-gam của mỗi loại rau quả trong bảng trên là không đổi. Tổng số tiền nông trại thu được ở ngày thứ Bảy từ ba loại rau quả trên khi cung cấp cho siêu thị A là bao nhiêu nghìn đồng?",
+   "table": [
+    [
+     "Ngày",
+     "Rau muống (kg)",
+     "Bí xanh (kg)",
+     "Cà chua (kg)",
+     "Tổng số tiền (nghìn đồng)"
+    ],
+    [
+     "Thứ Tư",
+     "19",
+     "15",
+     "10",
+     "615"
+    ],
+    [
+     "Thứ Năm",
+     "20",
+     "12",
+     "8",
+     "540"
+    ],
+    [
+     "Thứ Sáu",
+     "25",
+     "12",
+     "7",
+     "570"
+    ],
+    [
+     "Thứ Bảy",
+     "50",
+     "30",
+     "20",
+     "?"
+    ]
+   ],
+   "answer": "1350",
+   "answer_value": 1350.0,
+   "level": "Hiểu"
+  },
+  {
+   "part": "III",
+   "cau": 6,
+   "topic": "thong_ke_xac_suat/xac_suat_co_dien",
+   "stem": "Một khung hình trang trí có dạng một đa giác đều 12 cạnh $A_1A_2\\ldots A_{12}$ (xem hình dưới) được gắn cố định trên một trần nhà. Bạn Dũng có 12 bóng đèn gồm bốn bóng màu đỏ và tám bóng màu xanh, có công suất đôi một khác nhau. Bạn Dũng lắp ngẫu nhiên 12 bóng đèn trên vào 12 đỉnh $A_1, A_2, \\ldots, A_{12}$ sao cho mỗi đỉnh có đúng một bóng đèn. Gọi $P$ là xác suất để mỗi hình vuông (có bốn đỉnh là các đỉnh của đa giác đã cho) đều có ít nhất một bóng đèn màu đỏ. Giá trị của $4565P$ bằng bao nhiêu?",
+   "figure": "Đa giác đều 12 đỉnh $A_1\\ldots A_{12}$.",
+   "answer": "2656",
+   "answer_value": 2656.0,
+   "level": "Vận dụng"
+  }
+ ]
+}

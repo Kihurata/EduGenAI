@@ -1,0 +1,418 @@
+{
+ "id": "toan-tn-2025-tham-khao",
+ "exam": "Kỳ thi tốt nghiệp THPT từ năm 2025 – Đề tham khảo",
+ "subject": "toan",
+ "ma_de": "tham-khao",
+ "duration_min": 90,
+ "source_exam": "Đề tham khảo Bộ GD&ĐT công bố 18/10/2024: bản scan có dấu Bộ (trang 1–4 của file PDF do Minh Quan cung cấp ngày 2026-11-01; trang 6–13 của file là bản gõ LaTeX của bên thứ ba, không dùng)",
+ "source_key": "Đáp án đề tham khảo của Bộ GD&ĐT (trang 5 của cùng file PDF, có dấu Bộ)",
+ "images": [
+  "sources/2025-tham-khao/trang1.jpg",
+  "sources/2025-tham-khao/trang2.jpg",
+  "sources/2025-tham-khao/trang3.jpg",
+  "sources/2025-tham-khao/trang4.jpg",
+  "sources/2025-tham-khao/dap-an.jpg"
+ ],
+ "official": true,
+ "confidence": "cao",
+ "topic_labels": "nhóm tự gán (không chính thức)",
+ "level_labels": "ma trận bên thứ ba của mathvn.com (https://www.mathvn.com/2024/10/ma-tran-e-thi-tham-khao-mon-toan-nam.html, ảnh 'Ma trận đề tham khảo môn Toán của Bộ GD-ĐT từ 2025', đọc 2026-11-05), không chính thức, độ tin cậy medium; thứ tự mức độ các ý a–d Phần II do nhóm xếp",
+ "questions": [
+  {
+   "part": "I",
+   "cau": 1,
+   "topic": "dai_so_giai_tich/nguyen_ham_tich_phan",
+   "stem": "Nguyên hàm của hàm số $f(x)=e^x$ là:",
+   "options": {
+    "A": "$\\dfrac{e^{x+1}}{x+1}+C$",
+    "B": "$e^x+C$",
+    "C": "$\\dfrac{e^x}{x}+C$",
+    "D": "$x\\cdot e^{x-1}+C$"
+   },
+   "answer": "B",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/nguyen_ham_tich_phan",
+   "stem": "Cho hàm số $y=f(x)$ liên tục, nhận giá trị dương trên đoạn $[a;b]$. Xét hình phẳng $(H)$ giới hạn bởi đồ thị hàm số $y=f(x)$, trục hoành và hai đường thẳng $x=a, x=b$. Khối tròn xoay được tạo thành khi quay hình phẳng $(H)$ quanh trục $Ox$ có thể tích là:",
+   "options": {
+    "A": "$V=\\pi\\int_a^b|f(x)|\\,dx$",
+    "B": "$V=\\pi^2\\int_a^b f(x)\\,dx$",
+    "C": "$V=\\pi^2\\int_a^b[f(x)]^2\\,dx$",
+    "D": "$V=\\pi\\int_a^b[f(x)]^2\\,dx$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 3,
+   "topic": "thong_ke_xac_suat/thong_ke_phan_tan",
+   "stem": "Hai mẫu số liệu ghép nhóm $M_1, M_2$ có bảng tần số ghép nhóm như sau. Gọi $s_1, s_2$ lần lượt là độ lệch chuẩn của mẫu số liệu ghép nhóm $M_1, M_2$. Phát biểu nào sau đây là đúng?",
+   "table": [
+    [
+     "Nhóm",
+     "[8;10)",
+     "[10;12)",
+     "[12;14)",
+     "[14;16)",
+     "[16;18)"
+    ],
+    [
+     "Tần số ($M_1$)",
+     "3",
+     "4",
+     "8",
+     "6",
+     "4"
+    ],
+    [
+     "Tần số ($M_2$)",
+     "6",
+     "8",
+     "16",
+     "12",
+     "8"
+    ]
+   ],
+   "options": {
+    "A": "$s_1=s_2$",
+    "B": "$s_1=2s_2$",
+    "C": "$2s_1=s_2$",
+    "D": "$4s_1=s_2$"
+   },
+   "answer": "A",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 4,
+   "topic": "hinh_hoc_do_luong/toa_do_khong_gian",
+   "stem": "Trong không gian với hệ trục tọa độ $Oxyz$, phương trình của đường thẳng đi qua điểm $M(1;-3;5)$ và có một vectơ chỉ phương $\\vec{u}(2;-1;1)$ là:",
+   "options": {
+    "A": "$\\dfrac{x-1}{2}=\\dfrac{y-3}{-1}=\\dfrac{z-5}{1}$",
+    "B": "$\\dfrac{x-1}{2}=\\dfrac{y-3}{-1}=\\dfrac{z+5}{1}$",
+    "C": "$\\dfrac{x-1}{2}=\\dfrac{y+3}{-1}=\\dfrac{z-5}{1}$",
+    "D": "$\\dfrac{x+1}{2}=\\dfrac{y+3}{-1}=\\dfrac{z-5}{1}$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 5,
+   "topic": "dai_so_giai_tich/ung_dung_dao_ham",
+   "stem": "Cho hàm số $y=\\dfrac{ax+b}{cx+d}$ $(c\\neq0, ad-bc\\neq0)$ có đồ thị như hình vẽ bên. Tiệm cận ngang của đồ thị hàm số là:",
+   "figure": "Đồ thị hàm phân thức bậc nhất trên bậc nhất; tiệm cận đứng $x=-1$, tiệm cận ngang $y=\\dfrac{1}{2}$; nhánh phải cắt trục tung tại $-\\dfrac{1}{2}$ và trục hoành tại $1$.",
+   "options": {
+    "A": "$x=-1$",
+    "B": "$y=\\dfrac{1}{2}$",
+    "C": "$y=-1$",
+    "D": "$x=\\dfrac{1}{2}$"
+   },
+   "answer": "B",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 6,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Tập nghiệm của bất phương trình $\\log_2(x-1)<3$ là:",
+   "options": {
+    "A": "$(1;9)$",
+    "B": "$(-\\infty;9)$",
+    "C": "$(9;+\\infty)$",
+    "D": "$(1;7)$"
+   },
+   "answer": "A",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 7,
+   "topic": "hinh_hoc_do_luong/toa_do_khong_gian",
+   "stem": "Trong không gian với hệ trục tọa độ $Oxyz$, cho mặt phẳng $(P)$ có phương trình $x-3y-z+8=0$. Vectơ nào sau đây là một vectơ pháp tuyến của mặt phẳng $(P)$?",
+   "options": {
+    "A": "$\\vec{n_1}(1;-3;1)$",
+    "B": "$\\vec{n_2}(1;-3;-1)$",
+    "C": "$\\vec{n_3}(1;-3;8)$",
+    "D": "$\\vec{n_4}(1;3;8)$"
+   },
+   "answer": "B",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 8,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình chữ nhật và $SA\\perp(ABCD)$. Mặt phẳng nào sau đây vuông góc với mặt phẳng $(ABCD)$?",
+   "options": {
+    "A": "$(SAB)$",
+    "B": "$(SBC)$",
+    "C": "$(SCD)$",
+    "D": "$(SBD)$"
+   },
+   "answer": "A",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 9,
+   "topic": "dai_so_giai_tich/mu_logarit",
+   "stem": "Nghiệm của phương trình $2^x=6$ là:",
+   "options": {
+    "A": "$x=\\log_6 2$",
+    "B": "$x=3$",
+    "C": "$x=4$",
+    "D": "$x=\\log_2 6$"
+   },
+   "answer": "D",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 10,
+   "topic": "dai_so_giai_tich/day_so_cap_so",
+   "stem": "Cấp số cộng $(u_n)$ có $u_1=1$ và $u_2=3$. Số hạng $u_5$ của cấp số cộng là:",
+   "options": {
+    "A": "$5$",
+    "B": "$7$",
+    "C": "$9$",
+    "D": "$11$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "I",
+   "cau": 11,
+   "topic": "hinh_hoc_do_luong/vecto_khong_gian",
+   "stem": "Cho hình hộp $ABCD.A'B'C'D'$ (minh họa như hình bên). Phát biểu nào sau đây là đúng?",
+   "figure": "Hình hộp $ABCD.A'B'C'D'$.",
+   "options": {
+    "A": "$\\overrightarrow{AB}+\\overrightarrow{BB'}+\\overrightarrow{B'A'}=\\overrightarrow{AC'}$",
+    "B": "$\\overrightarrow{AB}+\\overrightarrow{BC'}+\\overrightarrow{C'D'}=\\overrightarrow{AC'}$",
+    "C": "$\\overrightarrow{AB}+\\overrightarrow{AC}+\\overrightarrow{AA'}=\\overrightarrow{AC'}$",
+    "D": "$\\overrightarrow{AB}+\\overrightarrow{AA'}+\\overrightarrow{AD}=\\overrightarrow{AC'}$"
+   },
+   "answer": "D",
+   "level": "Hiểu"
+  },
+  {
+   "part": "I",
+   "cau": 12,
+   "topic": "dai_so_giai_tich/ung_dung_dao_ham",
+   "stem": "Cho hàm số có đồ thị như hình vẽ bên. Hàm số đã cho đồng biến trên khoảng nào sau đây?",
+   "figure": "Đồ thị hàm bậc ba (hệ số bậc cao nhất âm): điểm cực tiểu $(-1;-2)$, điểm cực đại $(1;2)$.",
+   "options": {
+    "A": "$(-\\infty;-1)$",
+    "B": "$(-\\infty;1)$",
+    "C": "$(-1;1)$",
+    "D": "$(1;+\\infty)$"
+   },
+   "answer": "C",
+   "level": "Biết"
+  },
+  {
+   "part": "II",
+   "cau": 1,
+   "topic": "dai_so_giai_tich/ung_dung_dao_ham",
+   "stem": "Cho hàm số $f(x)=2\\cos x+x$.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "$f(0)=2$; $f\\left(\\dfrac{\\pi}{2}\\right)=\\dfrac{\\pi}{2}$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Đạo hàm của hàm số đã cho là $f'(x)=2\\sin x+1$.",
+     "answer": false
+    },
+    {
+     "label": "c",
+     "text": "Nghiệm của phương trình $f'(x)=0$ trên đoạn $\\left[0;\\dfrac{\\pi}{2}\\right]$ là $\\dfrac{\\pi}{6}$.",
+     "answer": true
+    },
+    {
+     "label": "d",
+     "text": "Giá trị lớn nhất của $f(x)$ trên đoạn $\\left[0;\\dfrac{\\pi}{2}\\right]$ là $\\sqrt{3}+\\dfrac{\\pi}{6}$.",
+     "answer": true
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Biết",
+    "Hiểu",
+    "Hiểu"
+   ],
+   "level": "Hiểu"
+  },
+  {
+   "part": "II",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/nguyen_ham_tich_phan",
+   "stem": "Một người điều khiển ô tô đang ở đường dẫn muốn nhập làn vào đường cao tốc. Khi ô tô cách điểm nhập làn 200 m, tốc độ của ô tô là 36 km/h. Hai giây sau đó, ô tô bắt đầu tăng tốc với tốc độ $v(t)=at+b$ $(a,b\\in\\mathbb{R}, a>0)$, trong đó $t$ là thời gian tính bằng giây kể từ khi bắt đầu tăng tốc. Biết rằng ô tô nhập làn cao tốc sau 12 giây và duy trì sự tăng tốc trong 24 giây kể từ khi bắt đầu tăng tốc.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Quãng đường ô tô đi được từ khi bắt đầu tăng tốc đến khi nhập làn là 180 m.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Giá trị của $b$ là 10.",
+     "answer": true
+    },
+    {
+     "label": "c",
+     "text": "Quãng đường $S(t)$ (đơn vị: mét) mà ô tô đi được trong thời gian $t$ giây $(0\\leq t\\leq24)$ kể từ khi tăng tốc được tính theo công thức $S(t)=\\int_0^{24}v(t)\\,dt$.",
+     "answer": false
+    },
+    {
+     "label": "d",
+     "text": "Sau 24 giây kể từ khi tăng tốc, tốc độ của ô tô không vượt quá tốc độ tối đa cho phép là 100 km/h.",
+     "answer": false
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Hiểu",
+    "Hiểu",
+    "Hiểu"
+   ],
+   "level": "Hiểu"
+  },
+  {
+   "part": "II",
+   "cau": 3,
+   "topic": "thong_ke_xac_suat/xac_suat_co_dieu_kien",
+   "stem": "Trước khi đưa một loại sản phẩm ra thị trường, người ta đã phỏng vấn ngẫu nhiên 200 khách hàng về sản phẩm đó. Kết quả thống kê như sau: có 105 người trả lời “sẽ mua”; có 95 người trả lời “không mua”. Kinh nghiệm cho thấy tỉ lệ khách hàng thực sự sẽ mua sản phẩm tương ứng với những cách trả lời “sẽ mua” và “không mua” lần lượt là 70% và 30%.\nGọi $A$ là biến cố “Người được phỏng vấn thực sự sẽ mua sản phẩm”.\nGọi $B$ là biến cố “Người được phỏng vấn trả lời sẽ mua sản phẩm”.",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Xác suất $P(B)=\\dfrac{21}{40}$ và $P(\\overline{B})=\\dfrac{19}{40}$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Xác suất có điều kiện $P(A\\mid B)=0{,}3$.",
+     "answer": false
+    },
+    {
+     "label": "c",
+     "text": "Xác suất $P(A)=0{,}51$.",
+     "answer": true
+    },
+    {
+     "label": "d",
+     "text": "Trong số những người được phỏng vấn thực sự sẽ mua sản phẩm có 70% người đã trả lời “sẽ mua” khi được phỏng vấn (kết quả tính theo phần trăm được làm tròn đến hàng đơn vị).",
+     "answer": false
+    }
+   ],
+   "statement_levels": [
+    "Biết",
+    "Hiểu",
+    "Vận dụng",
+    "Vận dụng"
+   ],
+   "level": "Vận dụng"
+  },
+  {
+   "part": "II",
+   "cau": 4,
+   "topic": "hinh_hoc_do_luong/toa_do_khong_gian",
+   "stem": "Các thiên thạch có đường kính lớn hơn 140 m và có thể lại gần Trái Đất ở khoảng cách nhỏ hơn 7 500 000 km được coi là những vật thể có khả năng va chạm gây nguy hiểm cho Trái Đất. Để theo dõi những thiên thạch này, người ta đã thiết lập các trạm quan sát các vật thể bay gần Trái Đất. Giả sử có một hệ thống quan sát có khả năng theo dõi các vật thể ở độ cao không vượt quá 6 600 km so với mực nước biển. Coi Trái Đất là khối cầu có bán kính 6 400 km. Chọn hệ trục tọa độ $Oxyz$ trong không gian có gốc $O$ tại tâm Trái Đất và đơn vị độ dài trên mỗi trục tọa độ là 1 000 km. Một thiên thạch (coi như một hạt) chuyển động với tốc độ không đổi theo một đường thẳng từ điểm $M(6;20;0)$ đến điểm $N(-6;-12;16)$.",
+   "figure": "Hai đường tròn đồng tâm $O$: Trái Đất bán kính 6 400 km và biên phạm vi theo dõi (cao thêm 6 600 km). Đường thẳng $MN$ cắt biên phạm vi theo dõi tại $A$ (phía $M$) và $B$ (phía $N$).",
+   "statements": [
+    {
+     "label": "a",
+     "text": "Đường thẳng $MN$ có phương trình tham số là $\\begin{cases}x=6+3t\\\\y=20+8t\\\\z=-4t\\end{cases}$ $(t\\in\\mathbb{R})$.",
+     "answer": true
+    },
+    {
+     "label": "b",
+     "text": "Vị trí đầu tiên thiên thạch di chuyển vào phạm vi theo dõi của hệ thống quan sát là điểm $A(-3;-4;12)$.",
+     "answer": false
+    },
+    {
+     "label": "c",
+     "text": "Khoảng cách giữa vị trí đầu tiên và vị trí cuối cùng mà thiên thạch di chuyển trong phạm vi theo dõi của hệ thống quan sát là 18 900 km (kết quả làm tròn đến hàng trăm theo đơn vị ki-lô-mét).",
+     "answer": true
+    },
+    {
+     "label": "d",
+     "text": "Nếu thời gian di chuyển của thiên thạch trong phạm vi theo dõi của hệ thống quan sát là 3 phút thì thời gian nó di chuyển từ $M$ đến $N$ là 6 phút.",
+     "answer": true
+    }
+   ],
+   "statement_levels": [
+    "Hiểu",
+    "Hiểu",
+    "Hiểu",
+    "Vận dụng"
+   ],
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 1,
+   "topic": "hinh_hoc_do_luong/quan_he_vuong_goc",
+   "stem": "Cho hình lăng trụ đứng $ABC.A'B'C'$ có $AB=5, BC=6, CA=7$. Khoảng cách giữa hai đường thẳng $AA'$ và $BC$ bằng bao nhiêu? (làm tròn kết quả đến hàng phần mười).",
+   "rounding": "hàng phần mười",
+   "answer": "4,9",
+   "answer_value": 4.9,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 2,
+   "topic": "dai_so_giai_tich/to_hop",
+   "stem": "Một trò chơi điện tử quy định như sau: Có 4 trụ $A, B, C, D$ với số lượng các thử thách trên đường đi giữa các cặp trụ được mô tả trong hình bên. Người chơi xuất phát từ một trụ nào đó, đi qua tất cả các trụ còn lại, mỗi khi đi qua một trụ thì trụ đó sẽ bị phá hủy và không thể quay trở lại trụ đó được nữa, nhưng người chơi vẫn phải trở về trụ ban đầu. Tổng số thử thách của đường đi thoả mãn điều kiện trên nhận giá trị nhỏ nhất là bao nhiêu?",
+   "figure": "Bốn trụ nối với nhau từng đôi; số thử thách trên mỗi đường: $AB=10$, $AC=11$, $AD=9$, $BC=12$, $BD=11$, $CD=14$.",
+   "answer": "43",
+   "answer_value": 43.0,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 3,
+   "topic": "hinh_hoc_do_luong/toa_do_khong_gian",
+   "stem": "Hệ thống định vị toàn cầu GPS là một hệ thống cho phép xác định vị trí của một vật thể trong không gian. Trong cùng một thời điểm, vị trí của một điểm $M$ trong không gian sẽ được xác định bởi bốn vệ tinh cho trước nhờ các bộ thu phát tín hiệu đặt trên các vệ tinh. Giả sử trong không gian với hệ tọa độ $Oxyz$, có bốn vệ tinh lần lượt đặt tại các điểm $A(3;1;0)$, $B(3;6;6)$, $C(4;6;2)$, $D(6;2;14)$; vị trí $M(a;b;c)$ thỏa mãn $MA=3, MB=6, MC=5, MD=13$. Khoảng cách từ điểm $M$ đến điểm $O$ bằng bao nhiêu?",
+   "answer": "3",
+   "answer_value": 3.0,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 4,
+   "topic": "dai_so_giai_tich/nguyen_ham_tich_phan",
+   "stem": "Kiến trúc sư thiết kế một khu sinh hoạt cộng đồng có dạng hình chữ nhật với chiều rộng và chiều dài lần lượt là 60 m và 80 m. Trong đó, phần được tô màu đậm là sân chơi, phần còn lại để trồng hoa. Mỗi phần trồng hoa có đường biên cong là một phần của parabol với đỉnh thuộc một trục đối xứng của hình chữ nhật và khoảng cách từ đỉnh đó đến trung điểm cạnh tương ứng của hình chữ nhật bằng 20 m (xem hình minh họa). Diện tích của phần sân chơi là bao nhiêu mét vuông?",
+   "figure": "Hình chữ nhật 60 m × 80 m; ở mỗi cạnh 60 m có một phần trồng hoa giới hạn bởi cạnh đó và một cung parabol, đỉnh parabol cách trung điểm cạnh 20 m; phần còn lại (tô đậm) là sân chơi.",
+   "answer": "3200",
+   "answer_value": 3200.0,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 5,
+   "topic": "dai_so_giai_tich/ung_dung_dao_ham",
+   "stem": "Một doanh nghiệp dự định sản xuất không quá 500 sản phẩm. Nếu doanh nghiệp sản xuất $x$ sản phẩm $(1\\leq x\\leq500)$ thì doanh thu nhận được khi bán hết số sản phẩm đó là $F(x)=x^3-1999x^2+1001000x+250000$ (đồng), trong khi chi phí sản xuất bình quân cho một sản phẩm là $G(x)=x+1000+\\dfrac{250000}{x}$ (đồng). Doanh nghiệp cần sản xuất bao nhiêu sản phẩm để lợi nhuận thu được là lớn nhất?",
+   "answer": "333",
+   "answer_value": 333.0,
+   "level": "Vận dụng"
+  },
+  {
+   "part": "III",
+   "cau": 6,
+   "topic": "thong_ke_xac_suat/xac_suat_co_dieu_kien",
+   "stem": "Có hai chiếc hộp, hộp I có 6 quả bóng màu đỏ và 4 quả bóng màu vàng, hộp II có 7 quả bóng màu đỏ và 3 quả bóng màu vàng, các quả bóng có cùng kích thước và khối lượng. Lấy ngẫu nhiên một quả bóng từ hộp I bỏ vào hộp II. Sau đó, lấy ra ngẫu nhiên một quả bóng từ hộp II. Tính xác suất để quả bóng được lấy ra từ hộp II là quả bóng được chuyển từ hộp I sang, biết rằng quả bóng đó có màu đỏ (làm tròn kết quả đến hàng phần trăm).",
+   "rounding": "hàng phần trăm",
+   "answer": "0,08",
+   "answer_value": 0.08,
+   "level": "Vận dụng"
+  }
+ ]
+}

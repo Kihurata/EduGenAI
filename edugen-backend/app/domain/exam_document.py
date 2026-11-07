@@ -36,6 +36,7 @@ class ExamInfo:
     subject_name: str
     grade: int
     duration_minutes: int  # GV nhập
+    code: str | None = None  # mã đề; None = bản gốc, không in mã
 
 
 @dataclass(frozen=True)
@@ -191,6 +192,7 @@ def build_blocks(
         Heading(1, info.title),
         _p(f"Môn: {info.subject_name} – Lớp {info.grade}", center=True),
         _p(f"Thời gian làm bài: {info.duration_minutes} phút (không kể thời gian phát đề)", center=True),
+        *([_p(f"Mã đề: {info.code}", bold=True, center=True)] if info.code else []),
         *_questions(parts),
         _p("HẾT", center=True),
     ]

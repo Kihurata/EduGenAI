@@ -1,0 +1,196 @@
+[
+  {
+    "o_ma_tran": {
+      "chu_de": "vecto",
+      "dang": "nhieu_lua_chon",
+      "muc_do": "Biet"
+    },
+    "nguon": [
+      "de_02/PI/C9",
+      "de_01/PI/C7",
+      "de_02/PI/C7"
+    ],
+    "so_lan": 1,
+    "canh_bao": [],
+    "cau_hoi": {
+      "dang": "nhieu_lua_chon",
+      "muc_do": "Biet",
+      "de_bai": "Cho hình bình hành $ABCD$ với $|\\overrightarrow{AB}| = 5$, $|\\overrightarrow{AD}| = 3$ và góc $\\widehat{BAD}=60^{\\circ}$. Tích vô hướng $\\overrightarrow{AB}\\cdot\\overrightarrow{AD}$ bằng:",
+      "phuong_an": [
+        "8",
+        "7,5",
+        "6",
+        "10"
+      ],
+      "y_dung_sai": [],
+      "dap_an": "B",
+      "loi_giai": "Theo công thức $\\overrightarrow{u}\\cdot\\overrightarrow{v}=|\\overrightarrow{u}|\\,|\\overrightarrow{v}|\\cos\\theta$, ta có $\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=5\\times3\\times\\cos60^{\\circ}=15\\times\\frac12=7{,}5$. Vì vậy đáp án đúng là B.",
+      "kiem_tra": {
+        "bieu_thuc": "15*cos(60*pi/180)",
+        "gia_tri": 7.5,
+        "lam_tron": null
+      },
+      "trich_dan": [
+        "de_02/PI/C9",
+        "de_01/PI/C7"
+      ]
+    }
+  },
+  {
+    "o_ma_tran": {
+      "chu_de": "he_thuc_luong",
+      "dang": "nhieu_lua_chon",
+      "muc_do": "Hieu"
+    },
+    "nguon": [
+      "de_02/PI/C5",
+      "de_01/PI/C5",
+      "de_01/PI/C6"
+    ],
+    "so_lan": 2,
+    "canh_bao": [],
+    "cau_hoi": {
+      "dang": "nhieu_lua_chon",
+      "muc_do": "Hieu",
+      "de_bai": "Cho tam giác $ABC$ có độ dài các cạnh $AB=3$, $BC=4$, $AC=5$. Giá trị đo góc $\\widehat{B}$ (độ) là",
+      "phuong_an": [
+        "30°",
+        "45°",
+        "60°",
+        "90°"
+      ],
+      "y_dung_sai": [],
+      "dap_an": "D",
+      "loi_giai": "Áp dụng định lí cosin cho góc $B$ (các cạnh kề $B$ là $AB,BC$, cạnh đối diện $AC$):\n$$\\cos B=\\frac{AB^{2}+BC^{2}-AC^{2}}{2\\cdot AB\\cdot BC}=\\frac{3^{2}+4^{2}-5^{2}}{2\\cdot3\\cdot4}=\\frac{9+16-25}{24}=0.$$ \nSuy ra $B=\\arccos 0=90^{\\circ}$. Do đó đáp án đúng là $90^{\\circ}$ (phương án D).",
+      "kiem_tra": {
+        "bieu_thuc": "acos((3**2+4**2-5**2)/(2*3*4))*180/pi",
+        "gia_tri": 90.0,
+        "lam_tron": null
+      },
+      "trich_dan": [
+        "de_01/PI/C6"
+      ]
+    }
+  },
+  {
+    "o_ma_tran": {
+      "chu_de": "thong_ke",
+      "dang": "nhieu_lua_chon",
+      "muc_do": "Van_dung"
+    },
+    "nguon": [
+      "de_01/PI/C11",
+      "de_02/PI/C12",
+      "de_02/PI/C10"
+    ],
+    "so_lan": 2,
+    "canh_bao": [],
+    "cau_hoi": {
+      "dang": "nhieu_lua_chon",
+      "muc_do": "Van_dung",
+      "de_bai": "Cho dãy số liệu thống kê: $12, 15, 17, 14, 13, 16$. Tính trung bình cộng và khoảng biến thiên (range) của dãy số liệu trên, rồi làm tròn giá trị trung bình cộng đến một chữ số thập phân. Chọn đáp án đúng:",
+      "phuong_an": [
+        "Trung bình cộng = $14{,}5$, khoảng biến thiên = $5$",
+        "Trung bình cộng = $14{,}3$, khoảng biến thiên = $6$",
+        "Trung bình cộng = $14{,}7$, khoảng biến thiên = $4$",
+        "Trung bình cộng = $14{,}5$, khoảng biến thiên = $6$"
+      ],
+      "y_dung_sai": [],
+      "dap_an": "A",
+      "loi_giai": "Tổng các số: $12+15+17+14+13+16 = 87$.\\nTrung bình cộng $\\bar{x}=\\dfrac{87}{6}=14{,}5$. Vì đã có một chữ số thập phân nên không cần làm tròn thêm.\\nGiá trị lớn nhất $=17$, giá trị nhỏ nhất $=12$, nên khoảng biến thiên $R = 17-12 = 5$.\\nDo đó đáp án đúng là \"Trung bình cộng = $14{,}5$, khoảng biến thiên = $5$\" (phương án A).",
+      "kiem_tra": {
+        "bieu_thuc": "87/6",
+        "gia_tri": 14.5,
+        "lam_tron": null
+      },
+      "trich_dan": [
+        "de_01/PI/C11",
+        "de_02/PI/C12",
+        "de_02/PI/C10"
+      ]
+    }
+  },
+  {
+    "o_ma_tran": {
+      "chu_de": "vecto",
+      "dang": "dung_sai",
+      "muc_do": "Hieu"
+    },
+    "nguon": [
+      "de_02/PII/C3",
+      "de_01/PII/C1"
+    ],
+    "so_lan": 1,
+    "canh_bao": [],
+    "cau_hoi": {
+      "dang": "dung_sai",
+      "muc_do": "Hieu",
+      "de_bai": "Cho tam giác $XYZ$ với $X(0,0),\\;Y(4,0),\\;Z(0,3)$. Gọi $M$ là trung điểm của $YZ$, $N$ là trung điểm của $XZ$, và $G$ là trọng tâm tam giác $XYZ$. Xét các mệnh đề sau:",
+      "phuong_an": [],
+      "y_dung_sai": [
+        {
+          "noi_dung": "$\\overrightarrow{XY} = \\overrightarrow{ZG}$.",
+          "dung": false,
+          "giai_thich": "$\\overrightarrow{XY}=(4,0)$ còn $\\overrightarrow{ZG}=G-Z=(\\frac{4}{3},1)-(0,3)=(\\frac{4}{3},-2)$, không bằng nhau nên sai.",
+          "kiem_tra": null
+        },
+        {
+          "noi_dung": "$\\overrightarrow{XM} + \\overrightarrow{MN} = \\overrightarrow{XN}$.",
+          "dung": true,
+          "giai_thich": "$M\\;(2,1.5),\\;N\\;(0,1.5)\\Rightarrow \\overrightarrow{XM}=(2,1.5),\\;\\overrightarrow{MN}=(-2,0),\\;\\overrightarrow{XM}+\\overrightarrow{MN}=(0,1.5)=\\overrightarrow{XN}$, đúng.",
+          "kiem_tra": null
+        },
+        {
+          "noi_dung": "$\\overrightarrow{GZ} = \\frac{2}{3}\\overrightarrow{XZ}$.",
+          "dung": false,
+          "giai_thich": "$\\overrightarrow{GZ}=Z-G=( -\\frac{4}{3},2)$, còn $\\frac{2}{3}\\overrightarrow{XZ}=\\frac{2}{3}(0,3)=(0,2)$, không bằng nhau nên sai.",
+          "kiem_tra": null
+        },
+        {
+          "noi_dung": "$\\overrightarrow{XY}\\cdot\\overrightarrow{XZ} = 12$.",
+          "dung": false,
+          "giai_thich": "$\\overrightarrow{XY}=(4,0),\\;\\overrightarrow{XZ}=(0,3)\\Rightarrow$ tích vô hướng $=4\\cdot0+0\\cdot3=0$, không bằng $12$ nên sai.",
+          "kiem_tra": null
+        }
+      ],
+      "dap_an": "SĐSS",
+      "loi_giai": "a) Sai vì vectơ không bằng nhau; b) Đúng theo tính chất cộng vectơ; c) Sai vì thành phần x khác; d) Sai vì tích vô hướng bằng 0.",
+      "kiem_tra": null,
+      "trich_dan": [
+        "de_02/PII/C3",
+        "de_01/PII/C1"
+      ]
+    }
+  },
+  {
+    "o_ma_tran": {
+      "chu_de": "he_thuc_luong",
+      "dang": "tra_loi_ngan",
+      "muc_do": "Van_dung"
+    },
+    "nguon": [
+      "de_01/PIII/C6",
+      "de_02/PIII/C4",
+      "de_02/PIII/C3"
+    ],
+    "so_lan": 1,
+    "canh_bao": [],
+    "cau_hoi": {
+      "dang": "tra_loi_ngan",
+      "muc_do": "Van_dung",
+      "de_bai": "Cho tam giác $ABC$ có $AB=7$, $BC=10$ và góc $\\widehat{ABC}=45^{\\circ}$. Tính độ dài $AC$ (làm tròn đến 2 chữ số thập phân).",
+      "phuong_an": [],
+      "y_dung_sai": [],
+      "dap_an": "7,07",
+      "loi_giai": "Áp dụng định lý cosin: $AC^{2}=AB^{2}+BC^{2}-2\\cdot AB\\cdot BC\\cdot\\cos\\widehat{ABC}$.\\n\\nThay các giá trị: $AC^{2}=7^{2}+10^{2}-2\\cdot7\\cdot10\\cdot\\cos45^{\\circ}=49+100-140\\cdot\\frac{\\sqrt{2}}{2}=149-70\\sqrt{2}$.\\n\\nDo đó $AC=\\sqrt{149-70\\sqrt{2}}\\approx7.0710678$. Làm tròn đến 2 chữ số thập phân được $AC\\approx7,07$.",
+      "kiem_tra": {
+        "expr": "sqrt(149 - 70*sqrt(2))",
+        "verified": true
+      },
+      "trich_dan": [
+        "de_01/PIII/C6",
+        "de_02/PIII/C3"
+      ]
+    }
+  }
+]

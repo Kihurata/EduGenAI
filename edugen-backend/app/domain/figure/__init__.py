@@ -17,6 +17,7 @@ from typing import Any
 
 import numpy as np
 
+from app.domain.figure.labels import FONT_SIZE, Label, label_box, place_labels
 from app.domain.figure.solids import BUILDERS, SOLIDS, Solid
 from app.domain.figure.spec import FEET, MAX_RATIO, FigureError, Spec, parse_spec
 from app.domain.figure.view import VIEW, Edge, classify_edges, project
@@ -26,18 +27,7 @@ log = logging.getLogger(__name__)
 
 SIZE = 220  # cạnh dài của hình, px
 MARGIN = 2
-FONT_SIZE = 14
-CHAR_WIDTH = 8
-LABEL_OFFSET = 11  # tâm nhãn cách đỉnh ít nhất ngần này px
-LABEL_GAP = 1
 STROKE, DASH = 1.5, "5 4"
-
-
-@dataclass(frozen=True)
-class Label:
-    name: str
-    x: float  # tâm hộp nhãn
-    y: float
 
 
 @dataclass(frozen=True)
@@ -49,46 +39,7 @@ class Layout:
     labels: tuple[Label, ...]
 
 
-def label_box(label: Label) -> tuple[float, float, float, float]:
-    half_w, half_h = (CHAR_WIDTH * len(label.name) + 2) / 2, FONT_SIZE / 2
-    return label.x - half_w, label.y - half_h, label.x + half_w, label.y + half_h
-
-
 # ----- bố cục -----
-
-
-def _overlaps(box, others) -> bool:
-    x0, y0, x1, y1 = box
-    return any(x0 < ox1 + LABEL_GAP and ox0 - LABEL_GAP < x1 and y0 < oy1 + LABEL_GAP and oy0 - LABEL_GAP < y1
-               for ox0, oy0, ox1, oy1 in others)  # fmt: skip
-
-
-def _covers(box, point) -> bool:
-    return box[0] - LABEL_GAP < point[0] < box[2] + LABEL_GAP and box[1] - LABEL_GAP < point[1] < box[3] + LABEL_GAP
-
-
-def _spot(name: str, vertex: np.ndarray, away: np.ndarray, taken: list) -> Label:
-    """Chỗ đầu tiên không chồng nhãn nào: thử hướng "ra ngoài" rồi xoay dần, ở từng khoảng cách xa dần."""
-    for step in range(40):
-        for turn in (0, 30, -30, 60, -60, 90, -90, 120, -120, 150, -150, 180):
-            t = math.radians(turn)
-            direction = np.array([away[0] * math.cos(t) - away[1] * math.sin(t), away[0] * math.sin(t) + away[1] * math.cos(t)])
-            x, y = vertex + direction * (LABEL_OFFSET + 5 * step)
-            label = Label(name, float(x), float(y))
-            if not _overlaps(label_box(label), taken) and not _covers(label_box(label), vertex):
-                return label
-    raise FigureError(f"Không đặt được nhãn {name}")
-
-
-def _place_labels(points: dict[str, np.ndarray]) -> list[Label]:
-    """Nhãn nằm ngoài đỉnh, theo hướng từ tâm hình ra; chồng nhau thì xoay hướng rồi đẩy xa dần."""
-    center = np.mean(list(points.values()), axis=0)
-    placed: list[Label] = []
-    for name, vertex in points.items():
-        away = vertex - center
-        away = away / np.linalg.norm(away) if np.linalg.norm(away) > 1e-9 else np.array([0.0, -1.0])
-        placed.append(_spot(name, vertex, away, [label_box(p) for p in placed]))
-    return placed
 
 
 def layout(spec: Any) -> Layout:
@@ -99,7 +50,7 @@ def layout(spec: Any) -> Layout:
     xs, ys = zip(*flat.values())
     scale = SIZE / max(max(xs) - min(xs), max(ys) - min(ys))
     px = {k: np.array([(x - min(xs)) * scale, (max(ys) - y) * scale]) for k, (x, y) in flat.items()}
-    labels = _place_labels(px)
+    labels = place_labels(px)
     boxes = [label_box(label) for label in labels]
     left = min(min(p[0] for p in px.values()), *(bx[0] for bx in boxes)) - MARGIN
     top = min(min(p[1] for p in px.values()), *(bx[1] for bx in boxes)) - MARGIN

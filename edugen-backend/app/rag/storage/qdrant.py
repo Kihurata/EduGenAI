@@ -1,5 +1,6 @@
 """Tóm tắt: tạo collection `chunks` trong Qdrant (vector dense 1024 cosine + sparse của bge-m3, chỉ mục payload) và ghi đoạn vào đó theo D-004; ghi lại cùng đoạn thì cập nhật chứ không nhân đôi. `default_client` là Qdrant client dùng chung cho cả tiến trình: Qdrant server/Cloud khi có QDRANT_URL (D-012), không thì chế độ nhúng ở qdrant_data/ (thư mục bị khoá khi mở)."""
 
+import logging
 import os
 import uuid
 import warnings
@@ -80,6 +81,15 @@ def check_index(client: QdrantClient, embedder: Embedder):
         built, used = ("gemini", "bge-m3") if built_idf else ("bge-m3", "gemini")
         raise IndexMismatch(f"index in {COLLECTION!r} was built for {built}, EMBEDDER is {used}: re-ingest "
                             f"(python -m app.rag.ingest --sources) or set EMBEDDER={built}")
+
+
+def warn_if_empty(client: QdrantClient):
+    """Startup only (not ingest, where an empty index is normal): qdrant_data/ is gitignored and per worktree, so a fresh
+    checkout starts fine with no collection and fails at the first generation."""
+    if not client.collection_exists(COLLECTION) or not client.count(COLLECTION).count:
+        logging.getLogger(__name__).warning(
+            "index %r is missing or empty: generation will fail; ingest (python -m app.rag.ingest --sources ...) or set QDRANT_URL",
+            COLLECTION)
 
 
 def index_chunks(client: QdrantClient, chunks: list[Chunk], embedder: Embedder):

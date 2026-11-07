@@ -15,7 +15,7 @@ SYSTEM_PROMPT = """Bạn là giáo viên ra đề thi tốt nghiệp THPT môn T
 - Chỉ dùng kiến thức trong các đoạn tài liệu được cung cấp. Mỗi câu phải ghi source_chunk_ids là ID các đoạn tài liệu đã dùng.
 - Trắc nghiệm: 4 phương án A, B, C, D, đúng một phương án.
 - Đúng/Sai: đúng 4 ý a, b, c, d, mỗi ý có đáp án true (Đúng) hoặc false (Sai) và explanation giải thích ngắn vì sao ý đó đúng hoặc sai.
-- Trả lời ngắn: đáp án là số, tối đa 4 kí tự kể cả dấu "-" và dấu phẩy thập phân (ví dụ 12, -1,5, 0,25); làm tròn nếu cần và ghi rõ cách làm tròn trong đề.
+- Trả lời ngắn: đáp án là số, tối đa 4 kí tự kể cả dấu "-" và dấu phẩy thập phân (ví dụ 12, -1,5, 0,25); làm tròn nếu cần và ghi rõ cách làm tròn trong đề. Không viết phân số, căn hay pi trong đáp án (22/3 làm tròn thành 7,33). Đáp số dài hơn 4 kí tự thì sửa đề cho vừa: làm tròn ít chữ số hơn (26,81 → hàng phần mười 26,8), đổi đơn vị (17450 nghìn đồng → hỏi theo triệu đồng, 17,5) hoặc chọn số liệu khác.
 - Câu cần hình vẽ: mô tả hình trong figure đủ chi tiết để vẽ lại (các điểm, hình, nhãn, độ dài đã cho); câu cần bảng số liệu: ghi bảng trong table, mỗi hàng là một danh sách ô và mọi hàng phải có cùng số ô (ô trống ghi ""). Bảng biến thiên: hàng x, rồi hàng y', rồi hàng y, mỗi cột là một mốc hoặc một khoảng của x; ví dụ [["x","-∞","0","2","+∞"],["y'","","+","0","-"],["y","","↗","3","↘"]]. Câu không cần thì để figure, table là null.
 - Hình hộp chữ nhật, lăng trụ đứng đáy tam giác vuông, hình chóp đáy chữ nhật: ghi tham số vào figure_spec để máy vẽ hình, và vẫn ghi mô tả bằng chữ trong figure (dùng khi máy không vẽ được). figure_spec gồm solid (box, prism hoặc pyramid) và a, b, h là các độ dài dương: box là hình hộp chữ nhật AB = a, AD = b, AA' = h; prism là lăng trụ đứng có đáy ABC vuông tại A, AB = a, AC = b, chiều cao h; pyramid là chóp đáy chữ nhật AB = a, AD = b, chiều cao h. foot chỉ dùng cho pyramid: "A" nếu SA vuông góc với đáy, "center" nếu chân đường cao là tâm đáy; hình khác thì foot là null. Tên đỉnh cố định: hình hộp ABCD.A'B'C'D', lăng trụ ABC.A'B'C', hình chóp S.ABCD; đề bài phải dùng đúng các tên này. Hình khác hoặc câu không cần hình thì figure_spec là null.
 - Trả lời ngắn: ghi vào sympy.expr một biểu thức SymPy có giá trị đúng bằng đáp số trước khi làm tròn, viết theo cú pháp Python (lũy thừa dùng **, không dùng ^); được dùng Rational, sqrt, pi, Integral, diff, binomial, factorial; không chứa biến tự do (ví dụ Rational(3, 2), sqrt(2)*pi, Integral(x**2, (x, 0, 1))). Biểu thức phải tính ra đáp số từ dữ kiện của đề (ví dụ diff, solve, Integral, phép tính trên số liệu đã cho), không ghi thẳng đáp số.
@@ -88,7 +88,9 @@ _ITEMS = {
         })},
     }),
     # The 4-box limit can't be expressed (no maxLength/pattern); validate() checks it.
-    "short_answer": _object(_COMMON | {"answer": _STR, "sympy": _object({"expr": _STR})}),
+    # sympy before answer: the model writes the expression first, so the answer follows from it instead of from
+    # mental arithmetic (the main cause of "SymPy gives ..." rejections).
+    "short_answer": _object(_COMMON | {"sympy": _object({"expr": _STR}), "answer": _STR}),
 }
 SCHEMAS = {t: _object({"questions": {"type": "array", "items": item}}) for t, item in _ITEMS.items()}
 
@@ -99,10 +101,10 @@ _TYPE_NAMES = {"multiple_choice": "trắc nghiệm nhiều lựa chọn (Phần 
 
 
 def generate(cell: Cell, theory_chunks: list[Chunk], exam_items: list[Chunk], llm: LLM, system: str = SYSTEM_PROMPT,
-             format_examples=(), previous_stems=()) -> list[Question]:
+             format_examples=(), previous_stems=(), feedback=()) -> list[Question]:
     """Ask `llm` for cell["count"] questions; returns question dicts tagged with the cell's type, level and topic."""
     log_suspicious([*theory_chunks, *shown_exam_items(cell, exam_items)])
-    prompt = mask_pii(build_prompt(cell, theory_chunks, exam_items, format_examples, previous_stems))
+    prompt = mask_pii(build_prompt(cell, theory_chunks, exam_items, format_examples, previous_stems, feedback))
     questions = [{k: v for k, v in q.items() if not (k in ("figure", "table", "figure_spec") and v is None)}
                  | {"type": cell["type"], "level": cell["level"], "topic": cell["topic"]}
                  for q in map(normalize_strings, _ask(llm, system, prompt, SCHEMAS[cell["type"]]))]  # BUG-004
@@ -171,7 +173,7 @@ def _source(chunk_id, body):
     return f'<source id="{chunk_id}">\n{body}\n</source>'
 
 
-def build_prompt(cell, theory_chunks, exam_items, format_examples=(), previous_stems=()):
+def build_prompt(cell, theory_chunks, exam_items, format_examples=(), previous_stems=(), feedback=()):
     parts = []
     sgk = [c for c in theory_chunks if c.kind != "exercise"]
     exercises = [c for c in theory_chunks if c.kind == "exercise"]
@@ -190,6 +192,9 @@ def build_prompt(cell, theory_chunks, exam_items, format_examples=(), previous_s
     if previous_stems:  # T-036 fix 3: cells were generated blind to each other, so ideas repeated within an exam
         parts.append("# Câu đã có trong đề (không lặp lại ý, tình huống hay số liệu)\n"
                      + "\n".join(f"- {s}" for s in previous_stems))
+    if feedback:  # the pipeline's one re-ask: why the earlier questions of this cell were rejected
+        parts.append("# Lần trước có câu bị loại vì các lỗi sau (viết câu mới, không mắc lại)\n"
+                     + "\n".join(f"- {e}" for e in feedback))
     parts.append(
         f"# Yêu cầu\nViết {cell.get('count', 1)} câu {_TYPE_NAMES[cell['type']]}, "
         f"mức độ {cell['level']}, chủ đề {_topic_name(cell['topic'])}."

@@ -9,6 +9,10 @@ from typing import Protocol
 MODEL = "claude-opus-5-5"
 # Free-tier model the T-011 trial ran on; set GEMINI_MODEL for the T-036 runs (Gemini 3.1 Pro).
 GEMINI_MODEL = "gemini-3.5-flash-lite"
+# Flash-lite does not think unless asked (thinking_tokens 0): short answers then came from mental arithmetic and
+# SymPy disagreed with ~1 in 3 of them (TC-016 50%). GEMINI_THINKING overrides; "default" sends no thinking config.
+GEMINI_THINKING = "medium"  # "low" still got every real-world-function short answer wrong in the eval cells
+GEMINI_THINKING_LEVELS = ("minimal", "low", "medium", "high", "default")
 
 
 class LLMError(RuntimeError):
@@ -85,23 +89,25 @@ class ClaudeCodeLLM:
 class GeminiLLM:
     """Gemini API with a JSON-schema response; reads GEMINI_API_KEY (or GOOGLE_API_KEY) from the environment."""
 
-    def __init__(self, client=None, model=None):
+    def __init__(self, client=None, model=None, thinking=None):
         if client is None:
             from google import genai
             client = genai.Client()
         self.client = client
         self.model = model or os.environ.get("GEMINI_MODEL", GEMINI_MODEL)
+        self.thinking = (thinking or os.environ.get("GEMINI_THINKING") or GEMINI_THINKING).lower()
+        if self.thinking not in GEMINI_THINKING_LEVELS:
+            raise LLMError(f"GEMINI_THINKING={self.thinking!r}; choose one of {', '.join(GEMINI_THINKING_LEVELS)}")
         self.usage = []
 
     def complete(self, system, prompt, schema):
         from google.genai import errors
+        config = {"system_instruction": system, "response_mime_type": "application/json",
+                  "response_json_schema": schema, "max_output_tokens": 32768}
+        if self.thinking != "default":  # "default": send nothing, for models without thinking levels
+            config["thinking_config"] = {"thinking_level": self.thinking}
         try:
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=prompt,
-                config={"system_instruction": system, "response_mime_type": "application/json",
-                        "response_json_schema": schema, "max_output_tokens": 32768},
-            )
+            response = self.client.models.generate_content(model=self.model, contents=prompt, config=config)
         except errors.APIError as e:
             raise LLMError(f"Gemini API error: {e}") from e
         u = response.usage_metadata

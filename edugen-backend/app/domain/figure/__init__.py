@@ -19,12 +19,10 @@ import numpy as np
 
 from app.domain.figure.solids import BUILDERS, SOLIDS, Solid
 from app.domain.figure.spec import FEET, MAX_RATIO, FigureError, Spec, parse_spec
+from app.domain.figure.view import VIEW, Edge, classify_edges, project
 from app.domain.question import Question
 
 log = logging.getLogger(__name__)
-
-DEPTH_SCALE, DEPTH_ANGLE = 0.5, math.radians(45)
-VIEW = np.array([DEPTH_SCALE * math.cos(DEPTH_ANGLE), DEPTH_SCALE * math.sin(DEPTH_ANGLE), -1.0])  # từ vật về phía mắt
 
 SIZE = 220  # cạnh dài của hình, px
 MARGIN = 2
@@ -33,13 +31,6 @@ CHAR_WIDTH = 8
 LABEL_OFFSET = 11  # tâm nhãn cách đỉnh ít nhất ngần này px
 LABEL_GAP = 1
 STROKE, DASH = 1.5, "5 4"
-
-
-@dataclass(frozen=True)
-class Edge:
-    a: str
-    b: str
-    hidden: bool
 
 
 @dataclass(frozen=True)
@@ -58,34 +49,9 @@ class Layout:
     labels: tuple[Label, ...]
 
 
-def project(point) -> tuple[float, float]:
-    x, y, z = point
-    return x + DEPTH_SCALE * z * math.cos(DEPTH_ANGLE), y + DEPTH_SCALE * z * math.sin(DEPTH_ANGLE)
-
-
 def label_box(label: Label) -> tuple[float, float, float, float]:
     half_w, half_h = (CHAR_WIDTH * len(label.name) + 2) / 2, FONT_SIZE / 2
     return label.x - half_w, label.y - half_h, label.x + half_w, label.y + half_h
-
-
-# ----- cạnh thấy / khuất -----
-
-
-def _edges(points: dict[str, np.ndarray], faces) -> tuple[Edge, ...]:
-    centroid = np.mean(list(points.values()), axis=0)
-    visible = []
-    for face in faces:
-        p = [points[k] for k in face]
-        normal = np.cross(p[1] - p[0], p[2] - p[1])
-        if normal @ (np.mean(p, axis=0) - centroid) < 0:
-            normal = -normal  # hướng ra ngoài khối
-        visible.append(normal @ VIEW > 1e-9)
-    sides: dict[frozenset[str], list[bool]] = {}
-    for face, seen in zip(faces, visible):
-        for u, v in zip(face, face[1:] + face[:1]):
-            sides.setdefault(frozenset((u, v)), []).append(seen)
-    order = {frozenset((u, v)): (u, v) for face in faces for u, v in zip(face, face[1:] + face[:1])}
-    return tuple(Edge(*order[key], hidden=not any(seen)) for key, seen in sides.items())
 
 
 # ----- bố cục -----
@@ -128,7 +94,7 @@ def _place_labels(points: dict[str, np.ndarray]) -> list[Label]:
 def layout(spec: Any) -> Layout:
     parsed = parse_spec(spec)
     solid = BUILDERS[parsed.solid].build(parsed.a, parsed.b, parsed.h, parsed.foot)
-    points, edges = solid.points, _edges(solid.points, solid.faces)
+    points, edges = solid.points, classify_edges(solid)
     flat = {k: np.array(project(p)) for k, p in points.items()}
     xs, ys = zip(*flat.values())
     scale = SIZE / max(max(xs) - min(xs), max(ys) - min(ys))

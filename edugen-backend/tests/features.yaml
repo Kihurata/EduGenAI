@@ -114,6 +114,7 @@ features:
       - tests/rag/feature/eval/test_retrieval.py
       - tests/rag/feature/eval/test_chapter_table.py   # T-068
       - tests/rag/feature/eval/test_retrieval_chapter.py   # T-068 TC-033
+      - tests/rag/feature/eval/test_retrieval_10_11.py   # TC-030
       - tests/rag/feature/eval/test_chunking_comparison.py   # T-007 2x2
       - tests/rag/feature/eval/test_generation.py::test_TC_004_generated_questions_pass_validators
 

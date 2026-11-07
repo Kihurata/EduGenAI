@@ -1,0 +1,52 @@
+# Tóm tắt: chạy cả EduGen bằng một lệnh `docker compose up --build` (T-043, bản cơ bản): Postgres 16, Backend
+# (tự nâng schema rồi mở http://localhost:8000) và frontend (http://localhost:5173). Key Gemini và Qdrant đọc từ
+# edugen-backend/.env nếu có; không có QDRANT_URL thì dùng index nhúng trong edugen-backend/qdrant_data/.
+# Dữ liệu Postgres và file tải lên nằm trong volume Docker, còn nguyên khi chạy lại.
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: edugen
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-edugen-local}  # local only; set POSTGRES_PASSWORD for anything shared
+      POSTGRES_DB: edugen
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U edugen -d edugen"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: ./edugen-backend
+    user: "0:0"  # dev only: volumes and the qdrant_data bind mount made by earlier runs are owned by root
+    env_file:
+      - path: ./edugen-backend/.env  # GEMINI_API_KEY, QDRANT_URL, ... (gitignored, shared privately)
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://edugen:${POSTGRES_PASSWORD:-edugen-local}@db:5432/edugen
+      STORAGE_DIR: /app/storage
+    volumes:
+      - storage:/app/storage
+      - ./edugen-backend/qdrant_data:/app/qdrant_data  # embedded index, used only when QDRANT_URL is empty
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000  # the browser calls the API on the host port
+    ports:
+      - "5173:80"  # same origin as `npm run dev`, already in the Backend's CORS_ORIGINS
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  storage:

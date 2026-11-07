@@ -284,6 +284,30 @@ def test_gemini_model_comes_from_env(monkeypatch):
     assert client.calls[0]["model"] == "gemini-from-env"
 
 
+def test_gemini_thinks_at_medium_level_by_default():
+    """TC-016: without thinking, flash-lite's short answers came from mental arithmetic and SymPy disagreed."""
+    client = FakeGeminiClient(_gemini_response())
+    GeminiLLM(client=client, model="gemini-test").complete("SYS", "PROMPT", schema=SCHEMA)
+    assert client.calls[0]["config"]["thinking_config"] == {"thinking_level": "medium"}
+
+
+def test_gemini_thinking_level_comes_from_env_and_default_sends_none(monkeypatch):
+    monkeypatch.setenv("GEMINI_THINKING", "HIGH")
+    client = FakeGeminiClient(_gemini_response())
+    GeminiLLM(client=client, model="gemini-test").complete("SYS", "PROMPT", schema=SCHEMA)
+    assert client.calls[0]["config"]["thinking_config"] == {"thinking_level": "high"}
+
+    monkeypatch.setenv("GEMINI_THINKING", "default")
+    GeminiLLM(client=client, model="gemini-test").complete("SYS", "PROMPT", schema=SCHEMA)
+    assert "thinking_config" not in client.calls[1]["config"]
+
+
+def test_unknown_gemini_thinking_level_fails_at_once(monkeypatch):
+    monkeypatch.setenv("GEMINI_THINKING", "max")
+    with pytest.raises(LLMError, match="GEMINI_THINKING"):
+        GeminiLLM(client=FakeGeminiClient(_gemini_response()), model="gemini-test")
+
+
 def test_gemini_usage_is_recorded():
     llm = GeminiLLM(client=FakeGeminiClient(_gemini_response()), model="gemini-test")
     llm.complete("SYS", "PROMPT", schema=SCHEMA)

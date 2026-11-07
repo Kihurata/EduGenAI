@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 
 import { api } from "@/api";
-import { keyed, MathText, QuestionStem, useAction } from "@/common";
+import { keyed, MathText, QuestionFigure, QuestionStem, useAction } from "@/common";
 import { Chip } from "@/components/Chip";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
@@ -105,6 +105,7 @@ export default function QuestionPanel({ examId, question, number, locked, showKe
       <div className="leading-relaxed">
         <strong>Câu {number}.</strong> <QuestionStem stem={q.stem} table={q.table} />
       </div>
+      <QuestionFigure svg={q.figure_svg} caption={q.figure} />
 
       {q.type === "multiple_choice" && q.options && (
         <ol className={cn("mt-2 grid gap-x-4 gap-y-1", cols === 4 ? "sm:grid-cols-4" : cols === 2 ? "sm:grid-cols-2" : "")}>
@@ -239,6 +240,7 @@ function QuestionEditor({ initial, number, busy, error, onCancel, onSave }: Read
           <QuestionStem stem={q.stem} table={q.table} />
         </div>
       )}
+      <QuestionFigure svg={q.figure_svg} caption={q.figure} />
 
       {q.type === "multiple_choice" && q.options && (
         <div className="space-y-2">

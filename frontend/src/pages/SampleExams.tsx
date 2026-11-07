@@ -76,6 +76,7 @@ export default function SampleExams() {
           </label>
         </div>
         <input
+          className="max-w-full"
           type="file"
           accept="application/pdf,application/json,.json,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}

@@ -133,3 +133,13 @@ def test_the_retry_uses_the_stronger_model_when_one_is_set(tmp_path):
     source.write_bytes(b"png")
     assert conv.convert(source) == GOOD
     assert [c["model"] for c in models.calls] == ["lite", "strong"]
+
+
+def test_missing_api_key_is_a_conversion_error_not_a_crash(tmp_path, monkeypatch):
+    for key in ("GEMINI_API_KEY", "GOOGLE_API_KEY", "GOOGLE_GENAI_USE_VERTEXAI"):
+        monkeypatch.delenv(key, raising=False)
+    conv = GeminiMatrixConverter("gemini-test")  # built in the upload request's dependency: must not raise
+    source = tmp_path / "ma_tran.png"
+    source.write_bytes(b"PNG anh")
+    with pytest.raises(ConversionError, match="GEMINI_API_KEY"):
+        conv.convert(source)

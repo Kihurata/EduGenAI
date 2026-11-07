@@ -1,0 +1,51 @@
+# Tóm tắt: Ma trận đề Toán tốt nghiệp theo Phương án 1 của VIASM (đề xuất, KHÔNG phải ma trận chính thức của Bộ). Dùng làm dữ liệu test kiểm tra tổng số lệnh hỏi, tổng điểm theo mạch (TC-008).
+# source: VIASM, Cung Thế Anh, "Vài suy nghĩ về ma trận và cấu trúc của đề thi tốt nghiệp THPT môn Toán", Phương án 1, as summarised in [[Môn Toán]] §2
+#   (original PDF not read: https://viasm.edu.vn/Cms_Data/Contents/viasm/Media/2024/anhdang/VIASM-VAI-SUY-NGHI-VE-MA-TRAN-VA-CAU-TRUC-CUA-DE-THI-THPT-MON-TOAN-.pdf)
+# official: false (third-party proposal) · confidence: medium
+# type: multiple_choice (Part I) | true_false (Part II) | short_answer (Part III), next to `part`, as in the RAG contract.
+# count unit: question items (lệnh hỏi). Part I and III: 1 per question. Part II: 1 per a-d statement, 4 per question;
+#   `question` groups the 4 statements of one Part II question (numbered in the source's table order, not exam order).
+# Levels: the source gives levels only per part (for its illustrative exam), not per cell, so cells have no `level`;
+#   the per-part totals are in constraints.level_totals. VIASM "Vận dụng cao" is counted as vandung (QĐ 764 has 3 levels).
+# Cells with `strand` and no `topic`: the source names only the strand (mạch) for those questions.
+matrix:
+  id: viasm-pa1
+  subject: toan
+  grade: 12
+  exam_kind: tot_nghiep
+  source: "[[Môn Toán]] §2 Phương án 1 (VIASM proposal)"
+  official: false
+  confidence: medium
+  count_unit: item
+  cells:
+    # Part I: "4 Ứng dụng đạo hàm + 2 Nguyên hàm, tích phân" · "1 Vectơ + 3 Phương pháp tọa độ" · "1 Thống kê + 1 Xác suất"
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: I, type: multiple_choice, count: 4}
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: I, type: multiple_choice, count: 2}
+    - {strand: hinh_hoc_do_luong, topic: vecto_khong_gian, part: I, type: multiple_choice, count: 1}
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: I, type: multiple_choice, count: 3}
+    - {strand: thong_ke_xac_suat, topic: thong_ke_phan_tan, part: I, type: multiple_choice, count: 1}       # "Thống kê" read as grade 12 Chương III
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: I, type: multiple_choice, count: 1}   # "Xác suất" read as grade 12 Chương VI
+    # Part II: ĐS-GT "1 Đạo hàm + 1 Tích phân" · HH-ĐL "1 tọa độ (đường thẳng, mặt phẳng, mặt cầu) + 1 mô hình hình học gắn sẵn hệ trục"
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: II, type: true_false, question: 1, count: 4}
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: II, type: true_false, question: 2, count: 4}
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: II, type: true_false, question: 3, count: 4}
+    - {strand: hinh_hoc_do_luong, part: II, type: true_false, question: 4, count: 4}                  # model with axes: Chương II or V, source doesn't say
+    # Part III: ĐS-GT "1 Đạo hàm + 1 Nguyên hàm/tích phân" · HH-ĐL 2 (no topic given) · TK-XS "1 Thống kê + 1 Xác suất có điều kiện"
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: III, type: short_answer, count: 1}
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: III, type: short_answer, count: 1}
+    - {strand: hinh_hoc_do_luong, part: III, type: short_answer, count: 2}
+    - {strand: thong_ke_xac_suat, topic: thong_ke_phan_tan, part: III, type: short_answer, count: 1}
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: III, type: short_answer, count: 1}
+  constraints:
+    total_items: {I: 12, II: 16, III: 6}
+    # "Mức độ trên toàn đề minh họa PA1": I (NB 6, TH 4, VD 2) · II (NB 7, TH 4, VD 4, VDC 1) · III (TH 3, VD 2, VDC 1)
+    level_totals:
+      I: {biet: 6, hieu: 4, vandung: 2}
+      II: {biet: 7, hieu: 4, vandung: 5}
+      III: {biet: 0, hieu: 3, vandung: 3}
+    # source table "Tổng lệnh" and "Điểm" per strand
+    strand_items: {dai_so_giai_tich: 16, hinh_hoc_do_luong: 14, thong_ke_xac_suat: 4}
+    strand_points: {dai_so_giai_tich: 4.5, hinh_hoc_do_luong: 4.0, thong_ke_xac_suat: 1.5}
+    # VIASM PA1: NB 40 · TH 30 · VD 20 · VDC 10 → vandung 0.3. Not enforced (F-02 open question).
+    level_ratio: {biet: 0.4, hieu: 0.3, vandung: 0.3}
+    tolerance: 0.05

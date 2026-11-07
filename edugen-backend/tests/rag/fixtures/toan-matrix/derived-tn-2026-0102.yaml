@@ -1,0 +1,56 @@
+# Tóm tắt: Ma trận rút ra từ đề Toán tốt nghiệp THPT 2026 chính thức (mã 0102): nhóm tự xếp từng câu/ý vào chủ đề và mức độ. Đề là chính thức, còn cách xếp chủ đề và mức độ là của nhóm. Dùng làm đầu vào hợp lệ cho TC-008 và TC-009.
+# source: [[Đề Toán TN 2026 mã 0102]] (official Bộ GD&ĐT exam, confidence high); topic and level of every question/statement assigned by the team
+# official: false (the exam is official; this matrix is team-derived) · confidence: medium
+# type: multiple_choice (Part I) | true_false (Part II) | short_answer (Part III), next to `part`, as in the RAG contract.
+# count unit: question items (lệnh hỏi). Part I and III: 1 per question. Part II: 1 per a-d statement (each statement has its own level),
+#   `question` = the Part II question number in the exam (Câu 1-4), so its 4 statements stay together with one topic.
+# Level rule used: biet = one fact or formula applied directly; hieu = two facts combined or a short computation with interpretation;
+#   vandung = multi-step, modelling a real situation, or a non-routine idea. Comments give the Câu numbers.
+matrix:
+  id: derived-tn-2026-0102
+  subject: toan
+  grade: 12
+  exam_kind: tot_nghiep
+  source: "[[Đề Toán TN 2026 mã 0102]] (team-derived matrix)"
+  official: false
+  confidence: medium
+  count_unit: item
+  cells:
+    # Part I
+    - {strand: hinh_hoc_do_luong, topic: vecto_khong_gian, part: I, type: multiple_choice, level: biet, count: 2}          # Câu 1 equal vectors, Câu 3 coordinates of AB
+    - {strand: dai_so_giai_tich, topic: dao_ham, part: I, type: multiple_choice, level: biet, count: 1}                    # Câu 2 derivative of a sum (grade 11)
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: I, type: multiple_choice, level: hieu, count: 1}       # Câu 4 linearity + given antiderivative
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: I, type: multiple_choice, level: biet, count: 1}       # Câu 8 F' = f
+    - {strand: dai_so_giai_tich, topic: day_so_cap_so, part: I, type: multiple_choice, level: biet, count: 2}              # Câu 5, 7 (grade 11)
+    - {strand: dai_so_giai_tich, topic: mu_logarit, part: I, type: multiple_choice, level: biet, count: 1}                 # Câu 6 (grade 11)
+    - {strand: thong_ke_xac_suat, topic: xac_suat_quy_tac, part: I, type: multiple_choice, level: biet, count: 1}          # Câu 9 independent events (grade 11)
+    - {strand: dai_so_giai_tich, topic: he_bat_phuong_trinh_bac_nhat_hai_an, part: I, type: multiple_choice, level: biet, count: 1}  # Câu 10 (grade 10)
+    - {strand: thong_ke_xac_suat, topic: thong_ke_trung_tam, part: I, type: multiple_choice, level: hieu, count: 1}        # Câu 11 median group via cumulative frequency (grade 11)
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: I, type: multiple_choice, level: biet, count: 1}           # Câu 12 asymptote from variation table
+    # Part II
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: II, type: true_false, question: 1, level: biet, count: 1}      # a F(t)
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: II, type: true_false, question: 1, level: hieu, count: 3}      # b meaning of integral, c and d energy values
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: II, type: true_false, question: 2, level: biet, count: 2}          # a f', b roots of f'
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: II, type: true_false, question: 2, level: hieu, count: 2}          # c decreasing interval, d local minimum value
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: II, type: true_false, question: 3, level: biet, count: 1}    # a
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: II, type: true_false, question: 3, level: hieu, count: 2}    # b conditional from the counts, c marginal
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: II, type: true_false, question: 3, level: vandung, count: 1} # d reverse conditional
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: II, type: true_false, question: 4, level: biet, count: 1}        # a vector MN
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: II, type: true_false, question: 4, level: hieu, count: 1}        # b parametric line
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: II, type: true_false, question: 4, level: vandung, count: 2}     # c, d shortest distance to the ring
+    # Part III
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: III, type: short_answer, level: vandung, count: 1}  # Câu 1 bead, volume of revolution
+    - {strand: hinh_hoc_do_luong, topic: quan_he_vuong_goc, part: III, type: short_answer, level: vandung, count: 1}    # Câu 2 point-to-plane distance in a cube (grade 11; coordinates also work)
+    - {strand: dai_so_giai_tich, topic: to_hop, part: III, type: short_answer, level: vandung, count: 1}                # Câu 3 grid filling (grade 10)
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: III, type: short_answer, level: hieu, count: 1}         # Câu 4 max profit, functions given
+    - {strand: dai_so_giai_tich, topic: he_phuong_trinh_bac_nhat_ba_an, part: III, type: short_answer, level: hieu, count: 1}  # Câu 5 3x3 linear system (grade 10 chuyên đề)
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dien, part: III, type: short_answer, level: vandung, count: 1}     # Câu 6 bulbs on a 12-gon (grade 10)
+  constraints:
+    total_items: {I: 12, II: 16, III: 6}
+    level_totals:   # hand count of the classification above
+      I: {biet: 10, hieu: 2, vandung: 0}
+      II: {biet: 5, hieu: 8, vandung: 3}
+      III: {biet: 0, hieu: 2, vandung: 4}
+    # official target Biết : Hiểu : Vận dụng = 4 : 3 : 3 ([[Dữ liệu đầu vào hệ thống]] §2); unit and tolerance not settled (F-02), not enforced
+    level_ratio: {biet: 0.4, hieu: 0.3, vandung: 0.3}
+    tolerance: 0.05

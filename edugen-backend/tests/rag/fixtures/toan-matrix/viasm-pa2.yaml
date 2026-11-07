@@ -1,0 +1,41 @@
+# Tóm tắt: Ma trận đề Toán tốt nghiệp theo Phương án 2 của VIASM (đề xuất, KHÔNG phải ma trận chính thức của Bộ), phân hóa cao hơn PA1. Nguồn chỉ cho số câu theo mạch kiến thức nên các ô không có chủ đề chi tiết và mức độ; dùng cho TC-008.
+# source: VIASM, Cung Thế Anh, "Vài suy nghĩ về ma trận và cấu trúc của đề thi tốt nghiệp THPT môn Toán", Phương án 2, as summarised in [[Môn Toán]] §2
+#   (original PDF not read: https://viasm.edu.vn/Cms_Data/Contents/viasm/Media/2024/anhdang/VIASM-VAI-SUY-NGHI-VE-MA-TRAN-VA-CAU-TRUC-CUA-DE-THI-THPT-MON-TOAN-.pdf)
+# official: false (third-party proposal) · confidence: medium
+# type: multiple_choice (Part I) | true_false (Part II) | short_answer (Part III), next to `part`, as in the RAG contract.
+# count unit: question items (lệnh hỏi). Part I and III: 1 per question. Part II: 1 per a-d statement, 4 per question;
+#   `question` groups the 4 statements of one Part II question (numbered in the source's order, not exam order).
+# Strand-only cells: the vault summary gives PA2 only per strand (mạch). The topic points (Ứng dụng đạo hàm 2,5 · Nguyên hàm–Tích phân 2,0 ·
+#   Vectơ 1,0 · Tọa độ 2,5 · TK-XS 2,0) fit more than one topic split, so no topic is guessed.
+# No levels: the source gives only the overall ratio NB 30 · TH 30 · VD 30 · VDC 10, no counts per part or cell.
+# Source correction (documented in [[Môn Toán]] §2): the VIASM table gives HH-ĐL total 12, but 4 + 4 + 3 = 11 and only 11 makes 34; 11 is used.
+matrix:
+  id: viasm-pa2
+  subject: toan
+  grade: 12
+  exam_kind: tot_nghiep
+  source: "[[Môn Toán]] §2 Phương án 2 (VIASM proposal)"
+  official: false
+  confidence: medium
+  count_unit: item
+  cells:
+    # Part I: table "Bảng tổng số lệnh hỏi theo mạch", PA2 rows: 6 / 4 / 2
+    - {strand: dai_so_giai_tich, part: I, type: multiple_choice, count: 6}
+    - {strand: hinh_hoc_do_luong, part: I, type: multiple_choice, count: 4}
+    - {strand: thong_ke_xac_suat, part: I, type: multiple_choice, count: 2}
+    # Part II: "2 câu ĐS-GT + 1 HH-ĐL + 1 TK-XS" (table: 8 / 4 / 4 items)
+    - {strand: dai_so_giai_tich, part: II, type: true_false, question: 1, count: 4}
+    - {strand: dai_so_giai_tich, part: II, type: true_false, question: 2, count: 4}
+    - {strand: hinh_hoc_do_luong, part: II, type: true_false, question: 3, count: 4}
+    - {strand: thong_ke_xac_suat, part: II, type: true_false, question: 4, count: 4}
+    # Part III: "2 ĐS-GT + 3 HH-ĐL + 1 TK-XS"
+    - {strand: dai_so_giai_tich, part: III, type: short_answer, count: 2}
+    - {strand: hinh_hoc_do_luong, part: III, type: short_answer, count: 3}
+    - {strand: thong_ke_xac_suat, part: III, type: short_answer, count: 1}
+  constraints:
+    total_items: {I: 12, II: 16, III: 6}
+    strand_items: {dai_so_giai_tich: 16, hinh_hoc_do_luong: 11, thong_ke_xac_suat: 7}   # HH-ĐL corrected 12 → 11, see header
+    strand_points: {dai_so_giai_tich: 4.5, hinh_hoc_do_luong: 3.5, thong_ke_xac_suat: 2.0}
+    # VIASM PA2: NB 30 · TH 30 · VD 30 · VDC 10 → vandung 0.4. Not enforced (F-02 open question).
+    level_ratio: {biet: 0.3, hieu: 0.3, vandung: 0.4}
+    tolerance: 0.05

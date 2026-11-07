@@ -1,0 +1,55 @@
+# Tóm tắt: Ma trận rút ra từ đề Toán tốt nghiệp THPT 2025 chính thức (mã 0101): nhóm tự xếp từng câu/ý vào chủ đề và mức độ. Đề là chính thức, còn cách xếp chủ đề và mức độ là của nhóm. Dùng làm đầu vào hợp lệ cho TC-008 và TC-009.
+# source: [[Đề Toán TN 2025 mã 0101]] (official Bộ GD&ĐT exam, confidence high); topic and level of every question/statement assigned by the team
+# official: false (the exam is official; this matrix is team-derived) · confidence: medium
+# type: multiple_choice (Part I) | true_false (Part II) | short_answer (Part III), next to `part`, as in the RAG contract.
+# count unit: question items (lệnh hỏi). Part I and III: 1 per question. Part II: 1 per a-d statement (each statement has its own level),
+#   `question` = the Part II question number in the exam (Câu 1-4), so its 4 statements stay together with one topic.
+# Level rule used: biet = one fact or formula applied directly; hieu = two facts combined or a short computation with interpretation;
+#   vandung = multi-step, modelling a real situation, or a non-routine idea. Comments give the Câu numbers.
+matrix:
+  id: derived-tn-2025-0101
+  subject: toan
+  grade: 12
+  exam_kind: tot_nghiep
+  source: "[[Đề Toán TN 2025 mã 0101]] (team-derived matrix)"
+  official: false
+  confidence: medium
+  count_unit: item
+  cells:
+    # Part I
+    - {strand: hinh_hoc_do_luong, topic: vecto_khong_gian, part: I, type: multiple_choice, level: hieu, count: 1}          # Câu 1: A'C' = AC, then Chasles
+    - {strand: hinh_hoc_do_luong, topic: quan_he_song_song, part: I, type: multiple_choice, level: biet, count: 1}         # Câu 2 (grade 11)
+    - {strand: thong_ke_xac_suat, topic: thong_ke_trung_tam, part: I, type: multiple_choice, level: hieu, count: 1}        # Câu 3: Q3 of grouped data by formula (grade 11)
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: I, type: multiple_choice, level: biet, count: 2}         # Câu 4 direction vector, Câu 9 plane equation
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: I, type: multiple_choice, level: biet, count: 2}       # Câu 5 antiderivative of x^2, Câu 8 area formula
+    - {strand: dai_so_giai_tich, topic: day_so_cap_so, part: I, type: multiple_choice, level: biet, count: 1}              # Câu 6 (grade 11)
+    - {strand: dai_so_giai_tich, topic: luong_giac, part: I, type: multiple_choice, level: biet, count: 1}                 # Câu 7 (grade 11)
+    - {strand: dai_so_giai_tich, topic: mu_logarit, part: I, type: multiple_choice, level: biet, count: 1}                 # Câu 10 (grade 11)
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: I, type: multiple_choice, level: biet, count: 1}           # Câu 11 asymptote read from graph
+    - {strand: hinh_hoc_do_luong, topic: quan_he_vuong_goc, part: I, type: multiple_choice, level: hieu, count: 1}         # Câu 12 pyramid volume (grade 11)
+    # Part II
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: II, type: true_false, question: 1, level: biet, count: 3}          # a f', b roots of f', c f(2)
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: II, type: true_false, question: 1, level: hieu, count: 1}          # d max on [-3;3]
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: II, type: true_false, question: 2, level: hieu, count: 3}      # a g=kt+C, b k, c C (with ln)
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: II, type: true_false, question: 2, level: vandung, count: 1}   # d concentration at t=25
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: II, type: true_false, question: 3, level: hieu, count: 2}        # a direction cosine, b line AB
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: II, type: true_false, question: 3, level: vandung, count: 2}     # c beta via integral, d x_B (mixes Ch IV)
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: II, type: true_false, question: 4, level: biet, count: 1}    # a complement
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: II, type: true_false, question: 4, level: hieu, count: 2}    # b read conditional, c total probability
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: II, type: true_false, question: 4, level: vandung, count: 1} # d Bayes (reverse conditional)
+    # Part III (all vandung: multi-step or modelling)
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dien, part: III, type: short_answer, level: vandung, count: 1}     # Câu 1 cipher puzzle (grade 10, uses arithmetic progressions)
+    - {strand: dai_so_giai_tich, topic: ham_so_bac_hai, part: III, type: short_answer, level: vandung, count: 1}        # Câu 2 profit > 100 million: quadratic inequality (grade 10)
+    - {strand: dai_so_giai_tich, topic: he_bat_phuong_trinh_bac_nhat_hai_an, part: III, type: short_answer, level: vandung, count: 1}  # Câu 3 linear programming (grade 10)
+    - {strand: hinh_hoc_do_luong, topic: quan_he_vuong_goc, part: III, type: short_answer, level: vandung, count: 1}    # Câu 4 distance between skew lines (grade 11)
+    - {strand: dai_so_giai_tich, topic: to_hop, part: III, type: short_answer, level: vandung, count: 1}                # Câu 5 books on shelves (grade 10)
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: III, type: short_answer, level: vandung, count: 1}  # Câu 6 frustum minus spherical cap; cap volume by integral (could be quan_he_vuong_goc)
+  constraints:
+    total_items: {I: 12, II: 16, III: 6}
+    level_totals:   # hand count of the classification above
+      I: {biet: 9, hieu: 3, vandung: 0}
+      II: {biet: 4, hieu: 8, vandung: 4}
+      III: {biet: 0, hieu: 0, vandung: 6}
+    # official target Biết : Hiểu : Vận dụng = 4 : 3 : 3 ([[Dữ liệu đầu vào hệ thống]] §2); unit and tolerance not settled (F-02), not enforced
+    level_ratio: {biet: 0.4, hieu: 0.3, vandung: 0.3}
+    tolerance: 0.05

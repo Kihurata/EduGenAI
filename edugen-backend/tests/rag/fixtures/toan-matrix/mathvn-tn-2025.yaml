@@ -1,0 +1,46 @@
+# Tóm tắt: Ma trận đề Toán tốt nghiệp 2025 do trang mathvn.com tự phân tích từ đề chính thức của Bộ (bên thứ ba, KHÔNG phải ma trận chính thức). Chỉ có số câu theo chủ đề và phần, không có mức độ từng ô; dùng để đối chiếu với ma trận nhóm tự rút ra từ đề 2025 và làm dữ liệu test (TC-008, TC-017).
+# source: Toán Học Việt Nam (mathvn.com), "Ma trận đề thi tốt nghiệp THPT môn Toán (dựa vào đề thi chính thức của Bộ GD)", 2026-02,
+#   https://www.mathvn.com/2026/02/ma-tran-e-thi-tot-nghiep-thpt-mon-toan.html (read 2026-10-31; text table, no author or mã đề named)
+# official: false (third-party analysis of the official 2025 exam) · confidence: medium
+# type: multiple_choice (Part I) | true_false (Part II) | short_answer (Part III), next to `part`, as in the RAG contract.
+# count unit: question items (lệnh hỏi). Part I and III: 1 per question. Part II: 1 per a-d statement, 4 per question;
+#   `question` numbers the 4 Part II questions in the source's table order.
+# No levels: the source gives levels only per part (I: Biết/Hiểu, II: Hiểu/Vận dụng, III: Vận dụng), no counts.
+# Strand-only cells: "Hình học không gian (thuần túy)" lớp 11 can be Chương IV (song song) or VII (vuông góc); the source doesn't say.
+# Differences from derived-tn-2025-0101.yaml (same exam, team-made): the source counts Câu 1 (vectơ) under "Oxyz" (team: vecto_khong_gian),
+#   and Part III Câu 2 (profit) under "Khảo sát hàm số" (team: ham_so_bac_hai; the RAG golden set also maps it to Ứng dụng đạo hàm).
+matrix:
+  id: mathvn-tn-2025
+  subject: toan
+  grade: 12
+  exam_kind: tot_nghiep
+  source: "mathvn.com analysis of the official 2025 exam (third party)"
+  official: false
+  confidence: medium
+  count_unit: item
+  cells:
+    # Part I (12 câu)
+    - {strand: dai_so_giai_tich, topic: luong_giac, part: I, type: multiple_choice, count: 1}             # lớp 11 Lượng giác
+    - {strand: dai_so_giai_tich, topic: day_so_cap_so, part: I, type: multiple_choice, count: 1}          # lớp 11 Cấp số cộng – Cấp số nhân
+    - {strand: hinh_hoc_do_luong, part: I, type: multiple_choice, count: 2}                               # lớp 11 Hình học không gian (thuần túy)
+    - {strand: dai_so_giai_tich, topic: mu_logarit, part: I, type: multiple_choice, count: 1}             # lớp 11 Hàm số mũ và hàm số logarit
+    - {strand: thong_ke_xac_suat, topic: thong_ke_trung_tam, part: I, type: multiple_choice, count: 1}    # lớp 11 Thống kê
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: I, type: multiple_choice, count: 1}       # lớp 12 Khảo sát hàm số
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: I, type: multiple_choice, count: 2}   # lớp 12 Nguyên hàm – Tích phân – Ứng dụng
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: I, type: multiple_choice, count: 3}     # lớp 12 Hình học không gian Oxyz
+    # Part II (4 câu, 16 ý)
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: II, type: true_false, question: 1, count: 4}
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: II, type: true_false, question: 2, count: 4}
+    - {strand: hinh_hoc_do_luong, topic: toa_do_khong_gian, part: II, type: true_false, question: 3, count: 4}
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dieu_kien, part: II, type: true_false, question: 4, count: 4}
+    # Part III (6 câu)
+    - {strand: dai_so_giai_tich, topic: he_bat_phuong_trinh_bac_nhat_hai_an, part: III, type: short_answer, count: 1}  # lớp 10
+    - {strand: dai_so_giai_tich, topic: to_hop, part: III, type: short_answer, count: 1}                  # lớp 10 Đại số tổ hợp (strand per [[Toán topic list]])
+    - {strand: thong_ke_xac_suat, topic: xac_suat_co_dien, part: III, type: short_answer, count: 1}       # source says lớp 11; topic list has it as Toán 10 Chương IX
+    - {strand: hinh_hoc_do_luong, part: III, type: short_answer, count: 1}                                # lớp 11 Hình học không gian (thuần túy)
+    - {strand: dai_so_giai_tich, topic: ung_dung_dao_ham, part: III, type: short_answer, count: 1}        # lớp 12 Khảo sát hàm số
+    - {strand: dai_so_giai_tich, topic: nguyen_ham_tich_phan, part: III, type: short_answer, count: 1}    # lớp 12 Nguyên hàm – Tích phân – Ứng dụng
+  constraints:
+    total_items: {I: 12, II: 16, III: 6}
+    strand_items: {dai_so_giai_tich: 18, hinh_hoc_do_luong: 10, thong_ke_xac_suat: 6}
+    strand_points: {dai_so_giai_tich: 5.5, hinh_hoc_do_luong: 2.75, thong_ke_xac_suat: 1.75}

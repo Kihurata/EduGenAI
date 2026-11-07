@@ -1,3 +1,4 @@
+import logging
 import threading
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -9,6 +10,15 @@ from app.api.v1 import router as v1_router
 from app.core.config import settings
 from app.core.middleware import SecurityHeadersMiddleware
 from app.services import rag_client
+
+# Uvicorn chỉ cấu hình logger của nó; không có handler thì Python bỏ mọi log.info của app (cache hit, đăng nhập lỗi...).
+# Gắn handler cho logger "app" ở mức INFO, vẫn propagate để pytest caplog bắt được (root không có handler khi chạy thật).
+_app_log = logging.getLogger("app")
+if not _app_log.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+    _app_log.addHandler(_handler)
+    _app_log.setLevel(logging.INFO)
 
 # Ngoài môi trường dev không công khai tài liệu API (/docs, /redoc, /openapi.json).
 _dev = settings.app_env == "dev"

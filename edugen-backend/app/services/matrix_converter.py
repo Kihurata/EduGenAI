@@ -154,7 +154,7 @@ class CachedMatrixConverter:
         sha = hashlib.sha256(source.read_bytes()).hexdigest()
         cached = self._lookup(sha)
         if cached is not None:
-            log.info("Ma trận cache hit %s", sha[:12])
+            log.info("Ma trận cache hit, bỏ qua Gemini: file=%s sha256=%s", source.name, sha[:12])
             return cached
         output = self.inner.convert(source)
         if not _problems(output):

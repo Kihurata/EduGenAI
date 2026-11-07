@@ -5,7 +5,7 @@ from qdrant_client import models
 from app.rag.dto import Cell, Chunk, Retrieved, Vector
 from app.rag.embedding import Embedder
 from app.rag.storage.qdrant import COLLECTION, sparse_vector
-from app.rag.vocab import PART_BY_TYPE, TOPIC_QUERIES, old_codes
+from app.rag.vocab import CHAPTER_BY_TOPIC, PART_BY_TYPE, TOPIC_QUERIES, old_codes
 
 EXAMPLE_POOLS = {"all": None, "official": True, "unofficial": False}  # example_pool -> official filter (None = no filter)
 EXERCISES = 2  # SGK exercise chunks added for a Vận dụng cell (~1,700 characters each)
@@ -17,9 +17,10 @@ def retrieve(client, embedder: Embedder, cell: Cell, k=5, mode="hybrid", exclude
     vec = embedder.embed_query(query)
     scope = _school_scope(cell.get("school_id"), cell.get("teacher_id"))
     sgk = {"subject": cell["subject"], "lesson": cell.get("lesson"), "grade": cell.get("grade")}
-    theory = _search(client, vec, _filter(scope, kind="theory", **sgk), k, mode)
+    chapter = {"chapter": CHAPTER_BY_TOPIC.get(cell["topic"])}  # D-021: a preference, topped up by grade when short
+    theory = _search_preferring(client, vec, _filter(scope, kind="theory", **sgk), chapter, k, mode)
     if cell.get("level") == "Vận dụng":  # SGK exercises show the difficulty; Vận dụng cells came out too easy (T-036)
-        theory += _search(client, vec, _filter(scope, kind="exercise", **sgk), EXERCISES, mode)
+        theory += _search_preferring(client, vec, _filter(scope, kind="exercise", **sgk), chapter, EXERCISES, mode)
     topics = [cell["topic"], *old_codes(cell["topic"])]  # the index still stores the old lesson-level codes
     # Not filtered by grade: grade-12 exams test grade 10-11 topics too, and grade 10-11 school exams are examples for them (D-009 amendment).
     if cell["type"] not in PART_BY_TYPE:  # fail loudly: a typo would otherwise just find no exam items

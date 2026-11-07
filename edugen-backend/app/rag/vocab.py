@@ -31,6 +31,29 @@ TOPICS = {
 }
 
 _D, _H, _T = "dai_so_giai_tich/", "hinh_hoc_do_luong/", "thong_ke_xac_suat/"
+
+# D-021: payload `chapter` of each Toán topic in the SGK Kết nối tri thức index (exact match); a topic missing here (and every
+# non-Toán one) is searched by grade only. Another SGK set needs another table.
+CHAPTER_BY_TOPIC = {
+    _D + "he_bat_phuong_trinh_bac_nhat_hai_an": "Chương II. Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+    _D + "ham_so_bac_hai": "Chương VI. Hàm số, đồ thị và ứng dụng",
+    _D + "to_hop": "Chương VIII. Đại số tổ hợp",
+    _T + "xac_suat_co_dien": "Chương IX. Tính xác suất theo định nghĩa cổ điển",
+    _D + "luong_giac": "Chương I. Hàm số lượng giác và phương trình lượng giác",
+    _D + "day_so_cap_so": "Chương II. Dãy số. Cấp số cộng và cấp số nhân",
+    _T + "thong_ke_trung_tam": "Chương III. Các số đặc trưng đo xu thế trung tâm của mẫu số liệu ghép nhóm",
+    _H + "quan_he_song_song": "Chương IV. Quan hệ song song trong không gian",
+    _D + "mu_logarit": "Chương VI. Hàm số mũ và hàm số lôgarit",
+    _H + "quan_he_vuong_goc": "Chương VII. Quan hệ vuông góc trong không gian",
+    _T + "xac_suat_quy_tac": "Chương VIII. Các quy tắc tính xác suất",
+    _D + "dao_ham": "Chương IX. Đạo hàm",
+    _D + "ung_dung_dao_ham": "Chương I. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
+    _H + "vecto_khong_gian": "Chương II. Vectơ và hệ trục toạ độ trong không gian",
+    _T + "thong_ke_phan_tan": "Chương III. Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm",
+    _D + "nguyen_ham_tich_phan": "Chương IV. Nguyên hàm và tích phân",
+    _H + "toa_do_khong_gian": "Chương V. Phương pháp toạ độ trong không gian",
+    _T + "xac_suat_co_dieu_kien": "Chương VI. Xác suất có điều kiện",
+}
 OLD_TO_NEW = {
     _D + "bat_phuong_trinh_bac_nhat_hai_an": _D + "he_bat_phuong_trinh_bac_nhat_hai_an",
     _D + "cap_so_cong": _D + "day_so_cap_so",

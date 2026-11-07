@@ -12,8 +12,8 @@ One Google Compute Engine VM runs everything with Docker Compose. Caddy terminat
 | LLM and embeddings | Gemini API (`GEMINI_API_KEY`), `LLM_PROVIDER=gemini` |
 
 Images are `ghcr.io/kihurata/edugenai/backend` and `.../frontend`. CI (`.github/workflows/ci.yml`) builds both on every
-push and pull request but **does not publish them or deploy yet**; add a GHCR login and `push: true` to the `images`
-job, and a deploy job, when the VM exists. Until then, build locally with `docker compose build`.
+pull request; a push to `main` also publishes them as `:main` and `:sha-<commit>`, and, when `DEPLOY_ENABLED=true`,
+dumps the database on the VM, deploys that commit's images, and then checks `https://$DOMAIN/health`.
 
 ## One-time setup
 
@@ -29,16 +29,20 @@ job, and a deploy job, when the VM exists. Until then, build locally with `docke
 6. **First start**: `docker compose -f docker-compose.prod.yml up -d`, then open `https://$DOMAIN/health`.
    The one-shot `seed` service creates the first school and admin from the `SEED_*` values in `.env` (see the checklist below).
 7. **Backups**: create a bucket, put `BACKUP_BUCKET=gs://...` in `.env`, and add the cron line from `backup.sh`.
-8. **Turn on auto-deploy** (GitHub repo settings):
-   - secrets `VM_HOST`, `VM_USER`, `VM_SSH_KEY` (a key used only for deploys);
-   - variables `DOMAIN` and `DEPLOY_ENABLED=true`.
+8. **Turn on auto-deploy** (GitHub repo settings, done by the repo owner):
+   - secrets `VM_HOST`, `VM_USER`, `VM_SSH_KEY` (the private half of a key used only for deploys; its public half
+     goes into the VM's `~/.ssh/authorized_keys` or the GCE instance metadata for `VM_USER`);
+   - variables `DOMAIN` and `DEPLOY_ENABLED=true`;
+   - Settings > Actions > General > Workflow permissions: "Read and write permissions" is not needed (the jobs ask
+     for `packages: write` themselves), but Actions must be allowed to run.
 
 ## First deploy checklist
 
 1. **Secrets in `.env`** (from `.env.example`): `DOMAIN`, `POSTGRES_PASSWORD`, `JWT_SECRET`, `GEMINI_API_KEY`,
    `QDRANT_URL`, `QDRANT_API_KEY` (Qdrant Cloud, needed by a human), and `SEED_SCHOOL_CODE`, `SEED_SCHOOL_NAME`,
    `SEED_ADMIN_EMAIL`, `SEED_ADMIN_NAME`, `SEED_ADMIN_PASSWORD`. Compose refuses to start if one is missing. The auto-deploy job keeps the VM's existing `.env`, so add `QDRANT_*` and `SEED_*` to it before the first deploy of this version.
-2. **Qdrant Cloud index** must already hold the Toán 12 textbooks, embedded with `EMBEDDER=gemini` (same embedder as the
+2. **Qdrant Cloud index** must already hold the Toán 10-12 textbooks (the cluster had grades 10, 11 and 12 on
+   2026-11-08: 958 points), embedded with `EMBEDDER=gemini` (same embedder as the
    backend). Run this from a dev machine that has `data/parsed/...` and the same Qdrant Cloud and Gemini keys
    (`data/sources.yaml` also lists grade 10-11 exams, so first make a manifest with only the SGK Toán 12 entries):
    ```

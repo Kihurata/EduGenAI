@@ -47,7 +47,7 @@ def test_upload_returns_id_then_background_job_parses(client, teacher_headers, s
 def test_only_images_and_pdf_are_accepted(client, teacher_headers):
     resp = upload(client, teacher_headers, "mt.txt", b"abc", "text/plain")
     assert resp.status_code == 415
-    assert resp.json()["detail"] == "Chỉ nhận ảnh PNG/JPG hoặc file PDF"
+    assert resp.json()["detail"] == "Chỉ nhận ảnh PNG/JPG, file PDF hoặc file JSON ma trận"
     assert upload(client, teacher_headers, "mt.pdf", b"", "application/pdf").status_code == 400
 
 
@@ -183,3 +183,72 @@ def test_matrix_with_missing_or_wrong_grade_can_be_set_to_12_then_confirmed(clie
         resp = client.put(f"{BASE}/{m['id']}/cells", json={"cells": editable(m["cells"]), "grade": 12}, headers=teacher_headers)
         assert resp.status_code == 200 and resp.json()["grade"] == 12 and resp.json()["status"] == "parsed"
         assert client.post(f"{BASE}/{m['id']}/confirm", headers=teacher_headers).status_code == 200
+
+
+# --- Tải thẳng file JSON ma trận: đọc ngay, không gọi converter (Gemini/marker) ---
+
+JSON_FIXTURE = MATRIX_PNG.parents[1] / "matrix_extract" / "giua_ki_toan12.json"
+
+
+def upload_json(client, headers, data=None, name="ma_tran.json", mime="application/json"):
+    data = JSON_FIXTURE.read_bytes() if data is None else data
+    return client.post(BASE, files={"file": (name, data, mime)}, headers=headers)
+
+
+def no_converter(monkeypatch, converter):
+    def boom(source):
+        raise AssertionError("tải JSON không được gọi converter")
+
+    monkeypatch.setattr(converter, "convert", boom)
+
+
+def test_json_upload_is_parsed_without_converter(client, teacher_headers, storage, monkeypatch, converter):
+    no_converter(monkeypatch, converter)
+    resp = upload_json(client, teacher_headers)
+    assert resp.status_code == 202
+    assert resp.json()["status"] == "parsed"
+    m = client.get(f"{BASE}/{resp.json()['id']}", headers=teacher_headers).json()
+    assert (m["status"], m["subject"], m["grade"]) == ("parsed", "toan", 12)
+    assert m["issues"] == []
+    totals = {}
+    for c in m["cells"]:
+        totals[c["type"]] = totals.get(c["type"], 0) + c["count"]
+    assert sorted(totals.values()) == [4, 6, 12]
+    assert storage.path(f"matrices/{m['id']}/source.json").read_bytes() == JSON_FIXTURE.read_bytes()
+
+
+def test_json_upload_accepted_by_extension_when_browser_sends_octet_stream(client, teacher_headers):
+    resp = upload_json(client, teacher_headers, mime="application/octet-stream")
+    assert resp.status_code == 202
+    assert resp.json()["status"] == "parsed"
+
+
+def test_json_upload_edit_cells_keeps_working(client, teacher_headers):
+    m = client.get(f"{BASE}/{upload_json(client, teacher_headers).json()['id']}", headers=teacher_headers).json()
+    resp = client.put(f"{BASE}/{m['id']}/cells", json={"cells": editable(m["cells"]), "grade": 12}, headers=teacher_headers)
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "parsed"
+
+
+def test_json_upload_with_wrong_totals_is_invalid_not_error(client, teacher_headers):
+    import json
+
+    data = json.loads(JSON_FIXTURE.read_text(encoding="utf-8"))
+    data["rows"][0]["multiple_choice"]["biet"] += 1
+    resp = upload_json(client, teacher_headers, json.dumps(data).encode())
+    assert resp.status_code == 202
+    m = client.get(f"{BASE}/{resp.json()['id']}", headers=teacher_headers).json()
+    assert m["status"] == "invalid"
+    assert any("12" in i["message"] for i in m["issues"])
+
+
+def test_broken_json_is_rejected_with_message(client, teacher_headers):
+    resp = upload_json(client, teacher_headers, b"{khong phai json")
+    assert resp.status_code == 422
+    assert "JSON" in resp.json()["detail"]
+    assert client.get(BASE, headers=teacher_headers).json() == []
+
+
+def test_json_without_rows_is_rejected(client, teacher_headers):
+    resp = upload_json(client, teacher_headers, b'{"subject": "Toan"}')
+    assert resp.status_code == 422

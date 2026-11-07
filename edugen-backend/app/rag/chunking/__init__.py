@@ -10,22 +10,24 @@ from app.rag.chunking.theory import chunk_theory, read_pages_md
 from app.rag.dto import Chunk
 
 
-def _chunk_sgk(path, count_tokens=None):
+def _chunk_sgk(path, count_tokens=None, grade=12):
     # Parser output layout: data/parsed/<book>/<parser>/pages.md, so the book name is two levels up.
-    return chunk_theory(read_pages_md(path), source=f"{path.parent.parent.name}.pdf", count_tokens=count_tokens)
+    return chunk_theory(read_pages_md(path), source=f"{path.parent.parent.name}.pdf", grade=grade,
+                        count_tokens=count_tokens)
 
 
-def _chunk_exam(path, count_tokens=None):
+def _chunk_exam(path, count_tokens=None, grade=12):
     return chunk_exam(path)
 
 
 CHUNKERS = {"sgk": _chunk_sgk, "exam": _chunk_exam}  # doc_type in data/sources.yaml (T-035) -> chunker
 
 
-def chunk_source(doc_type, path, count_tokens=None) -> list[Chunk]:
+def chunk_source(doc_type, path, count_tokens=None, grade=12) -> list[Chunk]:
+    """grade: the manifest's grade; an SGK puts it in each chunk's heading path ("Toán 11 > ..."), T-056."""
     if doc_type not in CHUNKERS:
         raise ValueError(f"unknown doc_type {doc_type!r}; use one of {sorted(CHUNKERS)}")
-    return CHUNKERS[doc_type](Path(path), count_tokens)
+    return CHUNKERS[doc_type](Path(path), count_tokens, grade=grade)
 
 
 def chunk_file(path, count_tokens=None) -> list[Chunk]:

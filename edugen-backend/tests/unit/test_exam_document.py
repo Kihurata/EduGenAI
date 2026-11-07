@@ -168,3 +168,70 @@ def test_stem_starting_with_table_keeps_question_label():
     q["stem"] = "| a |\n|---|\n| 1 |"
     md = to_markdown(build_blocks(INFO, [q], ExportVariant.student))
     assert md.index("**Câu 1.**") < md.index("| a |")
+
+
+# ----- hình khối trong đề -----
+
+from app.domain.exam_document import Figure  # noqa: E402
+from app.domain.figure import render_svg  # noqa: E402
+
+SPEC = {"solid": "pyramid", "a": 3, "b": 4, "h": 5, "foot": "center"}
+SVG = render_svg(SPEC)
+CAPTION = "Hình chóp $S.ABCD$ có đáy là hình chữ nhật"
+
+
+def with_figure_on_first_mc(**extra) -> list[dict]:
+    qs = [dict(q) for q in QUESTIONS]
+    first = next(q for q in qs if q["type"] == "multiple_choice")
+    first.update({"figure_svg": SVG, "figure": CAPTION} | extra)
+    return qs
+
+
+def figures(blocks):
+    return [b for b in blocks if isinstance(b, Figure)]
+
+
+def test_question_with_a_figure_has_one_figure_block_after_its_stem_before_its_options():
+    blocks = build_blocks(INFO, with_figure_on_first_mc(), ExportVariant.student)
+    [figure] = figures(blocks)
+    i = blocks.index(figure)
+    assert blocks[i - 1].runs[0].text.startswith("Câu 1.")
+    assert blocks[i + 1].runs[0].text.startswith("A. ")
+    assert figure.svg == SVG and figure.caption == CAPTION
+
+
+def test_no_figure_block_without_an_svg():
+    assert figures(build_blocks(INFO, QUESTIONS, ExportVariant.student)) == []
+
+
+def test_text_figure_alone_adds_no_figure_block():
+    qs = [dict(q, figure=CAPTION) for q in QUESTIONS]
+    assert figures(build_blocks(INFO, qs, ExportVariant.student)) == []
+
+
+def test_figure_comes_after_the_tables_of_the_stem():
+    qs = with_figure_on_first_mc(stem="Cho bảng:\n| x | 1 |\n|---|---|\n| y | 2 |\n")
+    blocks = build_blocks(INFO, qs, ExportVariant.student)
+    [figure] = figures(blocks)
+    assert type(blocks[blocks.index(figure) - 1]).__name__ == "Table"
+
+
+def test_teacher_copy_draws_the_figure_once_not_again_in_the_solutions():
+    blocks = build_blocks(INFO, with_figure_on_first_mc(), ExportVariant.teacher)
+    assert len(figures(blocks)) == 1
+
+
+def test_figure_without_caption_has_an_empty_caption():
+    [figure] = figures(build_blocks(INFO, with_figure_on_first_mc(figure=None), ExportVariant.student))
+    assert figure.caption == ""
+
+
+def test_markdown_shows_the_caption_not_the_svg():
+    md = to_markdown(build_blocks(INFO, with_figure_on_first_mc(), ExportVariant.student))
+    assert f"*Hình: {CAPTION}*" in md
+    assert "<svg" not in md
+
+
+def test_markdown_shows_nothing_for_a_figure_without_caption():
+    md = to_markdown(build_blocks(INFO, with_figure_on_first_mc(figure=None), ExportVariant.student))
+    assert "Hình:" not in md and "<svg" not in md

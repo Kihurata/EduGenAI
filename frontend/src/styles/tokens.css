@@ -1,0 +1,46 @@
+@import "@fontsource/be-vietnam-pro/vietnamese-400.css";
+@import "@fontsource/be-vietnam-pro/vietnamese-500.css";
+@import "@fontsource/be-vietnam-pro/vietnamese-600.css";
+@import "@fontsource/be-vietnam-pro/latin-400.css";
+@import "@fontsource/be-vietnam-pro/latin-500.css";
+@import "@fontsource/be-vietnam-pro/latin-600.css";
+
+/* Design tokens (see DESIGN.md). Names are --color-* so they never clash with legacy --bg/--ok/... */
+@theme {
+  --color-paper: #f7f3e8;
+  --color-surface: #fffdf7;
+  --color-ink: #1b1a17;
+  --color-muted: #6c685c;
+  --color-line: #e3dcc8;
+  --color-soft: #efe8d6;
+  --color-accent: #243b6b;
+  --color-ok: #2f6b4f;
+  --color-warn: #8f5e18;
+  --color-bad: #b4481e;
+  --color-son: #b5342a;
+  --radius-sm: 6px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+}
+
+/* New app shell scope; legacy pages inside still get their styles from the legacy layer. */
+.app {
+  min-height: 100vh;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  position: relative;
+}
+.app main {
+  position: relative;
+  z-index: 1;
+}
+
+/* Base page styles (replaces the body rule that lived in the legacy styles.css). */
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
+}

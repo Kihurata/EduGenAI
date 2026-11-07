@@ -167,7 +167,7 @@ def build_prompt(cell, theory_chunks, exam_items, format_examples=(), previous_s
     exercises = [c for c in theory_chunks if c.kind == "exercise"]
     for chunks, title in ((sgk, "# Đoạn tài liệu (trích dẫn bằng ID)"),
                           (exercises, ("# Bài tập SGK (tham khảo độ khó của mức được yêu cầu; không chép lại; "
-                                      "trích dẫn bằng ID)"))):
+                                       "trích dẫn bằng ID)"))):
         if chunks:
             parts.append(title)
             parts += [_source(c.id, f"[{c.id}] {c.heading_path} (trang {c.page})\n{c.text}") for c in chunks]

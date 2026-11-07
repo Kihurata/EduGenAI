@@ -13,7 +13,8 @@ from pathlib import Path
 from docx import Document
 
 from app.domain.cell import Cell
-from app.domain.exam_document import ExamInfo, build_blocks, to_markdown
+from app.domain.exam_document import ExamInfo, Figure, build_blocks, to_markdown
+from app.domain.figure import render_svg
 from app.domain.question import split_questions
 from app.models.enums import ExportVariant, Level, QuestionType
 from app.services.docx_export import to_docx
@@ -171,9 +172,6 @@ def test_stem_starting_with_table_keeps_question_label():
 
 
 # ----- hình khối trong đề -----
-
-from app.domain.exam_document import Figure  # noqa: E402
-from app.domain.figure import render_svg  # noqa: E402
 
 SPEC = {"solid": "pyramid", "a": 3, "b": 4, "h": 5, "foot": "center"}
 SVG = render_svg(SPEC)

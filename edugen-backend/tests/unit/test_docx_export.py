@@ -8,12 +8,17 @@
 """
 
 import io
+import logging
+import zipfile
 
 import pytest
 from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
+from docx.shared import Cm
 
-from app.domain.exam_document import Paragraph, Run, Table
+from app.domain.exam_document import Figure, Paragraph, Run, Table
+from app.domain.figure import FigureError, layout, render_svg
 from app.services import docx_export
 from app.services.docx_export import split_math, to_docx
 
@@ -119,15 +124,6 @@ def test_control_characters_in_generated_text_do_not_break_the_export():
 
 
 # ----- hình khối: SVG → PNG nhúng vào DOCX -----
-
-import logging  # noqa: E402
-import zipfile  # noqa: E402
-
-from docx.enum.text import WD_ALIGN_PARAGRAPH  # noqa: E402
-from docx.shared import Cm  # noqa: E402
-
-from app.domain.exam_document import Figure  # noqa: E402
-from app.domain.figure import FigureError, layout, render_svg  # noqa: E402
 
 SPEC = {"solid": "pyramid", "a": 3, "b": 4, "h": 5, "foot": "center"}
 FIGURE = Figure(render_svg(SPEC), "Hình chóp $S.ABCD$")

@@ -18,7 +18,7 @@ def svg_to_png(svg: str, scale: float = DEFAULT_SCALE) -> bytes:
             raise FigureError("Không phải SVG")
         import cairosvg  # import muộn: thiếu thư viện Cairo của máy chỉ làm hỏng việc đổi ảnh, không làm hỏng cả app
 
-        return cairosvg.svg2png(bytestring=svg.encode("utf-8"), scale=scale)
+        return cairosvg.svg2png(bytestring=svg.encode("utf-8"), scale=scale, unsafe=False)  # không theo file/URL ngoài
     except FigureError:
         raise
     except Exception as exc:  # ParseError, OSError (thiếu libcairo), lỗi của cairosvg: đều là "không đổi được"

@@ -133,3 +133,15 @@ def test_the_retry_uses_the_stronger_model_when_one_is_set(tmp_path):
     source.write_bytes(b"png")
     assert conv.convert(source) == GOOD
     assert [c["model"] for c in models.calls] == ["lite", "strong"]
+
+
+def test_the_converter_is_always_gemini(monkeypatch, session_factory):
+    monkeypatch.setattr(matrix_converter.settings, "matrix_cache_enabled", False)
+    monkeypatch.setattr(matrix_converter, "GeminiMatrixConverter", lambda model, retry_model: ("gemini", model, retry_model))
+    s = matrix_converter.settings
+    assert matrix_converter.get_matrix_converter(session_factory) == ("gemini", s.matrix_gemini_model, s.matrix_gemini_retry_model)
+
+
+def test_an_old_env_with_matrix_converter_and_marker_settings_still_starts():
+    settings = Settings(_env_file=None, matrix_converter="marker", marker_config_path="marker_config.json", marker_timeout_seconds=5)
+    assert not hasattr(settings, "matrix_converter") and not hasattr(settings, "marker_config_path")

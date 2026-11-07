@@ -1,0 +1,195 @@
+{
+ "subject": "TOÁN",
+ "name": "MA TRẬN ĐỀ KIỂM TRA GIỮA KÌ 1 - NĂM HỌC 2025 - 2026",
+ "rows": [
+  {
+   "unit_name": "Tính đơn điệu và cực trị của hàm số",
+   "grade": 12,
+   "topic_code": "ung_dung_dao_ham",
+   "multiple_choice": {
+    "biet": 3,
+    "hieu": 1,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 3,
+    "hieu": 5,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": [
+    {
+     "cau": "C1",
+     "y": "a",
+     "level": "biet"
+    },
+    {
+     "cau": "C2",
+     "y": "a",
+     "level": "biet"
+    },
+    {
+     "cau": "C3",
+     "y": "b",
+     "level": "biet"
+    },
+    {
+     "cau": "C1",
+     "y": "c",
+     "level": "hieu"
+    },
+    {
+     "cau": "C1",
+     "y": "d",
+     "level": "hieu"
+    },
+    {
+     "cau": "C2",
+     "y": "d",
+     "level": "hieu"
+    },
+    {
+     "cau": "C3",
+     "y": "c",
+     "level": "hieu"
+    },
+    {
+     "cau": "C4",
+     "y": "c",
+     "level": "hieu"
+    }
+   ]
+  },
+  {
+   "unit_name": "Giá trị lớn nhất và giá trị nhỏ nhất của hàm số",
+   "grade": 12,
+   "topic_code": "ung_dung_dao_ham",
+   "multiple_choice": {
+    "biet": 2,
+    "hieu": 1,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 2,
+    "hieu": 1,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": [
+    {
+     "cau": "C1",
+     "y": "b",
+     "level": "biet"
+    },
+    {
+     "cau": "C2",
+     "y": "b",
+     "level": "biet"
+    },
+    {
+     "cau": "2",
+     "y": "c",
+     "level": "hieu"
+    }
+   ]
+  },
+  {
+   "unit_name": "Đường tiệm cận của đồ thị hàm số",
+   "grade": 12,
+   "topic_code": "ung_dung_dao_ham",
+   "multiple_choice": {
+    "biet": 2,
+    "hieu": 1,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 3,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": [
+    {
+     "cau": "C3",
+     "y": "a",
+     "level": "biet"
+    },
+    {
+     "cau": "C4",
+     "y": "a",
+     "level": "biet"
+    },
+    {
+     "cau": "C4",
+     "y": "b",
+     "level": "biet"
+    }
+   ]
+  },
+  {
+   "unit_name": "Khảo sát sự biến thiên và vẽ đồ thị của hàm số",
+   "grade": 12,
+   "topic_code": "ung_dung_dao_ham",
+   "multiple_choice": {
+    "biet": 1,
+    "hieu": 1,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 2,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 3
+   },
+   "true_false_items": [
+    {
+     "cau": "C3",
+     "y": "d",
+     "level": "hieu"
+    },
+    {
+     "cau": "C4",
+     "y": "d",
+     "level": "hieu"
+    }
+   ]
+  },
+  {
+   "unit_name": "Ứng dụng đạo hàm để giải quyết một số vấn đề liên quan đến thực tiễn",
+   "grade": 12,
+   "topic_code": "ung_dung_dao_ham",
+   "multiple_choice": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 3
+   },
+   "true_false_items": []
+  }
+ ]
+}

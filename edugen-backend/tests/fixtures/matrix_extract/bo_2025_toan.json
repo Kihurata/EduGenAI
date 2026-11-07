@@ -1,0 +1,258 @@
+{
+ "subject": "Toán",
+ "name": "MA TRẬN ĐỀ THAM KHẢO MÔN TOÁN CỦA BỘ GD-ĐT TỪ 2025",
+ "rows": [
+  {
+   "unit_name": "Lượng giác",
+   "grade": 11,
+   "topic_code": "luong_giac",
+   "multiple_choice": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 2,
+    "hieu": 2,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Dãy số - Cấp số cộng - Cấp số nhân",
+   "grade": 11,
+   "topic_code": "day_so_cap_so",
+   "multiple_choice": {
+    "biet": 1,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Mũ - Lôgarit",
+   "grade": 11,
+   "topic_code": "mu_logarit",
+   "multiple_choice": {
+    "biet": 2,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Hình học không gian",
+   "grade": 11,
+   "topic_code": null,
+   "multiple_choice": {
+    "biet": 1,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 1
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Lý thuyết đồ thị",
+   "grade": 11,
+   "topic_code": null,
+   "multiple_choice": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 1
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Xác suất cổ điển",
+   "grade": 11,
+   "topic_code": null,
+   "multiple_choice": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 1,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 1
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Xác suất có điều kiện",
+   "grade": 12,
+   "topic_code": "xac_suat_co_dieu_kien",
+   "multiple_choice": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 1,
+    "van_dung": 2
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Hàm số",
+   "grade": 12,
+   "topic_code": "ung_dung_dao_ham",
+   "multiple_choice": {
+    "biet": 2,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 1
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Vectơ trong không gian",
+   "grade": 12,
+   "topic_code": "vecto_khong_gian",
+   "multiple_choice": {
+    "biet": 0,
+    "hieu": 1,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Nguyên hàm - Tích phân",
+   "grade": 12,
+   "topic_code": "nguyen_ham_tich_phan",
+   "multiple_choice": {
+    "biet": 2,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 1,
+    "hieu": 3,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 1
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Thống kê với mẫu số liệu ghép nhóm",
+   "grade": 12,
+   "topic_code": "thong_ke_phan_tan",
+   "multiple_choice": {
+    "biet": 0,
+    "hieu": 1,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_items": []
+  },
+  {
+   "unit_name": "Hình học không gian Oxyz",
+   "grade": 12,
+   "topic_code": "toa_do_khong_gian",
+   "multiple_choice": {
+    "biet": 2,
+    "hieu": 0,
+    "van_dung": 0
+   },
+   "true_false_statements": {
+    "biet": 0,
+    "hieu": 3,
+    "van_dung": 1
+   },
+   "short_answer": {
+    "biet": 0,
+    "hieu": 0,
+    "van_dung": 1
+   },
+   "true_false_items": []
+  }
+ ]
+}

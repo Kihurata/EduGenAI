@@ -1,0 +1,524 @@
+{
+  "ready_for_rag": false,
+  "issues": [
+    "Chủ đề 'Mệnh đề và tập hợp' chưa có mã trong Toán topic list",
+    "Chủ đề 'Hệ thức lượng trong tam giác' chưa có mã trong Toán topic list"
+  ],
+  "matrix": {
+    "subject": "toan",
+    "grade": 10,
+    "name": "KTGK - HK1 - 10",
+    "exam_kind": "dinh_ky_7991",
+    "count_unit": "item",
+    "cells": [
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": "Mệnh đề",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "biet",
+        "count": 2,
+        "competency_codes": [
+          "TD1.2"
+        ],
+        "source_text": "02 (TD1.2)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": "Tập hợp-Các phép toán trên tập hợp",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "biet",
+        "count": 2,
+        "competency_codes": [
+          "TD1.2"
+        ],
+        "source_text": "02 (TD1.2)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": "Tập hợp-Các phép toán trên tập hợp",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "hieu",
+        "count": 1,
+        "competency_codes": [
+          "TD1.3"
+        ],
+        "source_text": "01 (TD1.3)"
+      },
+      {
+        "strand": "dai_so_giai_tich",
+        "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+        "source_topic": "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "content_unit": "Bất pt bậc nhất hai ẩn",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "biet",
+        "count": 1,
+        "competency_codes": [
+          "TD1.2"
+        ],
+        "source_text": "01 (TD1.2)"
+      },
+      {
+        "strand": "dai_so_giai_tich",
+        "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+        "source_topic": "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "content_unit": "Bất pt bậc nhất hai ẩn",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "hieu",
+        "count": 1,
+        "competency_codes": [
+          "TD1.3"
+        ],
+        "source_text": "01 (TD1.3)"
+      },
+      {
+        "strand": "dai_so_giai_tich",
+        "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+        "source_topic": "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "content_unit": "Hệ bất pt bậc nhất hai ẩn",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "biet",
+        "count": 1,
+        "competency_codes": [
+          "TD1.2"
+        ],
+        "source_text": "01 (TD1.2)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Hệ thức lượng trong tam giác",
+        "content_unit": "Giá trị lượng giác của một góc",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "biet",
+        "count": 1,
+        "competency_codes": [
+          "TD1.2"
+        ],
+        "source_text": "01 (TD1.2)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Hệ thức lượng trong tam giác",
+        "content_unit": "Giá trị lượng giác của một góc",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "hieu",
+        "count": 1,
+        "competency_codes": [
+          "TD1.3"
+        ],
+        "source_text": "01 (TD1.3)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Hệ thức lượng trong tam giác",
+        "content_unit": "Hệ thức lượng trong tam giác",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "biet",
+        "count": 1,
+        "competency_codes": [
+          "TD1.2"
+        ],
+        "source_text": "01 (TD1.2)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Hệ thức lượng trong tam giác",
+        "content_unit": "Hệ thức lượng trong tam giác",
+        "part": "I",
+        "type": "multiple_choice",
+        "level": "hieu",
+        "count": 1,
+        "competency_codes": [
+          "TD1.3"
+        ],
+        "source_text": "01 (TD1.3)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": null,
+        "part": "II",
+        "type": "true_false",
+        "question": 1,
+        "level": "biet",
+        "count": 2,
+        "competency_codes": [
+          "GQ1.4"
+        ],
+        "source_text": "2a, 2b (GQ1.4)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": null,
+        "part": "II",
+        "type": "true_false",
+        "question": 1,
+        "level": "hieu",
+        "count": 2,
+        "competency_codes": [
+          "GQ2.1"
+        ],
+        "source_text": "2c, 2d (GQ2.1)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": null,
+        "part": "II",
+        "type": "true_false",
+        "question": 2,
+        "level": "biet",
+        "count": 2,
+        "competency_codes": [
+          "GQ1.4"
+        ],
+        "source_text": "2a, 2b (GQ1.4)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": null,
+        "part": "II",
+        "type": "true_false",
+        "question": 2,
+        "level": "hieu",
+        "count": 2,
+        "competency_codes": [
+          "GQ2.1"
+        ],
+        "source_text": "2c, 2d (GQ2.1)"
+      },
+      {
+        "strand": "dai_so_giai_tich",
+        "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+        "source_topic": "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "content_unit": null,
+        "part": "II",
+        "type": "true_false",
+        "question": 3,
+        "level": "biet",
+        "count": 2,
+        "competency_codes": [
+          "GQ1.4"
+        ],
+        "source_text": "a, b (GQ1.4)"
+      },
+      {
+        "strand": "dai_so_giai_tich",
+        "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+        "source_topic": "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "content_unit": null,
+        "part": "II",
+        "type": "true_false",
+        "question": 3,
+        "level": "hieu",
+        "count": 2,
+        "competency_codes": [
+          "GQ2.1"
+        ],
+        "source_text": "c, d (GQ2.1)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Hệ thức lượng trong tam giác",
+        "content_unit": "Hệ thức lượng trong tam giác",
+        "part": "II",
+        "type": "true_false",
+        "question": 4,
+        "level": "biet",
+        "count": 2,
+        "competency_codes": [
+          "GQ1.4"
+        ],
+        "source_text": "a, b (GQ1.4)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Hệ thức lượng trong tam giác",
+        "content_unit": "Hệ thức lượng trong tam giác",
+        "part": "II",
+        "type": "true_false",
+        "question": 4,
+        "level": "hieu",
+        "count": 2,
+        "competency_codes": [
+          "GQ2.1"
+        ],
+        "source_text": "c, d (GQ2.1)"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": "Tập hợp-Các phép toán trên tập hợp",
+        "part": "III",
+        "type": "short_answer",
+        "level": "hieu",
+        "count": 1,
+        "competency_codes": [],
+        "source_text": "1"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Mệnh đề và tập hợp",
+        "content_unit": "Tập hợp-Các phép toán trên tập hợp",
+        "part": "III",
+        "type": "short_answer",
+        "level": "vandung",
+        "count": 1,
+        "competency_codes": [],
+        "source_text": "1"
+      },
+      {
+        "strand": "dai_so_giai_tich",
+        "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+        "source_topic": "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "content_unit": "Bất pt bậc nhất hai ẩn",
+        "part": "III",
+        "type": "short_answer",
+        "level": "hieu",
+        "count": 1,
+        "competency_codes": [],
+        "source_text": "1"
+      },
+      {
+        "strand": "dai_so_giai_tich",
+        "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+        "source_topic": "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "content_unit": "Hệ bất pt bậc nhất hai ẩn",
+        "part": "III",
+        "type": "short_answer",
+        "level": "vandung",
+        "count": 1,
+        "competency_codes": [],
+        "source_text": "1"
+      },
+      {
+        "strand": null,
+        "topic": null,
+        "source_topic": "Hệ thức lượng trong tam giác",
+        "content_unit": null,
+        "part": "III",
+        "type": "short_answer",
+        "level": "vandung",
+        "count": 2,
+        "competency_codes": [],
+        "source_text": "2"
+      }
+    ],
+    "constraints": {
+      "total_items": {
+        "I": 12,
+        "II": 16,
+        "III": 6
+      },
+      "level_totals": {
+        "I": {
+          "biet": 8,
+          "hieu": 4,
+          "vandung": 0
+        },
+        "II": {
+          "biet": 8,
+          "hieu": 8,
+          "vandung": 0
+        },
+        "III": {
+          "biet": 0,
+          "hieu": 2,
+          "vandung": 4
+        }
+      },
+      "score_totals": {
+        "I": {
+          "biet": 2.0,
+          "hieu": 1.0,
+          "vandung": 0.0
+        },
+        "II": {
+          "biet": 2.0,
+          "hieu": 2.0,
+          "vandung": 0.0
+        },
+        "III": {
+          "biet": 0.0,
+          "hieu": 1.0,
+          "vandung": 2.0
+        }
+      },
+      "total_score": 10.0
+    }
+  },
+  "rag_cells": [
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Biết",
+      "type": "multiple_choice",
+      "count": 2
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Biết",
+      "type": "multiple_choice",
+      "count": 2
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Hiểu",
+      "type": "multiple_choice",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+      "level": "Biết",
+      "type": "multiple_choice",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+      "level": "Hiểu",
+      "type": "multiple_choice",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+      "level": "Biết",
+      "type": "multiple_choice",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Biết",
+      "type": "multiple_choice",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Hiểu",
+      "type": "multiple_choice",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Biết",
+      "type": "multiple_choice",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Hiểu",
+      "type": "multiple_choice",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Hiểu",
+      "type": "true_false",
+      "count": 2,
+      "statement_levels": [
+        "Biết",
+        "Biết",
+        "Hiểu",
+        "Hiểu"
+      ]
+    },
+    {
+      "subject": "toan",
+      "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+      "level": "Hiểu",
+      "type": "true_false",
+      "count": 1,
+      "statement_levels": [
+        "Biết",
+        "Biết",
+        "Hiểu",
+        "Hiểu"
+      ]
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Hiểu",
+      "type": "true_false",
+      "count": 1,
+      "statement_levels": [
+        "Biết",
+        "Biết",
+        "Hiểu",
+        "Hiểu"
+      ]
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Hiểu",
+      "type": "short_answer",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Vận dụng",
+      "type": "short_answer",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+      "level": "Hiểu",
+      "type": "short_answer",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": "he_bat_phuong_trinh_bac_nhat_hai_an",
+      "level": "Vận dụng",
+      "type": "short_answer",
+      "count": 1
+    },
+    {
+      "subject": "toan",
+      "topic": null,
+      "level": "Vận dụng",
+      "type": "short_answer",
+      "count": 2
+    }
+  ]
+}

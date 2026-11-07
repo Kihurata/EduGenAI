@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { BankEntry } from "@/types";
 
-import { FormError } from "./lib";
+import { codesLabel, exportRequest, FormError, parseCodes } from "./lib";
 
 // NOTE: admin controls (show/hide for teachers, RAG status, remove from bank) moved to /admin/bank.
 export default function BankPage() {
   const [items, setItems] = useState<BankEntry[] | null>(null);
   const [grade, setGrade] = useState("");
   const [q, setQ] = useState("");
+  const [codesText, setCodesText] = useState("");
   const list = useAction();
   const action = useAction();
 
@@ -23,6 +24,12 @@ export default function BankPage() {
     void list.run(async () => setItems(await api<BankEntry[]>(grade ? `/bank?grade=${grade}` : "/bank")));
   }, [grade]);
   useEffect(load, [load]);
+
+  const { codes, error: codesError } = parseCodes(codesText);
+  const get = (id: string, variant: "student" | "teacher") => {
+    const { path, fallback } = exportRequest(`/bank/${id}`, variant, codes);
+    return action.run(() => download(path, fallback));
+  };
 
   const shown = items?.filter((e) => e.title.toLowerCase().includes(q.trim().toLowerCase()));
 
@@ -49,7 +56,22 @@ export default function BankPage() {
             </button>
           ))}
         </div>
+        <div className="ml-auto flex items-center gap-2 text-sm">
+          <label htmlFor="bank-codes" className="text-muted">
+            Mã đề khi tải
+          </label>
+          <Input
+            id="bank-codes"
+            className="w-44"
+            value={codesText}
+            onChange={(e) => setCodesText(e.target.value)}
+            placeholder="Trống = bản gốc; 101, 102…"
+            aria-invalid={Boolean(codesError)}
+            autoComplete="off"
+          />
+        </div>
       </div>
+      {codesError && <p className="-mt-2 mb-3 text-right text-xs text-bad">{codesError}</p>}
 
       <FormError error={action.error} />
       {list.error && !items ? (
@@ -68,12 +90,12 @@ export default function BankPage() {
                   Lớp {e.grade} · {e.duration_minutes} phút{e.matrix_name ? ` · ${e.matrix_name}` : ""} · {e.saved_by.full_name}, {formatTime(e.saved_at)}
                 </p>
               </div>
-              {/* API: GET /api/v1/bank/{id}/export?variant=student|teacher (docx) */}
-              <Button variant="outline" disabled={action.busy} onClick={() => action.run(() => download(`/bank/${e.id}/export?variant=student`, "de.docx"))}>
-                Bản học sinh
+              {/* API: GET /api/v1/bank/{id}/export?variant=student|teacher[&code=] (docx) · /export-variants?codes= (zip) */}
+              <Button variant="outline" disabled={action.busy || Boolean(codesError)} onClick={() => get(e.id, "student")}>
+                Bản học sinh{codes.length > 1 ? ` (${codesLabel(codes)})` : ""}
               </Button>
-              <Button variant="outline" disabled={action.busy} onClick={() => action.run(() => download(`/bank/${e.id}/export?variant=teacher`, "de-gv.docx"))}>
-                Bản giáo viên
+              <Button variant="outline" disabled={action.busy || Boolean(codesError)} onClick={() => get(e.id, "teacher")}>
+                Bản giáo viên{codes.length > 1 ? ` (${codesLabel(codes)})` : ""}
               </Button>
             </li>
           ))}

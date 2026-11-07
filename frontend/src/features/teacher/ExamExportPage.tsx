@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { api, download } from "@/api";
@@ -8,12 +8,27 @@ import { Seal } from "@/components/Seal";
 import { Stepper } from "@/components/Stepper";
 import { ErrorState } from "@/components/states";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { subjectLabel, useSubjects } from "@/subjects";
-import { PART_OF_TYPE, type Exam, type Question } from "@/types";
+import { PART_OF_TYPE, type Exam, type ExamVariant, type Question } from "@/types";
 
-import { FormError, LETTERS, mathOption, optionColumns, PAPER_FONT, PART_HEAD, PARTS, solutionSteps, teacherSteps } from "./lib";
+import {
+  codesLabel,
+  exportRequest,
+  FormError,
+  LETTERS,
+  mathOption,
+  MAX_EXAM_CODES,
+  optionColumns,
+  PAPER_FONT,
+  PART_HEAD,
+  PARTS,
+  parseCodes,
+  solutionSteps,
+  SUGGESTED_CODES,
+  teacherSteps,
+} from "./lib";
 
 // A4 at 96 dpi; the preview approximates the .docx layout (Times 12 pt), it is not a render of the file.
 const SHEET_W = 794;
@@ -113,7 +128,7 @@ function KeyTable({ head, rows }: Readonly<{ head: (string | number)[]; rows: (s
   );
 }
 
-function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: number, subject: string): Block[] {
+function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: number, subject: string, code?: string): Block[] {
   const partOf = (q: Question) => q.part || PART_OF_TYPE[q.content.type];
   const sorted = [...exam.questions].sort((a, b) => a.position - b.position);
   const blocks: Block[] = [
@@ -135,6 +150,7 @@ function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: nu
                   <div className="font-bold uppercase">{exam.title}</div>
                   <div className="font-bold uppercase">Môn: {subject || "…"} – Lớp {exam.grade ?? "…"}</div>
                   <div className="italic">Thời gian làm bài: {exam.duration_minutes} phút, không kể thời gian phát đề</div>
+                  {code && <div className="mt-1 font-bold">Mã đề: {code}</div>}
                 </td>
               </tr>
             </tbody>
@@ -236,6 +252,9 @@ export default function ExamExportPage() {
   const [fontsTick, setFontsTick] = useState(0);
   const measureRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [codesText, setCodesText] = useState("");
+  const [variantPreview, setVariantPreview] = useState<ExamVariant | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
   const loader = useAction();
   const action = useAction();
 
@@ -245,13 +264,55 @@ export default function ExamExportPage() {
   }, [id]);
   useEffect(load, [load]);
 
+  const { codes, error: codesError } = parseCodes(codesText);
+  const previewCode = codes[0];
+
+  // Xem trước theo mã đề đầu tiên: thứ tự lấy từ BE để khớp file tải về (thuật toán xáo nằm ở BE).
+  useEffect(() => {
+    setPreviewFailed(false);
+    if (!previewCode) {
+      setVariantPreview(null);
+      return;
+    }
+    let stale = false;
+    const timer = setTimeout(() => {
+      // API: GET /api/v1/exams/{id}/variant?code=
+      api<ExamVariant>(`/exams/${id}/variant?code=${previewCode}`)
+        .then((v) => {
+          if (!stale) setVariantPreview(v);
+        })
+        .catch(() => {
+          if (stale) return;
+          setVariantPreview(null);
+          setPreviewFailed(true);
+        });
+    }, 350);
+    return () => {
+      stale = true;
+      clearTimeout(timer);
+    };
+  }, [id, previewCode]);
+
   useEffect(() => {
     void document.fonts?.ready.then(() => setFontsTick((t) => t + 1));
   }, []);
 
   const teacher = variant === "teacher";
   const pageCount = pages?.length ?? 0;
-  const blocks = exam ? buildBlocks(exam, teacher, user?.school.name ?? "", pageCount, subjectLabel(subjects, exam.subject)) : [];
+  const shownCode = variantPreview?.code === previewCode ? previewCode : undefined;
+  const shown = useMemo(() => {
+    if (!exam || !variantPreview || !shownCode) return exam;
+    const questions: Question[] = variantPreview.questions.map((q) => ({
+      id: `${variantPreview.code}-${q.position}`,
+      position: q.position,
+      part: q.part,
+      matrix_cell_id: "",
+      content: q.content,
+      edited: false,
+    }));
+    return { ...exam, questions };
+  }, [exam, variantPreview, shownCode]);
+  const blocks = shown ? buildBlocks(shown, teacher, user?.school.name ?? "", pageCount, subjectLabel(subjects, shown.subject), shownCode) : [];
 
   // Measure the hidden copy of every block, then split into A4 pages.
   useLayoutEffect(() => {
@@ -260,7 +321,7 @@ export default function ExamExportPage() {
     const heights = [...root.children].map((el) => el.getBoundingClientRect().height);
     setPages(paginate(blocks, heights));
     // blocks are rebuilt every render; exam / variant / fonts are what change them
-  }, [exam, variant, fontsTick]);
+  }, [shown, variant, fontsTick]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -288,8 +349,12 @@ export default function ExamExportPage() {
   }
 
   const approved = exam.status === "approved";
-  // API: GET /api/v1/exams/{id}/export?variant=student|teacher (docx)
-  const get = (v: Variant, name: string) => action.run(() => download(`/exams/${id}/export?variant=${v}`, name));
+  // API: GET /api/v1/exams/{id}/export?variant=student|teacher[&code=] (docx)
+  //      GET /api/v1/exams/{id}/export-variants?variant=student|teacher&codes=101,102 (zip)
+  const get = (v: Variant) => {
+    const { path, fallback } = exportRequest(`/exams/${id}`, v, codes);
+    return action.run(() => download(path, fallback));
+  };
   const scale = zoom === "fit" ? fit : Number(zoom);
   const count = (t: string) => exam.questions.filter((q) => q.content.type === t).length;
 
@@ -379,17 +444,44 @@ export default function ExamExportPage() {
               </Link>
             </p>
           )}
-          <Button className="h-11 w-full" disabled={!approved || action.busy} onClick={() => get("student", "de-hoc-sinh.docx")}>
-            Tải bản học sinh (.docx)
+          <div className="space-y-1.5">
+            <label htmlFor="exam-codes" className="block font-medium">
+              Mã đề
+            </label>
+            <Input
+              id="exam-codes"
+              value={codesText}
+              onChange={(e) => setCodesText(e.target.value)}
+              placeholder="Để trống = bản gốc"
+              aria-invalid={Boolean(codesError)}
+              aria-describedby="exam-codes-hint"
+              autoComplete="off"
+            />
+            <p id="exam-codes-hint" className={cn("text-xs", codesError ? "text-bad" : "text-muted")}>
+              {codesError ??
+                (codes.length === 0
+                  ? `Nhập một mã (vd 101) hoặc nhiều mã cách nhau bằng dấu phẩy, tối đa ${MAX_EXAM_CODES}. Mỗi mã có thứ tự câu và phương án khác nhau.`
+                  : codes.length === 1
+                    ? "Câu và phương án được xáo theo mã này; mã in trên đề."
+                    : `Tải ${codes.length} mã đề trong một file zip. Bản xem trước hiển thị mã ${codes[0]}.`)}
+            </p>
+            {previewFailed && <p className="text-xs text-bad">Không tải được bản xem trước theo mã đề này.</p>}
+            <button type="button" className="cursor-pointer text-xs text-accent underline" onClick={() => setCodesText(SUGGESTED_CODES.join(", "))}>
+              Điền {SUGGESTED_CODES.length} mã đề mẫu
+            </button>
+          </div>
+          <Button className="h-11 w-full" disabled={!approved || action.busy || Boolean(codesError)} onClick={() => get("student")}>
+            Tải bản học sinh ({codesLabel(codes)})
           </Button>
-          <Button variant="outline" className="h-11 w-full" disabled={!approved || action.busy} onClick={() => get("teacher", "de-giao-vien.docx")}>
-            Tải bản giáo viên (.docx)
+          <Button variant="outline" className="h-11 w-full" disabled={!approved || action.busy || Boolean(codesError)} onClick={() => get("teacher")}>
+            Tải bản giáo viên ({codesLabel(codes)})
           </Button>
           <FormError error={action.error} />
           <table className="w-full border-collapse">
             <tbody className="tabular-nums">
               {[
                 ["Phiên bản đang xem", teacher ? "Giáo viên" : "Học sinh"],
+                ["Mã đề", codes.length ? codes.join(", ") : "Bản gốc"],
                 ["Số trang", pageCount || "…"],
                 ["Số câu", `${exam.questions.length} (${count("multiple_choice")} · ${count("true_false")} · ${count("short_answer")})`],
                 ["Thời gian", `${exam.duration_minutes} phút`],

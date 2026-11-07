@@ -7,6 +7,11 @@ FROM python:3.12-slim
 RUN pip install --no-cache-dir uv==0.11.29
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PYTHONUNBUFFERED=1 PYTHONIOENCODING=utf-8
 
+# Cairo for cairosvg (figure SVG -> PNG in the DOCX export); the SVG labels use font-family "serif", which needs one font.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libcairo2 fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 # Dependencies first so a code change does not reinstall them.
 COPY pyproject.toml uv.lock ./
@@ -14,6 +19,9 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY alembic.ini ./
 COPY alembic ./alembic
 COPY app ./app
+
+# Build fails if Cairo cannot load (the DOCX export would silently drop every figure).
+RUN /app/.venv/bin/python -c "from app.services.figure_png import svg_to_png; assert svg_to_png('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\"><text y=\"15\">A</text></svg>')[1:4] == b'PNG'"
 
 # Run as an unprivileged user; /app/storage is created here so a new named volume inherits its owner.
 RUN useradd --system --uid 10001 --home-dir /app --shell /usr/sbin/nologin edugen \

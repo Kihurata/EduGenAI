@@ -69,11 +69,19 @@ class Table:
 
 
 @dataclass(frozen=True)
+class Figure:
+    """Hình khối của câu (SVG từ domain/figure.py); caption là mô tả chữ, dùng khi không nhúng được ảnh."""
+
+    svg: str
+    caption: str = ""
+
+
+@dataclass(frozen=True)
 class PageBreak:
     pass
 
 
-Block = Heading | Paragraph | Item | Table | PageBreak
+Block = Heading | Paragraph | Item | Table | Figure | PageBreak
 
 
 def _p(text: str, bold: bool = False, center: bool = False) -> Paragraph:
@@ -102,6 +110,8 @@ def _stem(n: int, q: Question) -> list[Block]:
             blocks.append(Table(tuple(tuple(r) + ("",) * (width - len(r)) for r in seg["table"])))
         else:
             blocks.append(Paragraph((Run(seg["text"]),)))
+    if q.get("figure_svg"):
+        blocks.append(Figure(q["figure_svg"], q.get("figure") or ""))
     return blocks
 
 
@@ -220,6 +230,8 @@ def to_markdown(blocks: list[Block]) -> str:
                 lines = ["| " + " | ".join(r) + " |" for r in rows]
                 lines.insert(1, "|" + "---|" * len(rows[0]))
                 out.append("\n".join(lines) + "\n")
+            case Figure(_, caption) if caption:  # markdown không nhúng ảnh; chỉ giữ mô tả chữ
+                out.append(f"*Hình: {caption}*\n")
             case PageBreak():
                 out.append("---\n")
     return "\n".join(out)

@@ -61,3 +61,39 @@ def test_validate_uses_be_structure_check():
 def test_sample_rag_ingest_is_immediately_done():
     rag = SampleRag.from_file(SAMPLES)
     assert rag.ingest_status(rag.ingest(b"x", "a.pdf", {})) == ("done", None)
+
+
+# ----- mẫu hình khối để thử cả luồng vẽ hình với FE, không cần LLM -----
+
+FIGURES = Path(__file__).parents[1] / "fixtures" / "rag" / "ket_qua_mau_hinh.json"
+
+
+def test_from_files_keeps_every_question_in_file_order():
+    both = SampleRag.from_files(SAMPLES, FIGURES)
+    assert both.questions[: len(SampleRag.from_file(SAMPLES).questions)] == SampleRag.from_file(SAMPLES).questions
+    assert len(both.questions) == len(SampleRag.from_file(SAMPLES).questions) + len(SampleRag.from_file(FIGURES).questions)
+
+
+def test_figure_samples_are_valid_multiple_choice_questions_with_a_spec_for_each_solid():
+    rag = SampleRag.from_file(FIGURES)
+    valid, rejected = rag.generate(cell(MC, B, 3))
+    assert rejected == []
+    assert sorted(q["hinh_ve"]["solid"] for q in valid) == ["box", "prism", "pyramid"]
+    assert all(rag.validate(q, cell(MC, B, 3)) == [] for q in valid)
+
+
+def test_figure_samples_get_an_svg_through_generate_cell():
+    [run] = [generate_cell(cell(MC, B, 3), SampleRag.from_file(FIGURES))]
+    assert run.status is CellRunStatus.complete
+    assert [q["figure_svg"][:4] for q in run.questions] == ["<svg"] * 3
+    assert all(q["figure"] for q in run.questions)  # mô tả chữ luôn đi kèm để dự phòng
+
+
+def test_figure_sample_stems_use_the_fixed_vertex_names_of_the_drawing():
+    stems = {q["hinh_ve"]["solid"]: q["de_bai"] for q in SampleRag.from_file(FIGURES).questions}
+    assert "ABCD.A'B'C'D'" in stems["box"] and "S.ABCD" in stems["pyramid"] and "ABC.A'B'C'" in stems["prism"]
+
+
+def test_cycling_through_both_files_still_returns_exactly_count_questions():
+    valid, _ = SampleRag.from_files(SAMPLES, FIGURES).generate(cell(MC, B, 9))
+    assert len(valid) == 9 and sum("hinh_ve" in q for q in valid) >= 3

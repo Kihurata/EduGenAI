@@ -21,5 +21,5 @@ def svg_to_png(svg: str, scale: float = DEFAULT_SCALE) -> bytes:
         return cairosvg.svg2png(bytestring=svg.encode("utf-8"), scale=scale)
     except FigureError:
         raise
-    except Exception as exc:  # noqa: BLE001 – ParseError, OSError (thiếu libcairo), lỗi của cairosvg: đều là "không đổi được"
+    except Exception as exc:  # ParseError, OSError (thiếu libcairo), lỗi của cairosvg: đều là "không đổi được"
         raise FigureError(f"Không đổi được SVG sang PNG: {exc}") from exc

@@ -68,6 +68,19 @@ def test_official_and_grade_come_from_the_manifest(tmp_path):
     assert {(p["official"], p["grade"]) for p in _points(client).values()} == {(False, 11)}
 
 
+def test_sgk_text_and_heading_path_carry_the_manifest_grade(tmp_path):
+    """T-056: a grade-11 book must not read "Toán 12 > ..." in the embedded text or the citation path."""
+    client = memory_client()
+
+    ingest_sources(_manifest(tmp_path, [_sgk_entry(tmp_path, grade=11)]), client, FakeEmbedder(),
+                   count_tokens=count_words)
+
+    points = _points(client).values()
+    assert points
+    assert {p["heading_path"].split(" > ")[0] for p in points} == {"Toán 11"}
+    assert all(p["text"].startswith("Toán 11 > ") for p in points)
+
+
 @pytest.mark.parametrize("entry, error", [
     ({"id": "x"}, "x: missing doc_type"),
     ({"doc_type": "video"}, "unknown doc_type 'video'"),

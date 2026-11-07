@@ -4,7 +4,9 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
-SUBJECT_NAMES = {"toan": "Toán", "ly": "Vật lí", "hoa": "Hoá học", "sinh": "Sinh học"}
+from app.core.subjects import SUBJECTS
+
+SUBJECT_NAMES = {s.code: s.label for s in SUBJECTS.values()}  # tên ngắn của môn, từ registry (D-020)
 HEADING = re.compile(r"^(#{1,3}) (.+?)\s*$")  # level 1 Chương, 2 Bài, 3 Mục; deeper levels are paragraph text
 _PAGE = re.compile(r"^\{(\d+)\}-{10,}\s*$", re.MULTILINE)
 

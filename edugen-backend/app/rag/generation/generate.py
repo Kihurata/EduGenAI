@@ -3,6 +3,7 @@
 import json
 import re
 
+from app.core.subjects import get_subject
 from app.rag.dto import Cell, Chunk, Question
 from app.rag.generation.guardrails import log_suspicious, mask_pii
 from app.rag.generation.latex import normalize_strings
@@ -29,9 +30,8 @@ NO_RAG_SYSTEM_PROMPT = SYSTEM_PROMPT.replace(_RAG_RULE, (
     "- Dùng kiến thức trong chương trình Toán THPT 2018. Mỗi câu ghi vào source_chunk_ids nguồn kiến thức đã dùng "
     "(tên sách, bài, trang)."))
 
-# T-050: Lý and Hóa reuse the Toán rules with their own subject name and a few subject rules (from the vault notes
-# "Môn Lý" / "Môn Hóa"); Toán keeps the exact prompts above.
-_SUBJECT_NAMES = {"ly": "Vật lí", "hoa": "Hoá học"}
+# T-050: Lý and Hóa reuse the Toán rules with their own subject name (registry label, D-020) and a few subject rules
+# (from the vault notes "Môn Lý" / "Môn Hóa"); Toán keeps the exact prompts above.
 _SUBJECT_RULES = {
     "ly": ("- Đề ghi rõ đơn vị của mọi đại lượng; khi tính, đổi về đơn vị SI (°C sang K, lít sang m³, g sang kg) và "
            "viết sympy.expr theo các giá trị đã đổi.\n"
@@ -48,11 +48,10 @@ _SUBJECT_RULES = {
 def system_prompt(subject: str, rag: bool = True) -> str:
     """System prompt for a cell's subject: Toán unchanged; Lý/Hóa renamed plus their own rules."""
     base = SYSTEM_PROMPT if rag else NO_RAG_SYSTEM_PROMPT
-    name = _SUBJECT_NAMES.get(subject)
-    if name is None:
-        return base
+    name = get_subject(subject).label  # T-064: a subject outside the registry raises, never gets the Toán prompt
     renamed = base.replace("môn Toán", f"môn {name}").replace("chương trình Toán THPT", f"chương trình {name} THPT")
-    return f"{renamed}\n{_SUBJECT_RULES[subject]}"
+    rules = _SUBJECT_RULES.get(subject)
+    return f"{renamed}\n{rules}" if rules else renamed
 
 _STR = {"type": "string"}
 _COMMON = {"stem": _STR, "explanation": _STR, "source_chunk_ids": {"type": "array", "items": _STR},

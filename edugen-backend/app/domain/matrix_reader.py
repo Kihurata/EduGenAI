@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
 from html.parser import HTMLParser
 
+from app.core.subjects import SUBJECT_CODES
 from app.domain.exam_structure import (
     FULL_SCORE,
     STATEMENTS_PER_TRUE_FALSE,
@@ -20,11 +21,6 @@ from app.models.enums import LEVEL_ORDER, Level, QuestionType
 
 MC, TF, SA = QuestionType.multiple_choice, QuestionType.true_false, QuestionType.short_answer
 
-SUBJECT_CODES = {
-    "toán học": "toan", "toán": "toan",
-    "vật lí": "ly", "vật lý": "ly", "lí": "ly", "lý": "ly",
-    "hóa học": "hoa", "hoá học": "hoa", "hóa": "hoa", "hoá": "hoa",
-}  # fmt: skip
 VALID_GRADES = range(10, 13)
 STATEMENTS = "abcd"
 

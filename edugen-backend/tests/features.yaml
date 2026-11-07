@@ -179,6 +179,8 @@ features:
     title: Deploy and operations
     tasks: [T-041, T-042, T-043]
     pending: [T-042 smoke on the real server]
+    integration:
+      - tests/smoke/test_deploy.py   # skipped without BASE_URL; only the no-secret check runs offline
 
   platform:
     title: DB schema, file storage, RAG stage boundaries, and this test map

@@ -7,6 +7,7 @@ from typing import Any
 from app.domain.figure.solids import BUILDERS
 
 FEET = ("A", "center")
+MIN_DIM, MAX_DIM = 1e-3, 1e4  # đủ cho mọi số đo trong SGK; ngoài khoảng này hình tính ra inf/NaN
 MAX_RATIO = 10  # cạnh dài nhất / ngắn nhất; lệch hơn thì hình dẹt đến mức nhãn không đặt được
 
 
@@ -25,8 +26,9 @@ class Spec:
 
 def _dim(raw: dict, key: str) -> float:
     value = raw.get(key)
-    if isinstance(value, bool) or not isinstance(value, int | float) or not math.isfinite(value) or value <= 0:
-        raise FigureError(f"Kích thước '{key}' của hình phải là số dương")
+    ok = isinstance(value, int | float) and not isinstance(value, bool) and math.isfinite(value)
+    if not ok or not MIN_DIM <= value <= MAX_DIM:
+        raise FigureError(f"Kích thước '{key}' của hình phải là số trong khoảng [{MIN_DIM:g}, {MAX_DIM:g}]")
     return float(value)
 
 

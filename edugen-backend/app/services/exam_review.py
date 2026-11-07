@@ -12,6 +12,7 @@ from typing import Any
 from sqlalchemy.orm import sessionmaker
 
 from app.domain.exam_structure import PART_OF_TYPE
+from app.domain.figure import with_figure
 from app.domain.generation import QuestionGenerator, generate_cell
 from app.domain.question import parse_question, to_rag
 from app.models import Exam, ExamQuestion, MatrixCell
@@ -38,7 +39,7 @@ def edit_question(question: ExamQuestion, content: dict[str, Any], rag: Question
         return errors
     if question.original is None:
         question.original = question.content
-    question.content = normalized
+    question.content = with_figure(normalized)  # SVG vẽ lại từ spec mới; SVG máy khách gửi lên không được tin
     return []
 
 

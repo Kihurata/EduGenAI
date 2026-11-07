@@ -58,6 +58,7 @@ features:
       - tests/unit/test_matrix_json.py   # matrix image → standard JSON + rag_cells
       - tests/unit/test_matrix_converter.py
       - tests/unit/test_matrix_converter_gemini.py   # Gemini converter → JSON (D-016, MATRIX_CONVERTER=gemini)
+      - tests/unit/test_matrix_cache.py   # cache JSON Gemini theo SHA-256 file
       - tests/unit/test_matrix_jobs.py
       - tests/api/test_demo_matrix.py   # demo Toán 12 fixture + scripts/create_demo_matrix.py
       - tests/unit/test_topics.py

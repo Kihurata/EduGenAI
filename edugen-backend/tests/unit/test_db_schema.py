@@ -26,7 +26,7 @@ TABLES = Base.metadata.tables
 ERD_TABLES = {
     "schools", "users", "refresh_tokens", "subjects",
     "sample_exams",
-    "exam_matrices", "matrix_cells",
+    "exam_matrices", "matrix_cells", "matrix_conversions",
     "exams", "exam_cell_runs", "exam_questions", "exam_exports",
     "exam_bank_entries",
 }  # fmt: skip

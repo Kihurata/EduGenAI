@@ -110,13 +110,14 @@ def test_unknown_file_type_is_rejected_before_calling_gemini(tmp_path):
     assert models.calls == []
 
 
-def test_setting_picks_the_converter(monkeypatch):
+def test_setting_picks_the_converter(monkeypatch, session_factory):
     monkeypatch.setattr(matrix_converter.settings, "matrix_converter", "marker")
-    assert isinstance(matrix_converter.get_matrix_converter(), MarkerConverter)
+    assert isinstance(matrix_converter.get_matrix_converter(session_factory), MarkerConverter)
     monkeypatch.setattr(matrix_converter.settings, "matrix_converter", "gemini")
+    monkeypatch.setattr(matrix_converter.settings, "matrix_cache_enabled", False)
     monkeypatch.setattr(matrix_converter, "GeminiMatrixConverter", lambda model, retry_model: ("gemini", model, retry_model))
     s = matrix_converter.settings
-    assert matrix_converter.get_matrix_converter() == ("gemini", s.matrix_gemini_model, s.matrix_gemini_retry_model)
+    assert matrix_converter.get_matrix_converter(session_factory) == ("gemini", s.matrix_gemini_model, s.matrix_gemini_retry_model)
 
 
 def test_unknown_converter_name_fails_at_startup():

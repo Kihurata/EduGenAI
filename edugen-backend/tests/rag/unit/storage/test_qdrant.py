@@ -24,6 +24,18 @@ class CountingEmbedder(FakeEmbedder):
 
 # --- existing behaviour (T-005) --------------------------------------------------------------------------------
 
+def test_warn_if_empty_flags_a_missing_or_empty_index_only(caplog):
+    qdrant.warn_if_empty(memory_client())
+    empty = memory_client()
+    create_collection(empty)
+    qdrant.warn_if_empty(empty)
+    assert caplog.text.count("missing or empty") == 2
+
+    caplog.clear()
+    qdrant.warn_if_empty(memory_client(chunk_exam(EXAM_2025)[:3]))
+    assert "missing or empty" not in caplog.text
+
+
 def test_chunks_collection_has_dense_and_sparse_vectors():
     client = memory_client()
 

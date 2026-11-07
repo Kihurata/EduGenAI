@@ -117,3 +117,68 @@ def test_BUG_005_later_cells_see_the_stems_of_earlier_valid_questions():
     assert [c.previous_stems for c in rag.calls] == [
         (), ("ô 1 câu 0", "ô 1 câu 1"), ("ô 1 câu 0", "ô 1 câu 1", "ô 2 câu 0", "ô 2 câu 1")]
 
+
+
+# ----- hình khối: gắn figure_svg sau khi RAG trả câu -----
+
+BOX = {"solid": "box", "a": 3, "b": 4, "h": 5, "foot": None}
+
+
+class FigureRag(FakeRag):
+    """Câu thứ n của mỗi ô nhận hinh_ve = specs[n] (thiếu thì không có hình)."""
+
+    def __init__(self, specs, **kw):
+        super().__init__(**kw)
+        self.specs = specs
+
+    def generate(self, c: Cell):
+        valid, rejected = super().generate(c)
+        for q, spec in zip(valid, self.specs, strict=False):
+            q["hinh_ve"] = spec
+            q["hinh"] = "Hình hộp chữ nhật"
+        return valid, rejected
+
+
+def test_question_with_a_spec_gets_its_svg():
+    [run] = generate_all([cell(1, 2)], FigureRag([BOX]))
+    first, second = run.questions
+    assert first["figure_spec"] == BOX and first["figure_svg"].startswith("<svg")
+    assert "figure_svg" not in second and "figure_spec" not in second
+
+
+def test_questions_without_any_spec_are_unchanged():
+    [run] = generate_all([cell(1, 2)], FakeRag())
+    assert all("figure_svg" not in q and "figure_spec" not in q for q in run.questions)
+
+
+def test_bad_spec_is_dropped_but_the_question_stays_valid_with_its_text_figure():
+    [run] = generate_all([cell(1, 2)], FigureRag([{"solid": "sphere", "a": 1, "b": 1, "h": 1, "foot": None}]))
+    first = run.questions[0]
+    assert run.status == CellRunStatus.complete and run.rejected_count == 0
+    assert "figure_spec" not in first and "figure_svg" not in first
+    assert first["figure"] == "Hình hộp chữ nhật"
+
+
+def test_non_dict_spec_is_dropped_too():
+    [run] = generate_all([cell(1, 1)], FigureRag(["hình hộp"]))
+    assert "figure_spec" not in run.questions[0] and run.status == CellRunStatus.complete
+
+
+def test_every_cell_draws_its_own_figures():
+    runs = generate_all([cell(1, 1), cell(2, 1)], FigureRag([BOX]))
+    assert all(r.questions[0]["figure_svg"].startswith("<svg") for r in runs)
+
+
+def test_extra_questions_over_the_cell_count_are_cut_before_drawing(monkeypatch):
+    drawn = []
+    from app.domain import generation
+
+    original = generation.with_figure
+    monkeypatch.setattr(generation, "with_figure", lambda q: drawn.append(q) or original(q))
+    generate_all([cell(1, 1)], FigureRag([BOX, BOX, BOX], valid_counts={1: 3}))
+    assert len(drawn) == 1  # chỉ vẽ câu được giữ lại
+
+
+def test_llm_error_in_a_cell_draws_nothing():
+    [run] = generate_all([cell(1, 1)], FigureRag([BOX], errors={1: LLMError("hỏng")}))
+    assert run.status == CellRunStatus.error and run.questions == []

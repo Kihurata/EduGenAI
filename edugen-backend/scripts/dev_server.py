@@ -7,7 +7,8 @@
 - Tài khoản seed sẵn: admin@nd.vn (admin), gv@nd.vn (giáo viên). Mật khẩu lấy từ biến môi trường
   `EDUGEN_DEV_PASSWORD` lúc seed, không đặt thì sinh ngẫu nhiên; lưu ở `dev_data/password.txt` và in ra
   mỗi lần chạy.
-- RAG: giả lập từ `tests/fixtures/rag/ket_qua_mau.json` (câu mẫu lặp lại, không phải câu sinh thật).
+- RAG: giả lập từ `tests/fixtures/rag/ket_qua_mau.json` và `ket_qua_mau_hinh.json` (câu mẫu lặp lại, không phải câu sinh
+  thật; file hình có hình hộp, chóp, lăng trụ để thử luồng vẽ hình). Không cần khoá LLM hay Qdrant.
 - Ma trận: có `marker_single` thì chạy marker thật; không thì ảnh tải lên phải trùng (theo nội dung)
   một ảnh trong `--matrix-dir`, và BE đọc file `.md` cùng tên cạnh ảnh đó. Thêm đề mẫu = thêm cặp
   `ten.png` + `ten.md` (markdown marker đã xuất) vào thư mục này.
@@ -106,7 +107,7 @@ def main() -> None:
     ap.add_argument("--port", type=int, default=8000)
     ap.add_argument("--data-dir", type=Path, default=BACKEND / "dev_data")
     ap.add_argument("--matrix-dir", type=Path, default=FIXTURES / "matrices")
-    ap.add_argument("--samples", type=Path, default=FIXTURES / "rag" / "ket_qua_mau.json")
+    ap.add_argument("--samples", type=Path, nargs="+", default=[FIXTURES / "rag" / "ket_qua_mau.json", FIXTURES / "rag" / "ket_qua_mau_hinh.json"])
     ap.add_argument("--reset", action="store_true", help="xoá DB và file đã lưu trước khi chạy")
     args = ap.parse_args()
 
@@ -119,7 +120,7 @@ def main() -> None:
     password = demo_password(data_dir)
     seed_demo(factory, password)
     storage = LocalStorage(data_dir / "storage")
-    rag = SampleRag.from_file(args.samples)
+    rag = SampleRag.from_files(*args.samples)
     if shutil.which("marker_single"):
         converter = MarkerConverter(settings.marker_config_path, timeout=settings.marker_timeout_seconds)
     else:

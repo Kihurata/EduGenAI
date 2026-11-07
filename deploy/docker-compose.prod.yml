@@ -1,0 +1,132 @@
+# Production on one VM (T-043, decided 2026-11-06): Caddy (HTTPS) -> frontend (static) and backend (/api, /health);
+# Postgres and uploaded files live on the VM disk in Docker volumes; Qdrant is Qdrant Cloud; the LLM is Gemini.
+# Images come from GHCR, built by CI. On the VM: put this folder in ~/edugen with a filled-in .env, then
+#   docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d
+#
+# Components and who can reach whom:
+#   internet --80/443--> caddy --edge--> frontend, backend --data (no internet)--> db
+#   backend also reaches the internet (Gemini, Qdrant Cloud). Only Caddy publishes ports.
+# Memory limits fit an e2-medium (4 GB): db 1 GB, backend 1.5 GB, caddy 256 MB, frontend 128 MB.
+
+x-common: &common
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  caddy:
+    <<: *common
+    image: caddy:2.10-alpine
+    mem_limit: 256m
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [edge]
+    healthcheck:
+      # Admin API on localhost:2019 (busybox wget ships in the alpine image); proves Caddy is up and has its config.
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:2019/config/ || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+
+  frontend:
+    <<: *common
+    image: ghcr.io/kihurata/edugenai/frontend:${TAG:-main}
+    mem_limit: 128m
+    networks: [edge]
+
+  backend:
+    <<: *common
+    image: ghcr.io/kihurata/edugenai/backend:${TAG:-main}
+    mem_limit: 1536m
+    env_file: .env  # GEMINI_API_KEY, QDRANT_URL, QDRANT_API_KEY, JWT_SECRET, ... (never committed)
+    environment:
+      APP_ENV: prod
+      LLM_PROVIDER: gemini  # an ANTHROPIC_API_KEY in .env must not silently switch the generator to Claude
+      EMBEDDER: gemini
+      MATRIX_CONVERTER: gemini  # temporary until the team decides marker vs Gemini (the image has no marker/torch)
+      QDRANT_URL: ${QDRANT_URL:?set QDRANT_URL in .env (Qdrant Cloud)}  # the image has no local index
+      QDRANT_API_KEY: ${QDRANT_API_KEY:?set QDRANT_API_KEY in .env (Qdrant Cloud)}
+      DATABASE_URL: postgresql+psycopg://edugen:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/edugen
+      STORAGE_DIR: /app/storage
+      CORS_ORIGINS: '["https://${DOMAIN}"]'
+      FORWARDED_ALLOW_IPS: "*"  # only Caddy can reach the backend; trust its X-Forwarded-For for the login throttle
+    volumes:
+      - storage:/app/storage
+    networks: [edge, data]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # One-shot: creates the first school + admin if missing, then exits (re-running is a no-op).
+  # It waits for the backend to be healthy, and the backend only becomes healthy after `alembic upgrade head`
+  # finished, so the tables exist and two alembic runs can never race on a fresh database.
+  seed:
+    image: ghcr.io/kihurata/edugenai/backend:${TAG:-main}
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    env_file: .env
+    environment:
+      APP_ENV: prod
+      DATABASE_URL: postgresql+psycopg://edugen:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/edugen
+      SEED_SCHOOL_CODE: ${SEED_SCHOOL_CODE:?set SEED_SCHOOL_CODE in .env}
+      SEED_SCHOOL_NAME: ${SEED_SCHOOL_NAME:?set SEED_SCHOOL_NAME in .env}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:?set SEED_ADMIN_EMAIL in .env}
+      SEED_ADMIN_NAME: ${SEED_ADMIN_NAME:?set SEED_ADMIN_NAME in .env}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:?set SEED_ADMIN_PASSWORD in .env}
+    command: ["python", "-m", "app.seed", "--if-missing"]
+    networks: [data]
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+
+  db:
+    <<: *common
+    image: postgres:16
+    mem_limit: 1g
+    shm_size: 256m
+    environment:
+      POSTGRES_USER: edugen
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: edugen
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U edugen -d edugen"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+networks:
+  edge:
+  data:
+    internal: true  # no route to the internet; only the backend joins it
+
+volumes:
+  pgdata:
+  storage:
+  caddy_data:
+  caddy_config:

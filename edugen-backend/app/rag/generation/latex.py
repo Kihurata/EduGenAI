@@ -18,9 +18,15 @@ _BROKEN_COMMANDS = {"tiff": "iff"}
 
 _UNICODE_AFTER_BACKSLASH = re.compile(r"\\([^\x00-\x7f])")
 _BROKEN = re.compile(r"\\(" + "|".join(_BROKEN_COMMANDS) + r")(?![a-zA-Z])")
+# Control characters XML (so Word) rejects. Backspace and form feed come from a model's "\b"/"\f" that json.loads read
+# as escapes (repair_latex_escapes keeps them before a non-letter): give the two characters back; drop the others.
+_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+_CONTROL_TEXT = {"\x08": r"\b", "\x0c": r"\f"}
 
 
 def normalize_latex(text: str) -> str:
+    text = _CONTROL.sub(lambda m: _CONTROL_TEXT.get(m.group(), ""), text)
+
     def unicode_command(m):
         command = _UNICODE_COMMANDS.get(m.group(1))
         if command is None:

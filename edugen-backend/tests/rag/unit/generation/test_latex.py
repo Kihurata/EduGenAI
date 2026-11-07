@@ -32,3 +32,12 @@ def test_correct_latex_and_plain_text_are_unchanged(ok):
 
 def test_unknown_unicode_after_a_backslash_keeps_the_symbol_without_the_backslash():
     assert normalize_latex(r"$a \⊥ b$") == r"$a ⊥ b$"
+
+
+def test_control_characters_from_json_escapes_are_made_visible_again():
+    """repair_latex_escapes keeps `\b`/`\f` before a non-letter as JSON escapes, so the text holds backspace or form
+    feed; Word (XML) rejects them and the answer-key export crashed (exam e51bd843, câu 6: "P(A) \x085 P(B)")."""
+    assert normalize_latex("$P(A) \x085 P(B)$") == r"$P(A) \b5 P(B)$"
+    assert normalize_latex("a\x0c1") == r"a\f1"
+    assert normalize_latex("x\x00y\x1bz") == "xyz"  # no visible spelling: dropped
+    assert normalize_latex("dòng 1\ndòng 2\tcột") == "dòng 1\ndòng 2\tcột"  # valid in XML, kept

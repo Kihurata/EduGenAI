@@ -194,6 +194,10 @@ BAD_SPECS = [
     pytest.param({**BOX, "a": None}, id="dim-null"),
     pytest.param({**BOX, "a": 1, "b": 11, "h": 1}, id="ratio-too-skewed"),
     pytest.param({**BOX, "a": 1e-9, "b": 1, "h": 1}, id="tiny-vs-others"),
+    pytest.param({**BOX, "a": 1e-300, "b": 1e-300, "h": 1e-300}, id="all-tiny"),
+    pytest.param({**BOX, "a": 1e300, "b": 1e300, "h": 1e300}, id="all-huge"),
+    pytest.param({**BOX, "a": 1e5, "b": 1e5, "h": 1e5}, id="above-textbook-range"),
+    pytest.param({**BOX, "a": 1e-4, "b": 1e-4, "h": 1e-4}, id="below-textbook-range"),
     pytest.param({**PYRAMID, "foot": "B"}, id="bad-foot"),
     pytest.param({**BOX, "foot": "A"}, id="foot-on-box"),
 ]
@@ -205,6 +209,11 @@ def test_bad_spec_raises_figure_error(spec):
         render_svg(spec)
     with pytest.raises(FigureError):
         layout(spec)
+
+
+@pytest.mark.parametrize("size", [1e-3, 0.5, 100, 1e4])
+def test_realistic_absolute_sizes_are_accepted(size):
+    assert render_svg({**BOX, "a": size, "b": size, "h": size}).startswith("<svg")
 
 
 QUESTION = {"type": "multiple_choice", "stem": "Cho hình chóp $S.ABCD$", "figure": "Chóp S.ABCD, đáy chữ nhật"}

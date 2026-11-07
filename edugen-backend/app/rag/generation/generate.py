@@ -1,6 +1,7 @@
 """Tóm tắt: sinh câu hỏi bằng LLM (T-008): schema JSON cho 3 dạng câu (trắc nghiệm, Đ/S, trả lời ngắn), dựng prompt từ đoạn lý thuyết + 1–2 câu đề mẫu cùng phần, gọi LLM được truyền vào và đọc kết quả thành câu hỏi. Ô Đ/S có thể ghi mức độ riêng cho từng ý a–d (statement_levels); LLM trả về không đọc được thì báo LLMError (T-028). Câu cần hình có thêm figure (mô tả hình bằng chữ), câu cần bảng số liệu có thêm table (danh sách hàng); không cần thì bỏ hẳn hai trường này (T-030). Prompt theo môn (system_prompt, T-050): Toán giữ nguyên, Lý/Hóa đổi tên môn và thêm quy tắc riêng. Câu trả lời ngắn kèm sympy.expr (biểu thức SymPy cho đáp số); trắc nghiệm kèm sympy.expr khi phương án đúng là số, không thì null (T-031). Spike T-036: câu đề mẫu có ID để trích dẫn, có thể thêm ví dụ định dạng cố định, và NO_RAG_SYSTEM_PROMPT cho nhánh không RAG (ghi nguồn tự do). Sau lần chạy 1: prompt ghi tên chủ đề tiếng Việt, định nghĩa 3 mức độ và buộc đề đủ dữ kiện, đúng một đáp án; có thể kèm đề bài các câu đã sinh trong cùng đề để không lặp ý (previous_stems). Ô mức Vận dụng có thêm bài tập SGK dưới tiêu đề riêng, làm mẫu độ khó. Trước khi đọc JSON của LLM, dấu gạch chéo ngược đứng trước lệnh LaTeX (beta, frac, times...) được nhân đôi để không bị đọc thành ký tự điều khiển (BUG-001)."""
 
 import json
+import logging
 import re
 
 from app.core.subjects import get_subject
@@ -10,8 +11,10 @@ from app.rag.generation.latex import normalize_strings
 from app.rag.generation.llm import LLM, LLMError
 from app.rag.vocab import PART_BY_TYPE, TOPIC_QUERIES
 
+log = logging.getLogger(__name__)
+
 SYSTEM_PROMPT = """Bạn là giáo viên ra đề thi tốt nghiệp THPT môn Toán theo định dạng của Bộ GD&ĐT (QĐ 764/2024).
-- Viết câu hỏi bằng tiếng Việt, công thức bằng LaTeX trong $...$.
+- Viết câu hỏi bằng tiếng Việt, công thức bằng LaTeX trong $...$. Tên lệnh LaTeX giữ nguyên tiếng Anh (ví dụ \\in, \\ge, \\infty, \\vec), không dịch sang tiếng Việt.
 - Chỉ dùng kiến thức trong các đoạn tài liệu được cung cấp. Mỗi câu phải ghi source_chunk_ids là ID các đoạn tài liệu đã dùng.
 - Trắc nghiệm: 4 phương án A, B, C, D, đúng một phương án.
 - Đúng/Sai: đúng 4 ý a, b, c, d, mỗi ý có đáp án true (Đúng) hoặc false (Sai) và explanation giải thích ngắn vì sao ý đó đúng hoặc sai.
@@ -133,22 +136,30 @@ def _read_questions(raw: str) -> list[dict]:
         raise LLMError(error) from e
     if not isinstance(questions, list) or not all(isinstance(q, dict) for q in questions):
         raise LLMError(error)
-    if _has_corrupt_latex(questions):
-        raise LLMError("LLM reply has a corrupted LaTeX command (non-ASCII in a LaTeX command name, or a control character)")
+    if bad := _bad_latex(questions):
+        log.warning("LLM reply rejected: LaTeX command %s is not in LATEX_COMMANDS (or a control character)", bad)
+        raise LLMError(f"LLM reply has a corrupted LaTeX command: {bad}")
     return questions
 
 
-# A model slip, not LaTeX: a non-ASCII letter glued to a command (`\thuộc`), or a backspace/form feed/vertical tab left
-# where `\b`, `\f`, `\v` was read as a JSON escape. Ask again instead of showing it to the teacher.
-_CORRUPT_LATEX = re.compile(r"\\[A-Za-z]+[^\x00-\x7f]|[\x08\x0b\x0c]")
+# Commands found in the parsed SGK Toán 12 (both volumes) plus the usual Toán/Lý/Hóa ones. The live run showed Gemini writing
+# `\thuộc`, `\berge`, `\bullet`, `\5\k` for `\in`, `\ge`, `\infty`, `\vec{k}`; the chunks do not contain them. Add names as needed.
+LATEX_COMMANDS = frozenset(["in", "notin", "ni", "ge", "geq", "gg", "le", "leq", "ll", "ne", "neq", "equiv", "approx", "sim", "simeq", "cong", "propto", "infty", "vec", "overrightarrow", "overline", "underline", "bar", "hat", "widehat", "tilde", "dot", "ddot", "frac", "dfrac", "tfrac", "sqrt", "int", "iint", "oint", "sum", "prod", "lim", "limits", "max", "min", "sup", "inf", "log", "ln", "lg", "exp", "sin", "cos", "tan", "cot", "sec", "csc", "arcsin", "arccos", "arctan", "sinh", "cosh", "tanh", "to", "rightarrow", "leftarrow", "leftrightarrow", "Rightarrow", "Leftarrow", "Leftrightarrow", "Longrightarrow", "Longleftrightarrow", "iff", "implies", "mapsto", "cdot", "times", "pm", "mp", "div", "circ", "prime", "angle", "perp", "parallel", "triangle", "cap", "cup", "subset", "subseteq", "supset", "supseteq", "setminus", "emptyset", "varnothing", "forall", "exists", "nexists", "neg", "land", "lor", "mid", "nmid", "left", "right", "big", "Big", "bigg", "Bigg", "begin", "end", "cases", "array", "matrix", "pmatrix", "vmatrix", "bmatrix", "hline", "quad", "qquad", "ldots", "cdots", "dots", "vdots", "ddots", "displaystyle", "textstyle", "mathbb", "mathbf", "mathcal", "mathrm", "mathit", "text", "textbf", "operatorname", "binom", "boxed", "lfloor", "rfloor", "lceil", "rceil", "langle", "rangle", "partial", "nabla", "degree", "because", "therefore", "alpha", "beta", "gamma", "delta", "epsilon", "varepsilon", "zeta", "eta", "theta", "vartheta", "iota", "kappa", "lambda", "mu", "nu", "xi", "pi", "varpi", "rho", "sigma", "tau", "upsilon", "phi", "varphi", "chi", "psi", "omega", "Gamma", "Delta", "Theta", "Lambda", "Xi", "Pi", "Sigma", "Upsilon", "Phi", "Psi", "Omega", "ell", "hbar", "Omega", "deg", "gcd", "det"])
+_LATEX_COMMAND = re.compile(r"(?<!\\)\\([A-Za-z]+|[0-9])")
+_CONTROL = re.compile(r"[\x08\x0b\x0c]")  # a `\b`, `\f`, `\v` that json read as an escape
 
 
-def _has_corrupt_latex(value):
+def _bad_latex(value):
+    """First `\\command` outside LATEX_COMMANDS (or a digit after the backslash, or a control character) in any string of value."""
     if isinstance(value, str):
-        return bool(_CORRUPT_LATEX.search(value))
+        if _CONTROL.search(value):
+            return "control character"
+        return next((m.group(0) for m in _LATEX_COMMAND.finditer(value) if m.group(1) not in LATEX_COMMANDS), None)
     if isinstance(value, dict):
         value = value.values()
-    return isinstance(value, (list, tuple, type({}.values()))) and any(_has_corrupt_latex(v) for v in value)
+    if isinstance(value, (list, tuple, type({}.values()))):
+        return next(filter(None, map(_bad_latex, value)), None)
+    return None
 
 
 # One backslash escape in the model's JSON: \uXXXX, or one other character (with re.S, `.` also takes the second backslash of a pair).

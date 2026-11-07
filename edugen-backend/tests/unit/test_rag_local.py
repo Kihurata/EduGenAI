@@ -327,3 +327,12 @@ def test_generate_cell_draws_the_figure_from_the_rag_spec():
     assert run.status is CellRunStatus.complete
     assert question["figure_svg"].startswith("<svg")
     assert question["figure"] == "Hình hộp ABCD.A'B'C'D'"
+
+
+def test_the_solids_rag_may_ask_for_are_the_ones_the_backend_draws():
+    from app.domain.figure import SOLIDS
+    from app.rag.generation.generate import SCHEMAS
+
+    item = SCHEMAS["multiple_choice"]["properties"]["questions"]["items"]
+    [obj] = [o for o in item["properties"]["figure_spec"]["anyOf"] if o.get("type") == "object"]
+    assert tuple(obj["properties"]["solid"]["enum"]) == tuple(sorted(SOLIDS))

@@ -16,7 +16,10 @@ _UNICODE_COMMANDS = {
 # Broken commands seen in generated text: \tiff is \iff behind a stray "t" (a tab escape gone wrong, e81f6617 Q1).
 _BROKEN_COMMANDS = {"tiff": "iff"}
 
-_UNICODE_AFTER_BACKSLASH = re.compile(r"\\([^\x00-\x7f])")
+# `\inf` (infimum) renders as the word "inf": the model meant `\infty` when it is not a limit-style `\inf_{...}`;
+# `inf` written bare after a sign, "-inf" / "+inf", is the same slip and also becomes `\infty`.
+_BARE_INF = re.compile(r"\\inf(?![a-zA-Z]|\s*(?:_|\\limits))|(?<=[-+])inf(?![a-zA-Z])")
+_UNICODE_AFTER_BACKSLASH =re.compile(r"\\([^\x00-\x7f])")
 _BROKEN = re.compile(r"\\(" + "|".join(_BROKEN_COMMANDS) + r")(?![a-zA-Z])")
 # Control characters XML (so Word) rejects. Backspace and form feed come from a model's "\b"/"\f" that json.loads read
 # as escapes (repair_latex_escapes keeps them before a non-letter): give the two characters back; drop the others.
@@ -35,6 +38,7 @@ def normalize_latex(text: str) -> str:
         return f"\\{command}" + (" " if follows_letter else "")  # "\≤x" -> "\le x", not "\lex"
 
     text = _UNICODE_AFTER_BACKSLASH.sub(unicode_command, text)
+    text = _BARE_INF.sub(lambda m: r"\infty", text)
     return _BROKEN.sub(lambda m: f"\\{_BROKEN_COMMANDS[m.group(1)]}", text)
 
 

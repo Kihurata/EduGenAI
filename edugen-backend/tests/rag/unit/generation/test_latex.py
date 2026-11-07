@@ -41,3 +41,22 @@ def test_control_characters_from_json_escapes_are_made_visible_again():
     assert normalize_latex("a\x0c1") == r"a\f1"
     assert normalize_latex("x\x00y\x1bz") == "xyz"  # no visible spelling: dropped
     assert normalize_latex("dòng 1\ndòng 2\tcột") == "dòng 1\ndòng 2\tcột"  # valid in XML, kept
+
+
+@pytest.mark.parametrize("raw, fixed", [
+    (r"$(-\inf; +\inf)$", r"$(-\infty; +\infty)$"),  # \inf prints the word "inf"; the model meant \infty
+    (r"$\inf$", r"$\infty$"),
+    ("(-inf; +inf)", r"(-\infty; +\infty)"),  # bare sign + inf
+])
+def test_inf_becomes_infty(raw, fixed):
+    assert normalize_latex(raw) == fixed
+
+
+@pytest.mark.parametrize("ok", [
+    r"$\inf_{x>0} f(x)$",  # infimum with a subscript
+    r"$\inf\limits_{x>0} f(x)$",
+    r"$(-\infty; +\infty)$",  # already right
+    "info, influence, +information",  # words that merely contain "inf"
+])
+def test_inf_kept(ok):
+    assert normalize_latex(ok) == ok

@@ -57,7 +57,20 @@ export function keyed<T>(items: readonly T[], prefix: string): { id: string; val
   return items.map((value, n) => ({ id: `${prefix}${n}`, value }));
 }
 
-export function MathText({ text }: Readonly<{ text: string }>) {
+// `\inf` prints the word "inf" (the model meant `\infty`); a sign followed by bare "inf" is the same slip.
+const BARE_INF = /\\inf(?![a-zA-Z]|\s*(?:_|\\limits))|(?<=[-+])inf(?![a-zA-Z])/g;
+
+/** Fix infinity written as `\inf`/"-inf", and wrap a `\infty` left outside $...$ so it renders as math. */
+export function fixInfinity(text: string): string {
+  return text
+    .replace(BARE_INF, "\\infty")
+    .split(MATH)
+    .map((part, i) => (i % 2 === 1 ? part : part.replace(/([-+]?)\s*\\infty/g, "$$$1\\infty$$")))
+    .join("");
+}
+
+export function MathText({ text: raw }: Readonly<{ text: string }>) {
+  const text = fixInfinity(raw);
   const parts = text.split(MATH);
   return (
     <span className="math-text">

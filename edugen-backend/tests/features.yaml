@@ -85,6 +85,7 @@ features:
       - tests/rag/unit/storage/test_retrieve_teacher_isolation.py
       - tests/rag/unit/storage/test_delete_school_points.py   # T-046 delete a school's points, never shared ones
       - tests/rag/unit/storage/test_retrieve_preferences.py   # T-034
+      - tests/rag/unit/storage/test_retrieve_chapter.py       # T-068
       - tests/rag/unit/storage/test_lookup.py
       - tests/rag/unit/generation/test_generate.py
       - tests/rag/unit/generation/test_latex.py   # BUG-004: chuẩn hoá LaTeX sau khi sinh
@@ -111,6 +112,7 @@ features:
       - tests/rag/feature/acceptance/test_generate.py
     eval:
       - tests/rag/feature/eval/test_retrieval.py
+      - tests/rag/feature/eval/test_chapter_table.py   # T-068
       - tests/rag/feature/eval/test_chunking_comparison.py   # T-007 2x2
       - tests/rag/feature/eval/test_generation.py::test_TC_004_generated_questions_pass_validators
 

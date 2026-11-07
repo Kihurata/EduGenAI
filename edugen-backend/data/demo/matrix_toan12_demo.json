@@ -1,0 +1,135 @@
+{
+ "name": "Demo Toan 12",
+ "subject": "toan",
+ "grade": 12,
+ "duration_minutes": 90,
+ "cells": [
+  {
+   "topic": "Nguyên hàm và tích phân",
+   "type": "multiple_choice",
+   "level": "Biết",
+   "count": 4,
+   "competency_codes": [
+    "TD1.2"
+   ]
+  },
+  {
+   "topic": "Nguyên hàm và tích phân",
+   "type": "multiple_choice",
+   "level": "Hiểu",
+   "count": 1,
+   "competency_codes": [
+    "TD1.3"
+   ]
+  },
+  {
+   "topic": "Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
+   "type": "multiple_choice",
+   "level": "Biết",
+   "count": 2,
+   "competency_codes": [
+    "TD1.2"
+   ]
+  },
+  {
+   "topic": "Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
+   "type": "multiple_choice",
+   "level": "Hiểu",
+   "count": 1,
+   "competency_codes": [
+    "TD1.3"
+   ]
+  },
+  {
+   "topic": "Vectơ và hệ trục tọa độ trong không gian",
+   "type": "multiple_choice",
+   "level": "Biết",
+   "count": 1,
+   "competency_codes": [
+    "TD1.2"
+   ]
+  },
+  {
+   "topic": "Vectơ và hệ trục tọa độ trong không gian",
+   "type": "multiple_choice",
+   "level": "Hiểu",
+   "count": 1,
+   "competency_codes": [
+    "TD1.3"
+   ]
+  },
+  {
+   "topic": "Phương pháp tọa độ trong không gian",
+   "type": "multiple_choice",
+   "level": "Biết",
+   "count": 1,
+   "competency_codes": [
+    "TD1.2"
+   ]
+  },
+  {
+   "topic": "Phương pháp tọa độ trong không gian",
+   "type": "multiple_choice",
+   "level": "Hiểu",
+   "count": 1,
+   "competency_codes": [
+    "TD1.3"
+   ]
+  },
+  {
+   "topic": "Xác suất có điều kiện",
+   "type": "true_false",
+   "statement_levels": [
+    "Biết",
+    "Biết",
+    "Hiểu",
+    "Hiểu"
+   ],
+   "count": 2,
+   "competency_codes": [
+    "GQ1.4",
+    "GQ2.1"
+   ],
+   "level": "Hiểu"
+  },
+  {
+   "topic": "Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
+   "type": "true_false",
+   "statement_levels": [
+    "Biết",
+    "Biết",
+    "Hiểu",
+    "Hiểu"
+   ],
+   "count": 1,
+   "competency_codes": [
+    "GQ1.4",
+    "GQ2.1"
+   ],
+   "level": "Hiểu"
+  },
+  {
+   "topic": "Nguyên hàm và tích phân",
+   "type": "true_false",
+   "statement_levels": [
+    "Biết",
+    "Biết",
+    "Hiểu",
+    "Hiểu"
+   ],
+   "count": 1,
+   "competency_codes": [
+    "GQ1.4",
+    "GQ2.1"
+   ],
+   "level": "Hiểu"
+  },
+  {
+   "topic": "Xác suất có điều kiện",
+   "type": "short_answer",
+   "level": "Biết",
+   "count": 6,
+   "competency_codes": []
+  }
+ ]
+}

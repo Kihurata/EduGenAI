@@ -145,9 +145,9 @@ export function mathOption(o: string): string {
 // Serif face of printed Vietnamese exams (the .docx export uses Times New Roman).
 export const PAPER_FONT = "font-['Times_New_Roman',Tinos,Times,serif]";
 
-// ----- Mã đề (khớp BE: 1–8 chữ hoặc số, tối đa 10 mã mỗi lần xuất) -----
+// ----- Mã đề (khớp BE: 1–8 chữ hoặc số, tối đa 4 mã mỗi lần xuất) -----
 
-export const MAX_EXAM_CODES = 10;
+export const MAX_EXAM_CODES = 4;
 const CODE_RE = /^[0-9A-Za-z]{1,8}$/;
 export const SUGGESTED_CODES = ["101", "102", "103", "104"];
 
@@ -160,12 +160,26 @@ export function parseCodes(text: string): { codes: string[]; error: string | nul
   return { codes, error: null };
 }
 
-/** Đường dẫn tải file: không mã → bản gốc; một mã → DOCX; nhiều mã → zip mỗi mã một DOCX. */
+const codeCount = (text: string) => new Set(text.split(/[\s,;]+/).filter(Boolean)).size;
+
+/**
+ * Ô nhập mã đề không nhận quá MAX_EXAM_CODES mã. Đã đủ 4 mã mà gõ thêm thì giữ nguyên chữ cũ
+ * (ký tự gõ thêm không dính vào mã thứ 4); dán một danh sách dài thì chỉ giữ 4 mã đầu.
+ * Trả chữ để hiển thị và cờ `capped` khi vừa chặn / cắt bớt.
+ */
+export function capCodes(text: string, prev = ""): { text: string; capped: boolean } {
+  if (codeCount(text) <= MAX_EXAM_CODES) return { text, capped: false };
+  if (codeCount(prev) >= MAX_EXAM_CODES) return { text: prev, capped: true };
+  const codes = [...new Set(text.split(/[\s,;]+/).filter(Boolean))];
+  return { text: codes.slice(0, MAX_EXAM_CODES).join(", "), capped: true };
+}
+
+/** Đường dẫn tải file: không mã → bản gốc; một mã → DOCX; nhiều mã → zip mỗi mã một DOCX. Tên file kết thúc bằng phiên bản HS/GV. */
 export function exportRequest(base: string, variant: "student" | "teacher", codes: string[]): { path: string; fallback: string } {
-  const suffix = variant === "teacher" ? "gv" : "hs";
+  const suffix = variant === "teacher" ? "ban-giao-vien" : "ban-hoc-sinh";
   if (codes.length === 0) return { path: `${base}/export?variant=${variant}`, fallback: `de-${suffix}.docx` };
-  if (codes.length === 1) return { path: `${base}/export?variant=${variant}&code=${codes[0]}`, fallback: `de-${suffix}-${codes[0]}.docx` };
-  return { path: `${base}/export-variants?variant=${variant}&codes=${codes.join(",")}`, fallback: `de-${suffix}-${codes.length}-ma-de.zip` };
+  if (codes.length === 1) return { path: `${base}/export?variant=${variant}&code=${codes[0]}`, fallback: `de-ma-${codes[0]}-${suffix}.docx` };
+  return { path: `${base}/export-variants?variant=${variant}&codes=${codes.join(",")}`, fallback: `de-${codes.length}-ma-de-${suffix}.zip` };
 }
 
 export function codesLabel(codes: string[]): string {

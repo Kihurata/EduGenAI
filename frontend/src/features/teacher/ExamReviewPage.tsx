@@ -75,6 +75,28 @@ export default function ExamReviewPage() {
     return () => io.disconnect();
   }, [idsKey, markActive]);
 
+  // "Read" must not depend on scroll speed or page length: a fast scroll can jump a short question over
+  // the spy band, and the last questions never reach it. So on every scroll, each question whose top
+  // has passed the band counts as read; at the bottom of the page every question on screen does too.
+  useEffect(() => {
+    function sweep() {
+      const root = docRef.current;
+      if (!root) return;
+      const page = document.scrollingElement ?? document.documentElement;
+      const bottom = page.scrollTop + window.innerHeight >= page.scrollHeight - 8;
+      const read: string[] = [];
+      for (const el of root.querySelectorAll<HTMLElement>("[data-qid]")) {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.35 || (bottom && r.top < window.innerHeight)) read.push(el.dataset.qid!);
+      }
+      if (read.length) setSeen((prev) => (read.every((q) => prev.has(q)) ? prev : new Set([...prev, ...read])));
+      if (bottom && read.length) setActive(read[read.length - 1]);
+    }
+    window.addEventListener("scroll", sweep, { passive: true });
+    sweep();
+    return () => window.removeEventListener("scroll", sweep);
+  }, [idsKey]);
+
   const head = (
     <>
       <Stepper steps={teacherSteps({ matrix: exam?.matrix_id, exam: id })} current={3} />

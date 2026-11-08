@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { BankEntry } from "@/types";
 
-import { codesLabel, exportRequest, FormError, parseCodes } from "./lib";
+import { capCodes, codesLabel, exportRequest, FormError, parseCodes } from "./lib";
 
 // NOTE: admin controls (show/hide for teachers, RAG status, remove from bank) moved to /admin/bank.
 export default function BankPage() {
@@ -64,7 +64,7 @@ export default function BankPage() {
             id="bank-codes"
             className="w-44"
             value={codesText}
-            onChange={(e) => setCodesText(e.target.value)}
+            onChange={(e) => setCodesText(capCodes(e.target.value, codesText).text)}
             placeholder="Trống = bản gốc; 101, 102…"
             aria-invalid={Boolean(codesError)}
             autoComplete="off"

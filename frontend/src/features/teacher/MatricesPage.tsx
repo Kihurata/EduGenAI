@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { Accepted, MatrixSummary } from "@/types";
 
 import { FormError, StatusChip, teacherSteps } from "./lib";
+import { MatrixFilePreview, useJsonSummary } from "./MatrixFilePreview";
 
 const ACCEPT = ["image/png", "image/jpeg", "application/pdf", "application/json", ".json"];
 const isJson = (f: File) => f.type === "application/json" || f.name.toLowerCase().endsWith(".json");
@@ -36,8 +37,8 @@ export default function MatricesPage() {
   const navigate = useNavigate();
   const [items, setItems] = useState<MatrixSummary[] | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
   const [over, setOver] = useState(false);
+  const jsonSummary = useJsonSummary(file);
   const list = useAction();
   const upload = useAction();
 
@@ -47,17 +48,6 @@ export default function MatricesPage() {
   }, []);
   useEffect(load, [load]);
   usePolling(load, !!items?.some((m) => m.status === "uploaded" || m.status === "converting"));
-
-  // Thumbnail for images; PDFs get a drawn page instead.
-  useEffect(() => {
-    if (!file || !file.type.startsWith("image/")) {
-      setPreview(null);
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
 
   const problem = file ? fileProblem(file) : "";
 
@@ -95,8 +85,8 @@ export default function MatricesPage() {
       <dl className="mt-5 mb-5 flex flex-wrap rounded-sm border border-line bg-surface text-sm">
         {[
           ["Môn", "Toán"],
-          ["Lớp", "12"],
-          ["Kỳ thi", "Tốt nghiệp THPT"],
+          ["Lớp", "10 · 11 · 12"],
+          ["Kỳ thi", "Định kỳ · Tốt nghiệp THPT"],
         ].map(([k, v]) => (
           <div key={k} className="border-r border-line px-4 py-2">
             <dt className="text-xs uppercase tracking-wide text-muted">{k}</dt>
@@ -104,7 +94,7 @@ export default function MatricesPage() {
           </div>
         ))}
         <p className="min-w-56 flex-1 self-center px-4 py-2 text-muted">
-          Phiên bản hiện tại hỗ trợ ma trận Toán 12 theo định dạng đề thi tốt nghiệp THPT từ năm 2025.
+          Hỗ trợ ma trận Toán lớp 10, 11 (kiểm tra định kỳ) và lớp 12 theo cấu trúc đề thi tốt nghiệp THPT từ năm 2025.
         </p>
       </dl>
 
@@ -122,25 +112,15 @@ export default function MatricesPage() {
           />
           {file ? (
             <div className="grid grid-cols-[6rem_minmax(0,1fr)] gap-5 rounded-sm border border-line bg-surface p-4 sm:grid-cols-[7rem_minmax(0,1fr)]">
-              {preview ? (
-                <img src={preview} alt="" className="aspect-[210/297] w-full border border-line object-cover object-top" />
-              ) : (
-                <div aria-hidden className="grid aspect-[210/297] w-full content-start gap-1 border border-line bg-white p-2">
-                  <i className="mx-auto block h-0.5 w-2/3 bg-line" />
-                  <i className="mx-auto mb-1 block h-0.5 w-1/2 bg-line" />
-                  <div className="grid grid-cols-7 border-l border-t border-line">
-                    {Array.from({ length: 42 }, (_, i) => (
-                      <span key={i} className={cn("h-2 border-b border-r border-line", i < 7 && "bg-soft")} />
-                    ))}
-                  </div>
-                </div>
-              )}
+              <MatrixFilePreview file={file} />
               <div className="min-w-0 space-y-1">
                 <p className="text-xs uppercase tracking-wide text-muted">File đã chọn</p>
                 <p className="break-words font-semibold">{file.name}</p>
                 <p className="text-sm text-muted">
                   {(file.name.split(".").pop() ?? "").toUpperCase()} · {fileSize(file.size)}
                 </p>
+                {jsonSummary && <p className="text-sm text-muted">{jsonSummary}</p>}
+                <p className="text-xs text-muted">Bấm vào ảnh xem nhỏ bên trái để xem to ma trận trước khi tải lên.</p>
                 {problem ? (
                   <p className="text-sm text-bad">{problem}</p>
                 ) : (

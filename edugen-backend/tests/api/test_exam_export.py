@@ -79,18 +79,21 @@ def labels_by_question(paragraphs: list[str]) -> dict[str, list[str]]:
             part = text.removeprefix("PHẦN ").split(".")[0]
         elif text.startswith("Câu ") and part:
             current = out.setdefault(f"{part}.{text.removeprefix('Câu ').split('.')[0]}", [])
-        elif current is not None and (text[1:2] in (".", ")")):
-            current.append(text[0])
+        elif current is not None:
+            # Phương án ngắn chung một dòng, cách nhau bằng tab ("A. 1\tB. 2\t…").
+            current += [cell[0] for cell in text.split("\t") if cell[1:2] in (".", ")")]
     return out
 
 
 def test_TC_011_export_toan_exam_docx(client, teacher_headers):
     exam = approved_exam(client, teacher_headers)
+    student = client.get(f"{BASE}/{exam['id']}/export", params={"variant": "student"}, headers=teacher_headers)
+    assert student.status_code == 200, student.text
+    paragraphs = [p.text for p in Document(io.BytesIO(student.content)).paragraphs]
+    paragraphs = paragraphs[: paragraphs.index("------ HẾT ------")]
     resp = client.get(f"{BASE}/{exam['id']}/export", params={"variant": "teacher"}, headers=teacher_headers)
     assert resp.status_code == 200, resp.text
     doc = Document(io.BytesIO(resp.content))
-    paragraphs = [p.text for p in doc.paragraphs]
-    paragraphs = paragraphs[: paragraphs.index("HẾT")]  # phần đề, trước đáp án và lời giải
 
     # 22 câu theo thứ tự phần, Phần I có A–D, Phần II có a)–d).
     assert numbers_by_part(paragraphs) == {"I": list(range(1, 13)), "II": list(range(1, 5)), "III": list(range(1, 7))}
@@ -100,9 +103,11 @@ def test_TC_011_export_toan_exam_docx(client, teacher_headers):
     assert [labels[f"III.{n}"] for n in range(1, 7)] == [[]] * 6
 
     # Bảng đáp án = đáp án chính thức của Bộ, mã 0101.
-    part_one, part_two, part_three, matrix = ([[c.text for c in r.cells] for r in t.rows] for t in doc.tables)
+    _, part_one, part_two, part_three, matrix = ([[c.text for c in r.cells] for r in t.rows] for t in doc.tables)
     assert part_one[1][1:] == KEY["I"]
-    assert [[mark == TRUE_FALSE_MARKS[True] for mark in row[1:]] for row in part_two[1:]] == KEY["II"]
+    # Đúng – Sai: một hàng mỗi ý a–d, một cột mỗi câu (như bản xem trước) → xoay lại theo câu.
+    by_question = [list(col) for col in zip(*(row[1:] for row in part_two[1:]))]
+    assert [[mark == TRUE_FALSE_MARKS[True] for mark in q] for q in by_question] == KEY["II"]
     assert part_three[1][1:] == KEY["III"]
 
     # Bảng ma trận: một hàng mỗi ô, tổng 12 / 4 / 6.

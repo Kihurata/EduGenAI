@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { subjectLabel, useSubjects } from "@/subjects";
-import { PART_OF_TYPE, type Exam, type ExamVariant, type Question } from "@/types";
+import { PART_OF_TYPE, type Cell, type Exam, type ExamVariant, type Question, type QuestionType } from "@/types";
 
 import {
+  capCodes,
   codesLabel,
   exportRequest,
   FormError,
@@ -28,6 +29,7 @@ import {
   solutionSteps,
   SUGGESTED_CODES,
   teacherSteps,
+  useMatrixCells,
 } from "./lib";
 
 // A4 at 96 dpi; the preview approximates the .docx layout (Times 12 pt), it is not a render of the file.
@@ -52,7 +54,10 @@ function PaperQuestion({ q, number, teacher }: Readonly<{ q: Question; number: n
       <div>
         <b>Câu {number}.</b> <QuestionStem stem={c.stem} table={c.table} />
       </div>
-      <QuestionFigure svg={c.figure_svg} caption={c.figure} />
+      {/* DOCX đặt hình giữa trang, rộng 8 cm (FIGURE_WIDTH_CM ở BE) */}
+      <div className="flex justify-center [&_img]:w-[302px]">
+        <QuestionFigure svg={c.figure_svg} caption={c.figure} />
+      </div>
       {c.type === "multiple_choice" && c.options && (
         <ol className={cn("grid gap-x-3", cols === 4 ? "grid-cols-4" : cols === 2 ? "grid-cols-2" : "grid-cols-1")}>
           {c.options.map((o, i) => (
@@ -80,32 +85,35 @@ function PaperQuestion({ q, number, teacher }: Readonly<{ q: Question; number: n
             {c.type === "short_answer" ? "Đáp số" : "Đáp án"}:{" "}
             {c.type === "true_false" ? c.statements?.map((s, i) => `${"abcd"[i]}) ${s.correct ? "Đúng" : "Sai"}`).join("; ") : c.answer}
           </b>
-          <ol className="list-decimal pl-5">
-            {keyed(solutionSteps(c.solution ?? ""), "st").map(({ id, value: s }) => (
-              <li key={id}>
-                <MathText text={s} />
-              </li>
-            ))}
-            {c.type === "true_false" &&
-              c.statements?.map(
-                (s, i) =>
-                  s.explanation && (
-                    <li key={`s-${"abcd"[i]}`}>
-                      <b>{"abcd"[i]})</b> <MathText text={s.explanation} />
-                    </li>
-                  ),
-              )}
-          </ol>
+          {/* Bước lời giải đánh số "1." bằng chữ, giải thích ý đúng/sai không đánh số: khớp DOCX */}
+          {keyed(solutionSteps(c.solution ?? ""), "st").map(({ id, value: s }, n) => (
+            <p key={id}>
+              {n + 1}. <MathText text={s} />
+            </p>
+          ))}
+          {c.type === "true_false" &&
+            c.statements?.map(
+              (s, i) =>
+                s.explanation?.trim() && (
+                  <p key={`s-${"abcd"[i]}`}>
+                    <b>{"abcd"[i]})</b> <MathText text={s.explanation} />
+                  </p>
+                ),
+            )}
         </div>
       )}
     </div>
   );
 }
 
-function KeyTable({ head, rows }: Readonly<{ head: (string | number)[]; rows: (string | number)[][] }>) {
+function KeyTable({
+  head,
+  rows,
+  align = "center",
+}: Readonly<{ head: (string | number)[]; rows: (string | number)[][]; align?: "center" | "left" }>) {
   const cell = "border border-[#111] px-1 py-0.5";
   return (
-    <table className="mt-1 w-full table-fixed border-collapse text-center text-[15px]">
+    <table className={cn("mt-1 w-full border-collapse text-[15px]", align === "center" ? "table-fixed text-center" : "text-left")}>
       <tbody>
         <tr>
           {keyed(head, "h").map(({ id, value: h }) => (
@@ -128,7 +136,45 @@ function KeyTable({ head, rows }: Readonly<{ head: (string | number)[]; rows: (s
   );
 }
 
-function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: number, subject: string, code?: string): Block[] {
+const pts = (n: number) => String(n).replace(".", ",");
+
+// Khớp _point_notes ở BE (domain/exam_document.py); môn chưa tải được thang điểm thì không ghi điểm.
+function pointNotes(points?: Record<QuestionType, number>): Record<QuestionType, string> {
+  if (!points) return { multiple_choice: "", true_false: "", short_answer: "" };
+  return {
+    multiple_choice: ` Mỗi câu trả lời đúng được ${pts(points.multiple_choice)} điểm.`,
+    true_false: " Đúng 1 ý: 0,1 đ · 2 ý: 0,25 đ · 3 ý: 0,5 đ · 4 ý: 1 đ.",
+    short_answer: ` Mỗi câu trả lời đúng được ${pts(points.short_answer)} điểm.`,
+  };
+}
+
+const MATRIX_TYPE: Record<QuestionType, string> = { multiple_choice: "Nhiều lựa chọn", true_false: "Đúng – Sai", short_answer: "Trả lời ngắn" };
+
+/** Bảng "Ma trận đề" cuối bản GV, cùng cột với DOCX (_matrix_table ở BE). */
+function matrixRows(cells: Cell[]): string[][] {
+  const unit = (c: Cell) => c.content_unit || [...new Set((c.statement_units ?? []).filter(Boolean))].join("; ");
+  const rows = cells.map((c) => [
+    PART_OF_TYPE[c.type],
+    c.topic,
+    unit(c),
+    MATRIX_TYPE[c.type],
+    c.statement_levels ? c.statement_levels.join(", ") : c.level,
+    String(c.count),
+  ]);
+  return [...rows, ["Tổng", "", "", "", "", String(cells.reduce((s, c) => s + c.count, 0))]];
+}
+
+interface PaperOptions {
+  teacher: boolean;
+  school: string;
+  pageCount: number;
+  subject: string;
+  code?: string;
+  points?: Record<QuestionType, number>;
+  cells: Cell[];
+}
+
+function buildBlocks(exam: Exam, { teacher, school, pageCount, subject, code, points, cells }: PaperOptions): Block[] {
   const partOf = (q: Question) => q.part || PART_OF_TYPE[q.content.type];
   const sorted = [...exam.questions].sort((a, b) => a.position - b.position);
   const blocks: Block[] = [
@@ -139,14 +185,14 @@ function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: nu
           <table role="presentation" className="w-full text-center text-[15px]">
             <tbody>
               <tr className="align-top">
-                <td className="w-1/2 px-1">
+                <td className="w-2/5 px-1">
                   <div className="font-bold uppercase">{school || "TRƯỜNG ……………………"}</div>
                   <div className="mx-auto mt-0.5 w-24 border-b border-[#111]" />
                   <div className="mt-1.5 italic">
                     (Đề thi có {pageCount ? String(pageCount).padStart(2, "0") : "…"} trang)
                   </div>
                 </td>
-                <td className="w-1/2 px-1">
+                <td className="w-3/5 px-1">
                   <div className="font-bold uppercase">{exam.title}</div>
                   <div className="font-bold uppercase">Môn: {subject || "…"} – Lớp {exam.grade ?? "…"}</div>
                   <div className="italic">Thời gian làm bài: {exam.duration_minutes} phút, không kể thời gian phát đề</div>
@@ -186,13 +232,15 @@ function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: nu
     const mc = of("multiple_choice");
     const tf = of("true_false");
     const sa = of("short_answer");
+    const notes = pointNotes(points);
     blocks.push({ kind: "part", node: <p className="mt-3 text-center font-bold">ĐÁP ÁN</p> });
     if (mc.length)
       blocks.push({
         kind: "q",
         node: (
           <div>
-            <b>Phần I.</b> Mỗi câu trả lời đúng được 0,25 điểm.
+            <b>Phần I.</b>
+            {notes.multiple_choice}
             <KeyTable head={["Câu", ...mc.map((_, i) => i + 1)]} rows={[["Đáp án", ...mc.map((q) => q.content.answer)]]} />
           </div>
         ),
@@ -202,7 +250,8 @@ function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: nu
         kind: "q",
         node: (
           <div>
-            <b>Phần II.</b> Đúng 1 ý: 0,1 đ · 2 ý: 0,25 đ · 3 ý: 0,5 đ · 4 ý: 1 đ.
+            <b>Phần II.</b>
+            {notes.true_false}
             <KeyTable
               head={["Câu", ...tf.map((_, i) => i + 1)]}
               rows={[0, 1, 2, 3].map((k) => [`Ý ${"abcd"[k]})`, ...tf.map((q) => (q.content.statements?.[k] ? (q.content.statements[k].correct ? "Đ" : "S") : ""))])}
@@ -215,11 +264,19 @@ function buildBlocks(exam: Exam, teacher: boolean, school: string, pageCount: nu
         kind: "q",
         node: (
           <div>
-            <b>Phần III.</b> Mỗi câu trả lời đúng được 0,5 điểm.
+            <b>Phần III.</b>
+            {notes.short_answer}
             <KeyTable head={["Câu", ...sa.map((_, i) => i + 1)]} rows={[["Đáp số", ...sa.map((q) => q.content.answer)]]} />
           </div>
         ),
       });
+    if (cells.length) {
+      blocks.push({ kind: "part", node: <p className="mt-3 text-center font-bold">MA TRẬN ĐỀ</p> });
+      blocks.push({
+        kind: "q",
+        node: <KeyTable head={["Phần", "Chủ đề", "Đơn vị kiến thức", "Dạng câu", "Mức độ", "Số câu"]} rows={matrixRows(cells)} align="left" />,
+      });
+    }
   }
   return blocks;
 }
@@ -253,6 +310,7 @@ export default function ExamExportPage() {
   const measureRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [codesText, setCodesText] = useState("");
+  const [codesCapped, setCodesCapped] = useState(false);
   const [variantPreview, setVariantPreview] = useState<ExamVariant | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
   const loader = useAction();
@@ -312,7 +370,20 @@ export default function ExamExportPage() {
     }));
     return { ...exam, questions };
   }, [exam, variantPreview, shownCode]);
-  const blocks = shown ? buildBlocks(shown, teacher, user?.school.name ?? "", pageCount, subjectLabel(subjects, shown.subject), shownCode) : [];
+  const cellMap = useMatrixCells(exam?.matrix_id);
+  const cells = useMemo(() => Object.values(cellMap).sort((a, b) => a.sort_order - b.sort_order), [cellMap]);
+  const points = subjects?.find((s) => s.code === exam?.subject)?.points;
+  const blocks = shown
+    ? buildBlocks(shown, {
+        teacher,
+        school: user?.school.name ?? "",
+        pageCount,
+        subject: subjectLabel(subjects, shown.subject),
+        code: shownCode,
+        points,
+        cells,
+      })
+    : [];
 
   // Measure the hidden copy of every block, then split into A4 pages.
   useLayoutEffect(() => {
@@ -320,8 +391,8 @@ export default function ExamExportPage() {
     if (!exam || !root) return;
     const heights = [...root.children].map((el) => el.getBoundingClientRect().height);
     setPages(paginate(blocks, heights));
-    // blocks are rebuilt every render; exam / variant / fonts are what change them
-  }, [shown, variant, fontsTick]);
+    // blocks are rebuilt every render; exam / variant / fonts / subject points / matrix cells change them
+  }, [shown, variant, fontsTick, points, cells]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -451,7 +522,11 @@ export default function ExamExportPage() {
             <Input
               id="exam-codes"
               value={codesText}
-              onChange={(e) => setCodesText(e.target.value)}
+              onChange={(e) => {
+                const next = capCodes(e.target.value, codesText);
+                setCodesText(next.text);
+                setCodesCapped(next.capped);
+              }}
               placeholder="Để trống = bản gốc"
               aria-invalid={Boolean(codesError)}
               aria-describedby="exam-codes-hint"
@@ -465,8 +540,16 @@ export default function ExamExportPage() {
                     ? "Câu và phương án được xáo theo mã này; mã in trên đề."
                     : `Tải ${codes.length} mã đề trong một file zip. Bản xem trước hiển thị mã ${codes[0]}.`)}
             </p>
+            {codesCapped && <p className="text-xs text-warn">Chỉ nhập được tối đa {MAX_EXAM_CODES} mã đề.</p>}
             {previewFailed && <p className="text-xs text-bad">Không tải được bản xem trước theo mã đề này.</p>}
-            <button type="button" className="cursor-pointer text-xs text-accent underline" onClick={() => setCodesText(SUGGESTED_CODES.join(", "))}>
+            <button
+              type="button"
+              className="cursor-pointer text-xs text-accent underline"
+              onClick={() => {
+                setCodesText(SUGGESTED_CODES.join(", "));
+                setCodesCapped(false);
+              }}
+            >
               Điền {SUGGESTED_CODES.length} mã đề mẫu
             </button>
           </div>
@@ -511,18 +594,23 @@ export default function ExamExportPage() {
         </aside>
       </div>
 
-      {/* Hidden copy at the printable width, used only to measure block heights. */}
-      <div
-        ref={measureRef}
-        aria-hidden
-        className={cn("invisible absolute top-0 -left-[10000px] text-[16px] leading-normal", PAPER_FONT)}
-        style={{ width: SHEET_W - 2 * PAD_X }}
-      >
-        {keyed(blocks, "b").map(({ id, value: b }) => (
-          <div key={id} className="pb-2">
-            {b.node}
-          </div>
-        ))}
+      {/*
+        Hidden copy at the printable width, used only to measure block heights. It sits in a fixed
+        0×0 clipping box: as a plain absolute element its full height stretched the page, leaving
+        blank space to scroll into past the last sheet.
+      */}
+      <div aria-hidden className="pointer-events-none fixed top-0 left-0 h-0 w-0 overflow-hidden">
+        <div
+          ref={measureRef}
+          className={cn("invisible text-[16px] leading-normal", PAPER_FONT)}
+          style={{ width: SHEET_W - 2 * PAD_X }}
+        >
+          {keyed(blocks, "b").map(({ id, value: b }) => (
+            <div key={id} className="pb-2">
+              {b.node}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

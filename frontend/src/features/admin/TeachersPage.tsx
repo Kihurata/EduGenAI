@@ -8,7 +8,7 @@ import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Table, Td, Th } from "@/components/ui/table";
 import type { User } from "@/types";
-import { AdminNav, ConfirmDialog, errText, Failed, Field, Loading, useLoad } from "./shared";
+import { ConfirmDialog, errText, Failed, Field, Loading, useLoad } from "./shared";
 
 export default function TeachersPage() {
   // API: GET /api/v1/admin/teachers
@@ -16,6 +16,10 @@ export default function TeachersPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [locking, setLocking] = useState<User | null>(null);
   const [resetting, setResetting] = useState<User | null>(null);
+  const [q, setQ] = useState("");
+  const needle = q.trim().toLowerCase();
+  const shown = data?.filter((t) => !needle || t.full_name.toLowerCase().includes(needle) || t.email.toLowerCase().includes(needle));
+  const active = data?.filter((t) => t.is_active).length ?? 0;
 
   // API: PATCH /api/v1/admin/teachers/{id} { is_active?, password? }
   async function patch(t: User, json: { is_active?: boolean; password?: string }) {
@@ -30,11 +34,23 @@ export default function TeachersPage() {
 
   return (
     <section>
-      <AdminNav />
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Giáo viên</h1>
+      <div className="mb-1 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">Tài khoản giáo viên</h1>
         <AddTeacher onAdded={(u) => setData((p) => [...(p ?? []), u])} />
       </div>
+      <p className="mb-4 text-sm text-muted">
+        {data ? `${data.length} tài khoản · ${active} đang hoạt động · ${data.length - active} đã khóa` : "Quản lý tài khoản giáo viên của trường."}
+      </p>
+      {data && data.length > 0 && (
+        <Input
+          className="mb-4 max-w-xs"
+          type="search"
+          placeholder="Tìm theo họ tên, email"
+          aria-label="Tìm theo họ tên, email"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
+      )}
       {actionError && (
         <p role="alert" className="mb-3 text-sm text-bad">
           {actionError}
@@ -43,7 +59,8 @@ export default function TeachersPage() {
       {error && <Failed message={error} onRetry={reload} />}
       {!error && !data && <Loading />}
       {data?.length === 0 && <EmptyState title="Chưa có giáo viên" hint="Bấm “Thêm giáo viên” để tạo tài khoản đầu tiên." />}
-      {data && data.length > 0 && (
+      {data && data.length > 0 && shown?.length === 0 && <EmptyState title="Không có giáo viên phù hợp" hint="Thử từ khóa khác." />}
+      {shown && shown.length > 0 && (
         <Table>
           <thead>
             <tr>
@@ -54,7 +71,7 @@ export default function TeachersPage() {
             </tr>
           </thead>
           <tbody>
-            {data.map((t) => (
+            {shown.map((t) => (
               <tr key={t.id}>
                 <Td>{t.full_name}</Td>
                 <Td className="text-muted">{t.email}</Td>

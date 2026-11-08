@@ -9,11 +9,12 @@ import { ErrorState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { LEVELS, QUESTION_TYPES, TYPE_LABEL, type Accepted, type CellIn, type Level, type Matrix, type QuestionType } from "@/types";
+import { LEVELS, QUESTION_TYPES, TYPE_LABEL, type Accepted, type CellIn, type ExamSource, type Level, type Matrix, type QuestionType } from "@/types";
 
 import { useSubjects } from "@/subjects";
 
 import { examTitleFromMatrix, FormError, StatusChip, taClass, teacherSteps } from "./lib";
+import { SourcePicker } from "./SourcePicker";
 
 const LV_SHORT: Record<Level, string> = { "Biết": "B", "Hiểu": "H", "Vận dụng": "VD" };
 const PART_COLS: { type: QuestionType; part: string; note: string }[] = [
@@ -149,6 +150,7 @@ export default function MatrixCheckPage() {
   const [title, setTitle] = useState<string | null>(null);
   const subjects = useSubjects();
   const [duration, setDuration] = useState(90);
+  const [source, setSource] = useState<ExamSource>("school");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [drawer, setDrawer] = useState<Drawer | null>(null);
   const loader = useAction();
@@ -299,7 +301,7 @@ export default function MatrixCheckPage() {
         apply(m);
       }
       // API: POST /api/v1/exams
-      return api<Accepted>("/exams", { method: "POST", json: { matrix_id: id, duration_minutes: duration, title: examTitle.trim() || null } });
+      return api<Accepted>("/exams", { method: "POST", json: { matrix_id: id, duration_minutes: duration, title: examTitle.trim() || null, source } });
     });
     if (accepted) navigate(`/exams?exam=${accepted.id}`);
   }
@@ -548,6 +550,11 @@ export default function MatrixCheckPage() {
       <FormError error={action.error} />
 
       <div className="sticky bottom-0 z-10 mt-6 rounded-sm border border-line bg-surface">
+        {(editable || matrix.status === "confirmed") && (
+          <div className="border-b border-line px-4 py-3">
+            <SourcePicker value={source} onChange={setSource} />
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 text-sm">
           <div className="flex flex-wrap items-center gap-5">
             <Stat label="Tổng" value={`${total}/${expectedTotal} câu · ${points} điểm`} ok={structureOk} />

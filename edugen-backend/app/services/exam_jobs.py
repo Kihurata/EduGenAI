@@ -50,15 +50,19 @@ class _CellGuard:
         return self._rag.validate(question, cell)
 
 
-def cell_of(matrix: ExamMatrix, row: MatrixCell, count: int | None = None) -> Cell:
-    """Ô ma trận trong DB → ô gửi RAG; `count` để sinh ít hơn số câu của ô (sinh lại, bù câu)."""
+def cell_of(matrix: ExamMatrix, row: MatrixCell, count: int | None = None, *, personal: bool = True) -> Cell:
+    """Ô ma trận trong DB → ô gửi RAG; `count` để sinh ít hơn số câu của ô (sinh lại, bù câu).
+
+    `personal` = đề sinh từ bộ sưu tập cá nhân: gửi teacher_id để RAG lấy thêm đề mẫu GV đó tự tải. Nguồn trường thì
+    không gửi, RAG chỉ dùng dữ liệu dùng chung và dữ liệu chung của trường (rag/storage/retrieve.py `_school_scope`).
+    """
     return Cell(
         id=row.sort_order, subject=matrix.subject.code, grade=matrix.grade, topic=row.topic,
         content_unit=row.content_unit, type=row.question_type, level=row.level,
         count=row.question_count if count is None else count,
         statement_levels=tuple(Level(v) for v in row.statement_levels) if row.statement_levels else None,
         competency_codes=tuple(row.competency_codes or ()), school_id=str(matrix.school_id),
-        teacher_id=str(matrix.owner_id),  # GV của ma trận: thấy đề mẫu GV đó tự tải
+        teacher_id=str(matrix.owner_id) if personal else None,  # GV của ma trận: thấy đề mẫu GV đó tự tải
         exam_kind=exam_kind_of(matrix.name),
         statement_units=tuple(row.statement_units) if row.statement_units else None,
     )  # fmt: skip
@@ -96,7 +100,7 @@ def run_exam_generation(session_factory: sessionmaker, exam_id: uuid.UUID, rag: 
                 return
             matrix = exam.matrix
             rows = {c.sort_order: c for c in matrix.cells}
-            cells = [cell_of(matrix, c) for c in matrix.cells]
+            cells = [cell_of(matrix, c, personal=exam.is_personal) for c in matrix.cells]
 
             def progress(done: int, total: int) -> None:
                 exam.cells_done = done

@@ -23,7 +23,9 @@ from app.domain.exam_variant import is_valid_code
 from app.domain.generation import QuestionGenerator
 from app.models import Exam, ExamBankEntry, ExamQuestion, User
 from app.models.enums import (
+    BankReview,
     CellRunStatus,
+    ExamSource,
     ExamStatus,
     ExportVariant,
     MatrixStatus,
@@ -47,6 +49,11 @@ class ExamIn(BaseModel):
     matrix_id: uuid.UUID
     duration_minutes: int = Field(gt=0, le=300)  # GV nhập
     title: str | None = Field(None, min_length=1, max_length=255)  # mặc định = tên ma trận
+    source: ExamSource = ExamSource.school  # nguồn dữ liệu sinh đề
+
+
+class ExamPatch(BaseModel):
+    title: str = Field(min_length=1, max_length=255)
 
 
 class CellRunOut(BaseModel):
@@ -87,6 +94,9 @@ class ExamOut(BaseModel):
     cells_done: int
     cells_total: int
     created_at: datetime
+    source: ExamSource
+    review_status: BankReview | None  # chỉ đề nguồn trường đã duyệt: admin xét chọn làm đề chính thức
+    review_note: str | None
     cell_runs: list[CellRunOut]
     questions: list[QuestionOut]
 
@@ -97,7 +107,8 @@ class ExamOut(BaseModel):
             id=e.id, matrix_id=e.matrix_id, owner_id=e.owner_id, title=e.title,
             duration_minutes=e.duration_minutes, subject=e.matrix.subject.code if e.matrix.subject else None,
             grade=e.matrix.grade, status=e.status, cells_done=e.cells_done,
-            cells_total=e.cells_total, created_at=e.created_at,
+            cells_total=e.cells_total, created_at=e.created_at, source=ExamSource(e.source),
+            review_status=BankReview(e.review_status) if e.review_status else None, review_note=e.review_note,
             cell_runs=[
                 CellRunOut(
                     matrix_cell_id=r.matrix_cell_id, sort_order=r.matrix_cell.sort_order,
@@ -191,7 +202,7 @@ def create_exam(
     exam = Exam(
         school_id=user.school_id, matrix_id=matrix.id, owner_id=user.id,
         title=body.title or matrix.name or "Đề kiểm tra", duration_minutes=body.duration_minutes,
-        status=ExamStatus.generating, cells_done=0, cells_total=len(matrix.cells),
+        status=ExamStatus.generating, cells_done=0, cells_total=len(matrix.cells), source=body.source.value,
     )  # fmt: skip
     db.add(exam)
     db.commit()
@@ -200,12 +211,53 @@ def create_exam(
 
 
 @router.get("")
-def list_exams(db: DB, user: CurrentUser) -> list[ExamOut]:
-    """GV: đề của mình. Admin: mọi đề trong trường, để chọn đề nạp vào ngân hàng."""
+def list_exams(db: DB, user: CurrentUser, source: ExamSource | None = None) -> list[ExamOut]:
+    """GV: đề của mình (lọc theo nguồn nếu có). Admin: đề nguồn trường, để chọn đề chính thức; đề trong bộ sưu
+    tập cá nhân của GV là riêng tư nên admin không thấy trong danh sách."""
     query = select(Exam).where(Exam.school_id == user.school_id).order_by(Exam.created_at.desc())
-    if user.role is not UserRole.admin:
+    if user.role is UserRole.admin:
+        query = query.where(Exam.source == ExamSource.school.value)
+    else:
         query = query.where(Exam.owner_id == user.id)
+        if source is not None:
+            query = query.where(Exam.source == source.value)
     return [ExamOut.of(e) for e in db.scalars(query)]
+
+
+def get_owned(db: Session, exam_id: uuid.UUID, user: User) -> Exam:
+    """Đề GV tự quản lý (đổi tên, xoá): chỉ người tạo."""
+    exam = get_exam(db, exam_id, user)
+    if exam.owner_id != user.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Chỉ người tạo đề được thao tác")
+    return exam
+
+
+def in_bank(db: Session, exam: Exam) -> bool:
+    return db.scalar(select(ExamBankEntry.id).where(ExamBankEntry.exam_id == exam.id)) is not None
+
+
+@router.patch("/{exam_id}")
+def rename_exam(exam_id: uuid.UUID, body: ExamPatch, db: DB, user: CurrentUser) -> ExamOut:
+    """Đổi tên đề của mình; đề đã là đề chính thức thì chỉ admin đổi (PATCH /bank/{id})."""
+    exam = get_owned(db, exam_id, user)
+    if in_bank(db, exam):
+        raise HTTPException(status.HTTP_409_CONFLICT, "Đề đã là đề chính thức của trường, không đổi tên được")
+    exam.title = body.title.strip()
+    db.commit()
+    return ExamOut.of(exam)
+
+
+@router.delete("/{exam_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_exam(exam_id: uuid.UUID, db: DB, user: CurrentUser) -> Response:
+    """Xoá đề của mình (kèm câu, file xuất). Không xoá được đề đang sinh hoặc đã là đề chính thức."""
+    exam = get_owned(db, exam_id, user)
+    if exam.status is ExamStatus.generating:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Đề đang sinh, chờ xong rồi thao tác")
+    if in_bank(db, exam):
+        raise HTTPException(status.HTTP_409_CONFLICT, "Đề đã là đề chính thức của trường, không xoá được")
+    db.delete(exam)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/{exam_id}")
@@ -360,11 +412,16 @@ def fill_cell(
 
 @router.post("/{exam_id}/approve")
 def approve(exam_id: uuid.UUID, db: DB, user: CurrentUser) -> ExamOut:
-    """Duyệt khi mọi ô đủ câu; không thì 409, detail = danh sách ô thiếu. Duyệt xong khoá sửa."""
+    """Duyệt khi mọi ô đủ câu; không thì 409, detail = danh sách ô thiếu. Duyệt xong khoá sửa.
+
+    Đề nguồn trường tự vào hàng chờ admin xét chọn làm đề chính thức; đề nguồn cá nhân ở lại bộ sưu tập của GV.
+    """
     exam = get_reviewable(db, exam_id, user)
     problems = approval_problems(exam)
     if problems:
         raise HTTPException(status.HTTP_409_CONFLICT, problems)
     exam.status = ExamStatus.approved
+    if not exam.is_personal:
+        exam.mark_review(BankReview.pending)
     db.commit()
     return ExamOut.of(exam)

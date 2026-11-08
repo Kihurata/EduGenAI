@@ -8,7 +8,7 @@ import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { Input, Select } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Table, Td, Th } from "@/components/ui/table";
-import { AdminNav, errText, Failed, Field, Loading } from "./shared";
+import { errText, Failed, Field, Loading } from "./shared";
 import { createSource, finishIngest, getCoverage, getSources, runCoverageCheck, startIngest } from "./sources/mock";
 import type { Coverage, CoverageCheck, Source, SourceStatus } from "./sources/types";
 
@@ -58,7 +58,6 @@ export default function SourcesPage() {
   return (
     <section>
       <PrototypeBanner />
-      <AdminNav />
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Nguồn tài liệu</h1>
         <AddDialog onAdded={(s) => setRows((r) => [...(r ?? []), s])} />

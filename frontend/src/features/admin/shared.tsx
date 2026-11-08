@@ -1,35 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
 
 import { ErrorState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-
-const LINKS = [
-  { to: "/admin/sources", label: "Nguồn tài liệu" },
-  { to: "/admin/bank", label: "Ngân hàng đề" },
-  { to: "/admin/teachers", label: "Giáo viên" },
-];
-
-// Link row shared by the three admin pages; every target is a real route.
-export function AdminNav() {
-  return (
-    <nav aria-label="Quản trị" className="mb-6 flex gap-4 border-b border-line">
-      {LINKS.map((l) => (
-        <NavLink
-          key={l.to}
-          to={l.to}
-          className={({ isActive }) =>
-            cn("border-b-2 pb-2 text-sm", isActive ? "border-accent text-ink" : "border-transparent text-muted")
-          }
-        >
-          {l.label}
-        </NavLink>
-      ))}
-    </nav>
-  );
-}
 
 export const errText = (e: unknown) => (e instanceof Error ? e.message : "Đã xảy ra lỗi");
 

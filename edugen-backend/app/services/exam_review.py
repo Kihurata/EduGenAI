@@ -85,13 +85,13 @@ def run_for(exam: Exam, row: MatrixCell):
 def fill_cell_questions(exam: Exam, row: MatrixCell, rag: QuestionGenerator):
     """Bù đủ số câu thiếu: RAG trả thiếu thì hỏi tiếp (tối đa FILL_ROUNDS lượt), dừng khi lượt không thêm câu."""
     need = missing_count(exam, row)
-    total = generate_cell(replace(cell_of(exam.matrix, row, need), previous_stems=exam_stems(exam)), rag)
+    total = generate_cell(replace(cell_of(exam.matrix, row, need, personal=exam.is_personal), previous_stems=exam_stems(exam)), rag)
     for _ in range(FILL_ROUNDS - 1):
         left = need - len(total.questions)
         if left <= 0 or total.error or not total.questions:
             break
         stems = exam_stems(exam) + tuple(q["stem"] for q in total.questions)
-        more = generate_cell(replace(cell_of(exam.matrix, row, left), previous_stems=stems), rag)
+        more = generate_cell(replace(cell_of(exam.matrix, row, left, personal=exam.is_personal), previous_stems=stems), rag)
         total.questions += more.questions
         total.rejected_count += more.rejected_count
         total.error = more.error
@@ -116,7 +116,7 @@ def run_regeneration(
             row = session.get(MatrixCell, matrix_cell_id)
             target = session.get(ExamQuestion, question_id) if question_id else None
             if target:
-                result = generate_cell(replace(cell_of(exam.matrix, row, 1), previous_stems=exam_stems(exam)), rag)
+                result = generate_cell(replace(cell_of(exam.matrix, row, 1, personal=exam.is_personal), previous_stems=exam_stems(exam)), rag)
             else:
                 result = fill_cell_questions(exam, row, rag)
             run = run_for(exam, row)

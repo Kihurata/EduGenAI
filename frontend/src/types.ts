@@ -8,6 +8,10 @@ export type ExamStatus = "generating" | "generated" | "incomplete" | "failed" | 
 export type CellRunStatus = "complete" | "short" | "error";
 export type IngestStatus = "pending" | "needs_review" | "sent" | "ingested" | "failed";
 export type ExportVariant = "student" | "teacher";
+/** Nguồn dữ liệu sinh đề: trường (duyệt xong vào hàng chờ admin) hoặc bộ sưu tập cá nhân (riêng của GV). */
+export type ExamSource = "school" | "personal";
+/** Admin xét đề nguồn trường đã duyệt: chờ xét / đã thành đề chính thức / không chọn. */
+export type BankReview = "pending" | "accepted" | "rejected";
 
 export const QUESTION_TYPES: QuestionType[] = ["multiple_choice", "true_false", "short_answer"];
 export const LEVELS: Level[] = ["Biết", "Hiểu", "Vận dụng"];
@@ -141,6 +145,9 @@ export interface Exam {
   cells_done: number;
   cells_total: number;
   created_at: string;
+  source: ExamSource;
+  review_status: BankReview | null;
+  review_note: string | null;
   cell_runs: CellRun[];
   questions: Question[];
 }

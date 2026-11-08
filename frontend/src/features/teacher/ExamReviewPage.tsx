@@ -13,6 +13,7 @@ import { PART_OF_TYPE, TYPE_LABEL, type Exam, type Question } from "@/types";
 
 import { cellLabel, FormError, PAPER_FONT, PART_HEAD, PARTS, StatusChip, teacherSteps, useMatrixCells } from "./lib";
 import QuestionPanel from "./QuestionPanel";
+import { DestinationChip } from "./SourcePicker";
 
 type Check = { bieu_thuc?: string; gia_tri?: number | string; lam_tron?: number | null };
 
@@ -156,6 +157,7 @@ export default function ExamReviewPage() {
           <Link to={`/matrices/${exam.matrix_id}`} className="text-accent">
             xem ma trận
           </Link>
+          <DestinationChip exam={exam} />
           {exam.status === "approved" && <Seal />}
         </p>
         <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -360,7 +362,24 @@ export default function ExamReviewPage() {
       <div className="sticky bottom-0 z-10 mt-6 flex flex-wrap items-center gap-3 rounded-sm border border-line bg-surface px-4 py-3 text-sm">
         {exam.status === "approved" ? (
           <>
-            <span className="text-muted">Đề đã duyệt và được khoá.</span>
+            <span className="text-muted">
+              Đề đã duyệt và được khoá.{" "}
+              {exam.source === "personal" ? (
+                <>
+                  Đã lưu vào{" "}
+                  <Link to="/collection" className="text-accent underline">
+                    bộ sưu tập cá nhân
+                  </Link>
+                  .
+                </>
+              ) : exam.review_status === "accepted" ? (
+                "Quản trị viên đã chọn làm đề chính thức của trường."
+              ) : exam.review_status === "rejected" ? (
+                `Quản trị viên không chọn đề này${exam.review_note ? `: ${exam.review_note}` : "."}`
+              ) : (
+                "Đã gửi vào ngân hàng đề, chờ quản trị viên xét chọn làm đề chính thức."
+              )}
+            </span>
             <Link to={`/exams/${exam.id}/export`} className="ml-auto inline-flex h-9 items-center rounded-sm border border-accent bg-accent px-3 font-medium text-surface">
               Sang bước Xuất đề →
             </Link>
@@ -371,7 +390,10 @@ export default function ExamReviewPage() {
               Đã đọc qua <b>{seen.size}/{sorted.length}</b> câu
               {missing.length > 0 && <span className="text-warn"> · {missing.length} ô còn thiếu câu</span>}
             </span>
-            <span className="ml-auto text-xs text-muted">Sửa / sinh lại / xoá ngay trên từng câu. Duyệt xong đề bị khoá.</span>
+            <span className="ml-auto text-xs text-muted">
+              Sửa / sinh lại / xoá ngay trên từng câu. Duyệt xong đề bị khoá và{" "}
+              {exam.source === "personal" ? "lưu vào bộ sưu tập cá nhân." : "gửi vào ngân hàng đề chờ quản trị viên xét."}
+            </span>
             <Button onClick={approve} disabled={generating || missing.length > 0 || action.busy}>
               Duyệt đề
             </Button>

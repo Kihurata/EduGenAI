@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/auth";
 import { Button } from "@/components/ui/button";
@@ -13,13 +14,18 @@ function message(error: unknown): string {
 
 export default function Login() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { busy, error, run } = useAction();
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    void run(() => login(email, password));
+    // Login renders at whatever URL the previous user left (e.g. /admin/teachers): always land on home.
+    void run(async () => {
+      await login(email, password);
+      navigate("/", { replace: true });
+    });
   }
 
   return (

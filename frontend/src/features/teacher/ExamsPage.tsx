@@ -42,15 +42,17 @@ function cellRows(exam: Exam, cells: Cell[]): CellRow[] {
 }
 
 /**
- * What the teacher sees. RAG misses (short / error cells) are not the teacher's concern: the page
- * re-fills them by itself, so they show as waiting or generating, never as an error.
+ * What the teacher sees. RAG misses are never shown as errors (no red, no RAG messages): while the
+ * page re-fills a cell by itself it shows as waiting / generating; once the automatic re-fills are
+ * used up it shows a neutral "Chưa đủ câu" with a "Sinh lại" button, so the teacher knows what blocks approval.
  */
-type ViewState = "wait" | "run" | "done";
+type ViewState = "wait" | "run" | "done" | "short";
 
 const STATE_CHIP: Record<ViewState, [string, "ok" | "accent" | "muted"]> = {
   done: ["Đã sinh", "ok"],
   run: ["Đang sinh", "accent"],
   wait: ["Chờ", "muted"],
+  short: ["Chưa đủ câu", "muted"],
 };
 
 /**
@@ -125,8 +127,10 @@ export default function ExamsPage() {
   const view: ViewRow[] = rows.map((r) => {
     if (!isBad(r)) return { ...r, view: r.state as ViewState, manual: false };
     const active = r.cell.id === retrying && (generating || fill.busy);
-    return { ...r, view: active ? "run" : "wait", manual: canFill && !fill.busy && !retriesLeft(r) };
+    const manual = canFill && !fill.busy && !retriesLeft(r);
+    return { ...r, view: active ? "run" : manual ? "short" : "wait", manual };
   });
+  const shortCells = view.filter((r) => r.view === "short");
 
   function jumpTo(cellId: string) {
     setHlCell(cellId);
@@ -188,10 +192,21 @@ export default function ExamsPage() {
       ) : (
         <>
           <Summary exam={selected} rows={view} working={generating || fill.busy || autoPending} />
-          {problem && (
+          {problem ? (
             <p role="alert" className="mt-3 rounded-sm border border-warn/40 bg-warn/10 px-4 py-2 text-sm text-warn">
               {problem}
             </p>
+          ) : (
+            shortCells.length > 0 && (
+              <p role="status" className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-sm border border-line bg-surface px-4 py-2 text-sm">
+                <span className="flex-1">
+                  Còn <b>{shortCells.length}</b> ô chưa đủ câu nên chưa duyệt được đề. Bấm “Sinh lại” ở từng ô bên dưới.
+                </span>
+                <button type="button" className="cursor-pointer font-medium text-accent hover:underline" onClick={() => jumpTo(shortCells[0].cell.id)}>
+                  Đến ô đầu tiên →
+                </button>
+              </p>
+            )
           )}
           <div className="mt-6 grid items-start gap-8 lg:grid-cols-[18rem_minmax(0,1fr)]">
             <SlotMap rows={view} hl={hlCell} onPick={jumpTo} />
@@ -223,15 +238,16 @@ function Summary({ exam, rows, working }: Readonly<{ exam: Exam; rows: ViewRow[]
             {generating ? `đã xong · đề cần ${need} câu` : `${doneCells}/${rows.length} ô ma trận đủ câu`}
           </span>
         </p>
-        <span className="text-sm text-muted">{complete ? "Đã chạy xong" : working ? `Đang sinh · ${Math.round(pct)}%` : "Đang chờ"}</span>
+        <span className="text-sm text-muted">{complete ? "Đã chạy xong" : working ? `Đang sinh · ${Math.round(pct)}%` : "Chưa đủ câu"}</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-soft">
-        <div className={cn("h-full", complete ? "bg-ok" : "bg-accent")} style={{ width: `${Math.min(100, pct)}%` }} />
+        <div className={cn("h-full", complete ? "bg-ok" : working ? "bg-accent" : "bg-muted/50")} style={{ width: `${Math.min(100, pct)}%` }} />
       </div>
       <div className="flex flex-wrap gap-4 text-xs text-muted">
         <Legend cls="border-line bg-surface" label="Chờ" />
         <Legend cls="animate-pulse border-accent bg-accent/30" label="Đang sinh" />
         <Legend cls="border-ok bg-ok" label="Đã sinh" />
+        {rows.some((r) => r.view === "short") && <Legend cls="border-dashed border-muted bg-soft" label="Chưa đủ câu" />}
       </div>
       {exam.status === "approved" ? (
         <Banner text="Đề đã duyệt.">
@@ -270,16 +286,17 @@ function Banner({ text, children }: Readonly<{ text: string; children: ReactNode
 
 /** One square per question of the exam, grouped by part, coloured by the state of its matrix cell. */
 function SlotMap({ rows, hl, onPick }: Readonly<{ rows: ViewRow[]; hl: string | null; onPick: (cellId: string) => void }>) {
-  const counts = { done: 0, run: 0, wait: 0 };
+  const counts = { done: 0, run: 0, wait: 0, short: 0 };
   for (const r of rows) counts[r.view]++;
   return (
     <aside className="space-y-5 lg:sticky lg:top-4" aria-label="Sơ đồ đề">
-      <dl className="grid grid-cols-3 rounded-sm border border-line bg-surface text-center">
+      <dl className="grid grid-cols-4 rounded-sm border border-line bg-surface text-center">
         {(
           [
             ["Ô xong", counts.done],
             ["Đang sinh", counts.run],
             ["Chờ", counts.wait],
+            ["Chưa đủ", counts.short],
           ] as const
         ).map(([k, v]) => (
           <div key={k} className="border-r border-line px-1 py-2 last:border-r-0">
@@ -314,6 +331,7 @@ function SlotMap({ rows, hl, onPick }: Readonly<{ rows: ViewRow[]; hl: string | 
                     s.state === "done" && "border-ok bg-ok text-surface",
                     s.state === "run" && "animate-pulse border-accent bg-accent/15 text-accent",
                     s.state === "wait" && "border-line bg-surface text-muted",
+                    s.state === "short" && "border-dashed border-muted bg-soft text-muted",
                     hl === s.cellId && "outline-2 outline-offset-1 outline-ink",
                   )}
                 >
@@ -364,7 +382,7 @@ function CellList({
             </span>
             <div className="col-span-2 h-1.5 overflow-hidden rounded-full bg-soft sm:col-span-1" aria-hidden="true">
               <div
-                className={cn("h-full", r.view === "done" && "bg-ok", r.view === "run" && "animate-pulse bg-accent/50", r.view === "wait" && "bg-ok/60")}
+                className={cn("h-full", r.view === "done" && "bg-ok", r.view === "run" && "animate-pulse bg-accent/50", (r.view === "wait" || r.view === "short") && "bg-muted/50")}
                 style={{ width: `${pct}%` }}
               />
             </div>

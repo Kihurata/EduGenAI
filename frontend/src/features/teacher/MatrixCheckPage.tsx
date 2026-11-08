@@ -114,6 +114,8 @@ interface Drawer {
   title: string;
   sub: string;
   idx: number[];
+  /** Index of a cell just added by clicking an empty grid cell: the drawer offers "Hoàn tác". */
+  added?: number;
 }
 
 /** Số câu / số phút là số nguyên: chặn ký tự thập phân, dấu và số mũ ngay khi gõ. */
@@ -204,10 +206,11 @@ export default function MatrixCheckPage() {
   const points = totals.reduce((s, t) => s + t.count * (subject?.points[t.type] ?? 0), 0);
   const structureOk = !!official && totals.every((t) => t.count === official[t.type]);
   let confirmHint = "";
+  const emptyCells = cells.flatMap((c, i) => (c.count < 1 ? [i] : []));
   const gradeOk = grade !== null && SUPPORTED_GRADES.includes(grade); // lớp đang chọn: bấm “Xác nhận & sinh đề” sẽ lưu lớp này trước
   if (!gradeOk) confirmHint = gradeMessage(grade);
   else if (!dirty && matrix.status === "invalid") confirmHint = "Sửa hết lỗi trước";
-  else if (cells.some((c) => c.count < 1)) confirmHint = "Mỗi ô ma trận cần ít nhất 1 câu";
+  else if (emptyCells.length) confirmHint = `Ô ${emptyCells.map((i) => i + 1).join(", ")} chưa có số câu (cần ít nhất 1)`;
   else if (duration < 1) confirmHint = "Nhập thời gian làm bài (phút)";
   else if (!official) confirmHint = "Chưa xác định được môn của ma trận";
   else if (!structureOk)
@@ -263,7 +266,7 @@ export default function MatrixCheckPage() {
     const index = cells.length;
     setCells((prev) => [...prev, cell]);
     setDirty(true);
-    setDrawer((d) => (d ? { ...d, idx: [...d.idx, index] } : { title: "Ô mới", sub: "Thêm ô ma trận", idx: [index] }));
+    setDrawer((d) => (d ? { ...d, idx: [...d.idx, index] } : { title: "Ô mới", sub: "Thêm ô ma trận", idx: [index], added: index }));
   }
 
   function openCells(f: { row: Row; type?: QuestionType; level?: Level }, label: string, sub: string) {
@@ -527,7 +530,7 @@ export default function MatrixCheckPage() {
                           c.level
                         )}
                       </td>
-                      <td className="border-b border-line px-3 py-3 font-semibold tabular-nums">{c.count}</td>
+                      <td className={cn("border-b border-line px-3 py-3 font-semibold tabular-nums", c.count < 1 && "text-bad")}>{c.count || "Trống"}</td>
                       <td className="border-b border-line px-3 py-3">
                         <button type="button" className="cursor-pointer text-accent hover:underline" onClick={() => setDrawer({ title: `Ô ${i + 1}`, sub: editable ? "Sửa ô ma trận" : "Chi tiết ô", idx: [i] })}>
                           {editable ? "Sửa" : "Xem"}
@@ -555,19 +558,39 @@ export default function MatrixCheckPage() {
           <div className="ml-auto flex flex-wrap items-end gap-2">
             {(editable || matrix.status === "confirmed") && (
               <form onSubmit={confirmAndGenerate} className="flex flex-wrap items-end gap-2">
-                {editable && confirmHint && <span className="basis-full text-right text-xs text-warn">{confirmHint}</span>}
+                {editable && confirmHint && (
+                  <span className="basis-full text-right text-xs text-warn">
+                    {confirmHint}
+                    {emptyCells.length > 0 && (
+                      <button
+                        type="button"
+                        className="ml-2 cursor-pointer font-medium text-accent underline"
+                        onClick={() => setDrawer({ title: "Ô chưa có số câu", sub: "Cần sửa", idx: emptyCells })}
+                      >
+                        Sửa các ô này
+                      </button>
+                    )}
+                  </span>
+                )}
+                {editable && !confirmHint && (
+                  <span className="basis-full text-right text-xs text-muted">
+                    Bấm nút sẽ lưu và chốt ma trận (sau đó không sửa được nữa), rồi bắt đầu sinh đề.
+                  </span>
+                )}
                 <label className="text-xs">
                   <span className="mb-1 block text-muted">Tên đề thi</span>
                   <Input className="w-64 max-w-full" value={examTitle} placeholder="Ví dụ: Đề kiểm tra giữa kì 1 – Toán 12" onChange={(e) => setTitle(e.target.value)} />
                 </label>
                 <label className="text-xs">
-                  <span className="mb-1 block text-muted">Thời gian (phút)</span>
+                  <span className="mb-1 block text-muted">Thời gian (phút, tối đa 300)</span>
                   <Input
                     type="number"
                     inputMode="numeric"
                     step={1}
-                    className="w-24"
+                    className={cn("w-24", duration < 1 && "border-bad")}
                     min={1}
+                    max={300}
+                    aria-invalid={duration < 1}
                     value={duration || ""}
                     onKeyDown={blockNonInteger}
                     onChange={(e) => setDuration(wholeNumber(e.target.value, 300))}
@@ -598,6 +621,10 @@ export default function MatrixCheckPage() {
           unitsOf={unitsOfTopic}
           onRemove={removeCell}
           onAdd={() => addCell(drawer.idx.length ? { topic: cells[drawer.idx[0]].topic, content_unit: cells[drawer.idx[0]].content_unit } : undefined)}
+          onUndoAdd={() => {
+            if (drawer.added !== undefined) removeCell(drawer.added);
+            setDrawer(null);
+          }}
         />
       )}
     </section>
@@ -649,17 +676,21 @@ function GroupRows({
             {PART_COLS.flatMap((p) =>
               LEVELS.map((l) => {
                 const v = amount(cells, row.entries, p.type, l);
+                const hasEmpty = row.entries.some(({ i, k }) => matches(cells[i], k, p.type, l) && cells[i].count < 1);
                 return (
                   // The button fills the whole grid cell, so a click anywhere in it opens (or adds) the cell.
                   <td key={p.type + l} className="h-px border border-line p-0 text-center">
-                    {v ? (
+                    {v || hasEmpty ? (
                       <button
                         type="button"
-                        aria-label={`${unitLabel}: ${TYPE_LABEL[p.type]}, ${l}, ${v} ${p.type === "true_false" ? "ý" : "câu"}`}
+                        aria-label={`${unitLabel}: ${TYPE_LABEL[p.type]}, ${l}, ${hasEmpty ? "có ô chưa có số câu" : `${v} ${p.type === "true_false" ? "ý" : "câu"}`}`}
                         onClick={() => onOpen({ row, type: p.type, level: l }, `${TYPE_LABEL[p.type]} · ${l}`, unitLabel)}
-                        className="h-full min-h-10 w-full cursor-pointer px-2 py-1 font-semibold tabular-nums hover:bg-accent/10 hover:text-accent hover:outline hover:outline-1 hover:-outline-offset-1 hover:outline-accent"
+                        className={cn(
+                          "h-full min-h-10 w-full cursor-pointer px-2 py-1 font-semibold tabular-nums hover:bg-accent/10 hover:text-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
+                          hasEmpty && "bg-bad/10 text-bad outline outline-1 -outline-offset-1 outline-bad",
+                        )}
                       >
-                        {v}
+                        {hasEmpty && !v ? "?" : v}
                         {p.type === "true_false" && <span className="text-xs font-normal text-muted"> ý</span>}
                       </button>
                     ) : onAdd ? (
@@ -668,10 +699,10 @@ function GroupRows({
                         title="Thêm ô ma trận vào đây"
                         aria-label={`Thêm ô: ${unitLabel}, ${TYPE_LABEL[p.type]}, ${l}`}
                         onClick={() => onAdd(row, p.type, l)}
-                        className="group h-full min-h-10 w-full cursor-pointer text-line hover:bg-accent/5 hover:text-accent"
+                        className="group h-full min-h-10 w-full cursor-pointer text-muted/60 hover:bg-accent/5 hover:text-accent focus-visible:bg-accent/5 focus-visible:text-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
                       >
-                        <span className="group-hover:hidden">·</span>
-                        <span className="hidden text-sm group-hover:inline">+</span>
+                        <span className="group-hover:hidden group-focus-visible:hidden">·</span>
+                        <span className="hidden text-sm group-hover:inline group-focus-visible:inline">+</span>
                       </button>
                     ) : (
                       <span className="text-line">·</span>
@@ -703,6 +734,8 @@ interface DrawerProps {
   unitsOf: (topic: string) => string[];
   onRemove: (i: number) => void;
   onAdd: () => void;
+  /** Removes the cell just added from the grid and closes the drawer. */
+  onUndoAdd: () => void;
 }
 
 function CellDrawer({
@@ -717,6 +750,7 @@ function CellDrawer({
   unitsOf,
   onRemove,
   onAdd,
+  onUndoAdd,
 }: Readonly<DrawerProps>) {
   const panel = useRef<HTMLElement>(null);
   const close = useRef(onClose);
@@ -748,9 +782,16 @@ function CellDrawer({
               {drawer.title}
             </h2>
           </div>
-          <Button variant="ghost" aria-label="Đóng" onClick={onClose}>
-            ✕
-          </Button>
+          <div className="flex shrink-0 items-center gap-1">
+            {editable && drawer.added !== undefined && (
+              <Button variant="outline" className="h-8" onClick={onUndoAdd}>
+                Hoàn tác thêm ô
+              </Button>
+            )}
+            <Button variant="ghost" aria-label="Đóng" onClick={onClose}>
+              ✕
+            </Button>
+          </div>
         </header>
         <div className="flex-1 space-y-5 overflow-y-auto px-5 py-4">
           {!editable && <p className="rounded-sm bg-soft px-3 py-2 text-sm text-muted">Ma trận đã xác nhận nên chỉ xem được, không sửa được.</p>}
@@ -795,8 +836,10 @@ function CellDrawer({
                     </Select>
                   </label>
                   <label className="block">
-                    <span className="mb-1 block text-muted">Số câu</span>
+                    <span className="mb-1 block text-muted">Số câu (1–50)</span>
                     <Input
+                      className={cn(c.count < 1 && "border-bad")}
+                      aria-invalid={c.count < 1}
                       type="number"
                       inputMode="numeric"
                       step={1}

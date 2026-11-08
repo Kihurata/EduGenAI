@@ -40,7 +40,7 @@ def test_lower_grade_chapter_fits_higher_grade_matrix_but_not_the_reverse():
 def test_topic_lists_per_subject():
     assert len(topics_for("ly")) == 15
     assert len(topics_for("hoa")) == 23
-    assert len(topics_for("toan")) == 19
+    assert len(topics_for("toan")) == 25
     assert all(t.subject == "toan" for t in topics_for("toan"))
 
 

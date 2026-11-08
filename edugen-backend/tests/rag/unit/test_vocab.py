@@ -1,4 +1,4 @@
-"""Tóm tắt: unit test bộ từ vựng chung của hợp đồng RAG (T-028): loại câu ↔ phần đề, mức độ Biết/Hiểu/Vận dụng theo thứ tự, 19 mã chủ đề mới "mạch/chủ đề", bảng đổi mã cũ → mới và chiều ngược lại (old_codes)."""
+"""Tóm tắt: unit test bộ từ vựng chung của hợp đồng RAG (T-028): loại câu ↔ phần đề, mức độ Biết/Hiểu/Vận dụng theo thứ tự, 25 mã chủ đề mới "mạch/chủ đề", bảng đổi mã cũ → mới và chiều ngược lại (old_codes)."""
 
 import pytest
 
@@ -20,7 +20,7 @@ def test_level_codes_cover_levels():
 
 
 def test_every_old_code_maps_to_a_topic():
-    assert len(TOPICS) == 19
+    assert len(TOPICS) == 25
     assert len(OLD_TO_NEW) == 31
     assert set(OLD_TO_NEW.values()) <= TOPICS
 
@@ -82,6 +82,15 @@ def test_codes_that_kept_their_name_map_to_themselves():
     assert "dai_so_giai_tich/ung_dung_dao_ham" in same and all(s in TOPICS for s in same)
 
 
-def test_only_thong_ke_phan_tan_has_no_old_exam_code():
-    # No indexed exam item uses it yet, so retrieval for it finds theory only; a new one shows up here.
-    assert {t for t in TOPICS if not old_codes(t)} == {"thong_ke_xac_suat/thong_ke_phan_tan"}
+def test_only_these_topics_have_no_old_exam_code():
+    # No indexed exam item uses them yet, so retrieval for them finds theory only; a new one shows up here.
+    # The six Toán 10-11 chapters were added for periodic (giữa kì) matrices, not for the graduation exams.
+    assert {t for t in TOPICS if not old_codes(t)} == {
+        "thong_ke_xac_suat/thong_ke_phan_tan",
+        "dai_so_giai_tich/menh_de_tap_hop",
+        "hinh_hoc_do_luong/he_thuc_luong_tam_giac",
+        "hinh_hoc_do_luong/vecto_mat_phang",
+        "thong_ke_xac_suat/thong_ke_khong_ghep_nhom",
+        "hinh_hoc_do_luong/toa_do_mat_phang",
+        "dai_so_giai_tich/gioi_han_ham_lien_tuc",
+    }

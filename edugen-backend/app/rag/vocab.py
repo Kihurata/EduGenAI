@@ -28,6 +28,12 @@ TOPICS = {
     "dai_so_giai_tich/to_hop",
     "thong_ke_xac_suat/xac_suat_co_dien",
     "dai_so_giai_tich/he_phuong_trinh_bac_nhat_ba_an",
+    "dai_so_giai_tich/menh_de_tap_hop",
+    "hinh_hoc_do_luong/he_thuc_luong_tam_giac",
+    "hinh_hoc_do_luong/vecto_mat_phang",
+    "thong_ke_xac_suat/thong_ke_khong_ghep_nhom",
+    "hinh_hoc_do_luong/toa_do_mat_phang",
+    "dai_so_giai_tich/gioi_han_ham_lien_tuc",
 }
 
 _D, _H, _T = "dai_so_giai_tich/", "hinh_hoc_do_luong/", "thong_ke_xac_suat/"
@@ -47,6 +53,12 @@ CHAPTER_BY_TOPIC = {
     _H + "quan_he_vuong_goc": "Chương VII. Quan hệ vuông góc trong không gian",
     _T + "xac_suat_quy_tac": "Chương VIII. Các quy tắc tính xác suất",
     _D + "dao_ham": "Chương IX. Đạo hàm",
+    _D + "menh_de_tap_hop": "Chương I. Mệnh đề và tập hợp",
+    _H + "he_thuc_luong_tam_giac": "Chương III. Hệ thức lượng trong tam giác",
+    _H + "vecto_mat_phang": "Chương IV. Vectơ",
+    _T + "thong_ke_khong_ghep_nhom": "Chương V. Các số đặc trưng của mẫu số liệu không ghép nhóm",
+    _H + "toa_do_mat_phang": "Chương VII. Phương pháp toạ độ trong mặt phẳng",
+    _D + "gioi_han_ham_lien_tuc": "Chương V. Giới hạn. Hàm số liên tục",
     _D + "ung_dung_dao_ham": "Chương I. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
     _H + "vecto_khong_gian": "Chương II. Vectơ và hệ trục toạ độ trong không gian",
     _T + "thong_ke_phan_tan": "Chương III. Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm",

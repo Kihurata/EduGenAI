@@ -46,6 +46,12 @@ TOPICS: dict[str, Topic] = {
         Topic("to_hop", DS, "Đại số tổ hợp", grade=10),
         Topic("xac_suat_co_dien", TK, "Tính xác suất theo định nghĩa cổ điển", grade=10),
         Topic("he_phuong_trinh_bac_nhat_ba_an", DS, "Hệ phương trình bậc nhất ba ẩn", grade=10),
+        Topic("menh_de_tap_hop", DS, "Mệnh đề và tập hợp", grade=10),
+        Topic("he_thuc_luong_tam_giac", HH, "Hệ thức lượng trong tam giác", grade=10),
+        Topic("vecto_mat_phang", HH, "Vectơ", grade=10),
+        Topic("thong_ke_khong_ghep_nhom", TK, "Các số đặc trưng của mẫu số liệu không ghép nhóm", grade=10),
+        Topic("toa_do_mat_phang", HH, "Phương pháp toạ độ trong mặt phẳng", grade=10),
+        Topic("gioi_han_ham_lien_tuc", DS, "Giới hạn. Hàm số liên tục", grade=11),
     )
 }  # fmt: skip
 

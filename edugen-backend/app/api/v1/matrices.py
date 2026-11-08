@@ -35,7 +35,7 @@ from app.services.matrix_converter import MatrixConverter, get_matrix_converter
 from app.services.matrix_jobs import apply_parsed, process_matrix, update_cells
 from app.services.storage import LocalStorage, get_storage
 
-DEMO_GRADE = 12  # bản demo chỉ sinh đề lớp 12 (D-001), mọi môn; không tự đổi lớp của ma trận
+SUPPORTED_GRADES = (10, 11, 12)  # 10–11: kiểm tra định kỳ, 12: tốt nghiệp THPT; không tự đổi lớp của ma trận
 
 router = APIRouter(prefix="/matrices", tags=["matrices"])
 
@@ -228,10 +228,12 @@ def confirm_matrix(matrix_id: uuid.UUID, db: DB, user: CurrentUser) -> MatrixOut
     matrix = get_matrix(db, matrix_id, user)
     if matrix.status is not MatrixStatus.parsed:
         raise HTTPException(status.HTTP_409_CONFLICT, "Ma trận còn lỗi hoặc chưa đọc xong, chưa xác nhận được")
-    if matrix.grade != DEMO_GRADE:
+    if matrix.grade not in SUPPORTED_GRADES:
         raise HTTPException(
             status.HTTP_409_CONFLICT,
-            f"Bản demo hiện chỉ hỗ trợ đề lớp {DEMO_GRADE}. Ma trận này là lớp {matrix.grade} nên chưa xác nhận được.",
+            "Chưa xác định được lớp của ma trận (10, 11 hoặc 12): chọn lớp rồi xác nhận lại."
+            if matrix.grade is None
+            else f"Hệ thống chỉ hỗ trợ đề lớp 10, 11, 12. Ma trận này là lớp {matrix.grade} nên chưa xác nhận được.",
         )
     matrix.status = MatrixStatus.confirmed
     matrix.confirmed_at = datetime.now(UTC)

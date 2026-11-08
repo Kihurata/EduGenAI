@@ -17,6 +17,7 @@ from app.api.v1.matrices import get_matrix
 from app.api.v1.schemas import Accepted
 from app.core.errors import LLMError
 from app.db.session import get_session_factory
+from app.domain.exam_document import VARIANT_LABELS
 from app.domain.exam_structure import PART_OF_TYPE
 from app.domain.exam_variant import is_valid_code
 from app.domain.generation import QuestionGenerator
@@ -123,7 +124,7 @@ def get_exam(db: Session, exam_id: uuid.UUID, user: User) -> Exam:
     return exam
 
 
-MAX_VARIANT_CODES = 10
+MAX_VARIANT_CODES = 4  # khớp MAX_EXAM_CODES của frontend
 ZIP_MIME = "application/zip"
 
 
@@ -171,7 +172,8 @@ def download_variants(
         for code in wanted:
             data, filename = export_exam(db, storage, exam, variant, code)
             archive.writestr(filename, data)
-    return attachment(buffer.getvalue(), f"{exam.title} - {len(wanted)} mã đề.zip", ZIP_MIME)
+    name = f"{exam.title} - {len(wanted)} mã đề - {VARIANT_LABELS[variant]}.zip"  # bản HS/GV ghi rõ ở cuối tên
+    return attachment(buffer.getvalue(), name, ZIP_MIME)
 
 
 @router.post("", status_code=status.HTTP_202_ACCEPTED)

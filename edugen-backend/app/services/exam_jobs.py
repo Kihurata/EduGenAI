@@ -7,8 +7,9 @@ from collections import Counter
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.errors import LLMError
+from app.core.subjects import SUBJECTS
 from app.domain.cell import Cell
-from app.domain.exam_document import ExamInfo, build_blocks
+from app.domain.exam_document import VARIANT_LABELS, ExamInfo, build_blocks
 from app.domain.exam_variant import make_variant, variant_seed
 from app.domain.generation import QuestionGenerator, generate_all
 from app.domain.matrix_json import exam_kind_of
@@ -155,10 +156,12 @@ def export_exam(
     thì xuất bản gốc. Đề đã duyệt không sửa được nên cùng mã luôn ra cùng thứ tự.
     """
     matrix = exam.matrix
+    known = SUBJECTS.get(matrix.subject.code)
     info = ExamInfo(
         school_name=session.get(School, exam.school_id).name, title=exam.title,
-        subject_name=matrix.subject.name, grade=matrix.grade, duration_minutes=exam.duration_minutes,
-        code=code,
+        # Tên ngắn ("Toán") như dòng "MÔN:" của bản xem trước; môn ngoài registry thì dùng tên trong DB.
+        subject_name=known.label if known else matrix.subject.name, grade=matrix.grade,
+        duration_minutes=exam.duration_minutes, code=code, subject_code=matrix.subject.code,
     )  # fmt: skip
     cells = [cell_of(matrix, row) for row in matrix.cells]
     questions = variant_questions(exam, code) if code else [q.content for q in exam.questions]
@@ -167,5 +170,9 @@ def export_exam(
     storage.save(key, data)
     session.add(ExamExport(exam_id=exam.id, variant=variant, storage_key=key))
     session.commit()
-    suffix = "GV" if variant is ExportVariant.teacher else "HS"
-    return data, f"{exam.title} - {suffix}{f' - Mã đề {code}' if code else ''}.docx"
+    return data, export_filename(exam.title, variant, code)
+
+
+def export_filename(title: str, variant: ExportVariant, code: str | None = None, ext: str = "docx") -> str:
+    """Tên file luôn kết thúc bằng phiên bản để phân biệt đề HS/GV: "<đề> - Mã đề 101 - Bản giáo viên.docx"."""
+    return f"{title}{f' - Mã đề {code}' if code else ''} - {VARIANT_LABELS[variant]}.{ext}"

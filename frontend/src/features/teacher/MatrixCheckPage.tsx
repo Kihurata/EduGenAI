@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { api } from "@/api";
@@ -116,12 +116,24 @@ interface Drawer {
   idx: number[];
 }
 
-const DEMO_GRADE = 12;
+/** Số câu / số phút là số nguyên: chặn ký tự thập phân, dấu và số mũ ngay khi gõ. */
+function blockNonInteger(e: ReactKeyboardEvent<HTMLInputElement>) {
+  if ([".", ",", "e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+}
+
+/** Chữ trong ô số → số nguyên 0..max (0 = ô đang trống; dán "1.9" thành 1). */
+function wholeNumber(text: string, max: number): number {
+  const n = Math.trunc(Number(text.replace(",", ".")));
+  return Number.isFinite(n) ? Math.min(Math.max(n, 0), max) : 0;
+}
+
+/** Lớp sinh được đề (khớp SUPPORTED_GRADES ở BE): 10–11 kiểm tra định kỳ, 12 tốt nghiệp THPT. */
+const SUPPORTED_GRADES = [10, 11, 12];
 
 function gradeMessage(grade: number | null) {
   return grade
-    ? `Bản demo hiện chỉ hỗ trợ đề lớp ${DEMO_GRADE}. Ma trận này là lớp ${grade} nên chưa sinh đề được.`
-    : `Chưa xác định được lớp của ma trận. Bản demo hiện chỉ hỗ trợ đề lớp ${DEMO_GRADE}.`;
+    ? `Hệ thống chỉ hỗ trợ đề lớp 10, 11, 12. Ma trận này là lớp ${grade} nên chưa sinh đề được.`
+    : "Chưa xác định được lớp của ma trận. Chọn lớp (10, 11 hoặc 12) rồi bấm “Xác nhận & sinh đề”.";
 }
 
 export default function MatrixCheckPage() {
@@ -192,9 +204,11 @@ export default function MatrixCheckPage() {
   const points = totals.reduce((s, t) => s + t.count * (subject?.points[t.type] ?? 0), 0);
   const structureOk = !!official && totals.every((t) => t.count === official[t.type]);
   let confirmHint = "";
-  const gradeOk = grade === DEMO_GRADE; // lớp đang chọn: bấm Xác nhận sẽ lưu lớp này trước
-  if (!gradeOk) confirmHint = `${gradeMessage(grade)} Nếu ma trận thật là lớp 12, chọn lại Lớp 12 rồi bấm Xác nhận.`;
+  const gradeOk = grade !== null && SUPPORTED_GRADES.includes(grade); // lớp đang chọn: bấm “Xác nhận & sinh đề” sẽ lưu lớp này trước
+  if (!gradeOk) confirmHint = gradeMessage(grade);
   else if (!dirty && matrix.status === "invalid") confirmHint = "Sửa hết lỗi trước";
+  else if (cells.some((c) => c.count < 1)) confirmHint = "Mỗi ô ma trận cần ít nhất 1 câu";
+  else if (duration < 1) confirmHint = "Nhập thời gian làm bài (phút)";
   else if (!official) confirmHint = "Chưa xác định được môn của ma trận";
   else if (!structureOk)
     confirmHint = `Cấu trúc phải là ${official.multiple_choice} nhiều lựa chọn / ${official.true_false} đúng-sai / ${official.short_answer} trả lời ngắn`;
@@ -239,10 +253,10 @@ export default function MatrixCheckPage() {
     const cell: CellIn = {
       topic: base?.topic ?? groups[0]?.topic ?? "",
       content_unit: base?.content_unit ?? null,
-      type: "multiple_choice",
-      level: "Biết",
+      type: base?.type ?? "multiple_choice",
+      level: base?.level ?? "Biết",
       count: 1,
-      statement_levels: null,
+      statement_levels: base?.type === "true_false" ? new Array<Level>(4).fill(base.level ?? "Biết") : null,
       statement_units: null,
       competency_codes: [],
     };
@@ -257,32 +271,33 @@ export default function MatrixCheckPage() {
     setDrawer({ title: label, sub, idx: cellsOf(entries) });
   }
 
-  /** Saves pending edits (if any), then confirms when the saved matrix validates. */
-  function saveAndConfirm() {
-    void action.run(async () => {
-      let m: Matrix = matrix!;
-      if (dirty) {
-        // API: PUT /api/v1/matrices/{id}/cells
-        m = await api<Matrix>(`/matrices/${id}/cells`, {
-          method: "PUT",
-          json: { cells, name: name || null, grade },
-        });
-        apply(m);
-      }
-      if (m.status !== "parsed") return; // still has issues: they are shown above
-      // API: POST /api/v1/matrices/{id}/confirm
-      apply(await api<Matrix>(`/matrices/${id}/confirm`, { method: "POST" }));
-    });
-  }
-
   const examTitle = title ?? examTitleFromMatrix(matrix.name);
 
-  async function createExam(e: FormEvent) {
+  /**
+   * One button for the whole step: saves pending edits (if any), confirms the matrix, then starts
+   * generating. Stops after saving when the saved matrix still has issues (they are shown above).
+   */
+  async function confirmAndGenerate(e: FormEvent) {
     e.preventDefault();
-    // API: POST /api/v1/exams
-    const accepted = await action.run(() =>
-      api<Accepted>("/exams", { method: "POST", json: { matrix_id: id, duration_minutes: duration, title: examTitle.trim() || null } }),
-    );
+    const accepted = await action.run(async () => {
+      let m: Matrix = matrix!;
+      if (editable) {
+        if (dirty) {
+          // API: PUT /api/v1/matrices/{id}/cells
+          m = await api<Matrix>(`/matrices/${id}/cells`, {
+            method: "PUT",
+            json: { cells, name: name || null, grade },
+          });
+          apply(m);
+        }
+        if (m.status !== "parsed") return undefined;
+        // API: POST /api/v1/matrices/{id}/confirm
+        m = await api<Matrix>(`/matrices/${id}/confirm`, { method: "POST" });
+        apply(m);
+      }
+      // API: POST /api/v1/exams
+      return api<Accepted>("/exams", { method: "POST", json: { matrix_id: id, duration_minutes: duration, title: examTitle.trim() || null } });
+    });
     if (accepted) navigate(`/exams?exam=${accepted.id}`);
   }
 
@@ -307,12 +322,12 @@ export default function MatrixCheckPage() {
       )}
       {!gradeOk && cells.length > 0 && (
         <p role="alert" className="mb-4 border-l-2 border-bad pl-4 text-sm text-bad">
-          {gradeMessage(grade)} Nếu ma trận thật là lớp 12, chọn lại Lớp 12 rồi bấm Xác nhận.
+          {gradeMessage(grade)}
         </p>
       )}
       {matrix.issues.length > 0 && (
         <div className="mb-6 border-l-2 border-warn pl-4 text-sm">
-          <p className="font-medium text-warn">Ma trận còn lỗi, sửa rồi bấm Xác nhận lại</p>
+          <p className="font-medium text-warn">Ma trận còn lỗi, sửa rồi bấm “Xác nhận & sinh đề” lại</p>
           <ul className="mt-1 list-disc pl-5">
             {matrix.issues.map((issue, i) => (
               <li key={i}>
@@ -352,7 +367,7 @@ export default function MatrixCheckPage() {
                 }}
               >
                 {matrix.grade === null && <option value="">Chưa rõ</option>}
-                {[10, 11, 12].map((g) => (
+                {SUPPORTED_GRADES.map((g) => (
                   <option key={g} value={g}>
                     Lớp {g}
                   </option>
@@ -428,7 +443,14 @@ export default function MatrixCheckPage() {
                 </thead>
                 <tbody>
                   {groups.map((g, gi) => (
-                    <GroupRows key={g.topic} group={g} gi={gi} cells={cells} onOpen={openCells} />
+                    <GroupRows
+                      key={g.topic}
+                      group={g}
+                      gi={gi}
+                      cells={cells}
+                      onOpen={openCells}
+                      onAdd={editable ? (row, type, level) => addCell({ topic: g.topic, content_unit: row.unit, type, level }) : undefined}
+                    />
                   ))}
                 </tbody>
                 <tfoot className="tabular-nums">
@@ -531,26 +553,28 @@ export default function MatrixCheckPage() {
             ))}
           </div>
           <div className="ml-auto flex flex-wrap items-end gap-2">
-            {editable && (
-              <>
-                {confirmHint && matrix.status !== "confirmed" && <span className="self-center text-xs text-warn">{confirmHint}</span>}
-                <Button onClick={saveAndConfirm} disabled={!!confirmHint || action.busy} title={confirmHint}>
-                  Xác nhận ma trận
-                </Button>
-              </>
-            )}
-            {matrix.status === "confirmed" && (
-              <form onSubmit={createExam} className="flex flex-wrap items-end gap-2">
+            {(editable || matrix.status === "confirmed") && (
+              <form onSubmit={confirmAndGenerate} className="flex flex-wrap items-end gap-2">
+                {editable && confirmHint && <span className="basis-full text-right text-xs text-warn">{confirmHint}</span>}
                 <label className="text-xs">
                   <span className="mb-1 block text-muted">Tên đề thi</span>
                   <Input className="w-64 max-w-full" value={examTitle} placeholder="Ví dụ: Đề kiểm tra giữa kì 1 – Toán 12" onChange={(e) => setTitle(e.target.value)} />
                 </label>
                 <label className="text-xs">
                   <span className="mb-1 block text-muted">Thời gian (phút)</span>
-                  <Input type="number" className="w-24" min={1} value={duration} onChange={(e) => setDuration(Number(e.target.value))} />
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    step={1}
+                    className="w-24"
+                    min={1}
+                    value={duration || ""}
+                    onKeyDown={blockNonInteger}
+                    onChange={(e) => setDuration(wholeNumber(e.target.value, 300))}
+                  />
                 </label>
-                <Button type="submit" disabled={action.busy}>
-                  Sinh đề
+                <Button type="submit" disabled={(editable && !!confirmHint) || action.busy} title={editable ? confirmHint : undefined}>
+                  {action.busy ? "Đang xử lý…" : editable ? "Xác nhận & sinh đề" : "Sinh đề"}
                 </Button>
               </form>
             )}
@@ -594,11 +618,14 @@ function GroupRows({
   gi,
   cells,
   onOpen,
+  onAdd,
 }: Readonly<{
   group: TopicGroup;
   gi: number;
   cells: CellIn[];
   onOpen: (f: { row: Row; type?: QuestionType; level?: Level }, label: string, sub: string) => void;
+  /** Editable matrix only: an empty grid cell adds a new matrix cell at that row / type / level. */
+  onAdd?: (row: Row, type: QuestionType, level: Level) => void;
 }>) {
   return (
     <>
@@ -623,16 +650,28 @@ function GroupRows({
               LEVELS.map((l) => {
                 const v = amount(cells, row.entries, p.type, l);
                 return (
-                  <td key={p.type + l} className="border border-line p-1 text-center">
+                  // The button fills the whole grid cell, so a click anywhere in it opens (or adds) the cell.
+                  <td key={p.type + l} className="h-px border border-line p-0 text-center">
                     {v ? (
                       <button
                         type="button"
                         aria-label={`${unitLabel}: ${TYPE_LABEL[p.type]}, ${l}, ${v} ${p.type === "true_false" ? "ý" : "câu"}`}
                         onClick={() => onOpen({ row, type: p.type, level: l }, `${TYPE_LABEL[p.type]} · ${l}`, unitLabel)}
-                        className="min-w-9 cursor-pointer rounded-sm border border-transparent px-2 py-1 font-semibold tabular-nums hover:border-accent hover:bg-accent/10 hover:text-accent"
+                        className="h-full min-h-10 w-full cursor-pointer px-2 py-1 font-semibold tabular-nums hover:bg-accent/10 hover:text-accent hover:outline hover:outline-1 hover:-outline-offset-1 hover:outline-accent"
                       >
                         {v}
                         {p.type === "true_false" && <span className="text-xs font-normal text-muted"> ý</span>}
+                      </button>
+                    ) : onAdd ? (
+                      <button
+                        type="button"
+                        title="Thêm ô ma trận vào đây"
+                        aria-label={`Thêm ô: ${unitLabel}, ${TYPE_LABEL[p.type]}, ${l}`}
+                        onClick={() => onAdd(row, p.type, l)}
+                        className="group h-full min-h-10 w-full cursor-pointer text-line hover:bg-accent/5 hover:text-accent"
+                      >
+                        <span className="group-hover:hidden">·</span>
+                        <span className="hidden text-sm group-hover:inline">+</span>
                       </button>
                     ) : (
                       <span className="text-line">·</span>
@@ -757,7 +796,17 @@ function CellDrawer({
                   </label>
                   <label className="block">
                     <span className="mb-1 block text-muted">Số câu</span>
-                    <Input type="number" min={1} max={50} value={c.count} disabled={!editable} onChange={(e) => onEdit(i, { count: Number(e.target.value) })} />
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      step={1}
+                      min={1}
+                      max={50}
+                      value={c.count || ""}
+                      disabled={!editable}
+                      onKeyDown={blockNonInteger}
+                      onChange={(e) => onEdit(i, { count: wholeNumber(e.target.value, 50) })}
+                    />
                   </label>
                 </div>
                 {c.type === "true_false" ? (

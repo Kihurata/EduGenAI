@@ -1,9 +1,6 @@
 {
-  "ready_for_rag": false,
-  "issues": [
-    "Chủ đề 'Mệnh đề và tập hợp' chưa có mã trong Toán topic list",
-    "Chủ đề 'Hệ thức lượng trong tam giác' chưa có mã trong Toán topic list"
-  ],
+  "ready_for_rag": true,
+  "issues": [],
   "matrix": {
     "subject": "toan",
     "grade": 10,
@@ -12,8 +9,8 @@
     "count_unit": "item",
     "cells": [
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": "Mệnh đề",
         "part": "I",
@@ -26,8 +23,8 @@
         "source_text": "02 (TD1.2)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": "Tập hợp-Các phép toán trên tập hợp",
         "part": "I",
@@ -40,8 +37,8 @@
         "source_text": "02 (TD1.2)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": "Tập hợp-Các phép toán trên tập hợp",
         "part": "I",
@@ -96,8 +93,8 @@
         "source_text": "01 (TD1.2)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "hinh_hoc_do_luong",
+        "topic": "he_thuc_luong_tam_giac",
         "source_topic": "Hệ thức lượng trong tam giác",
         "content_unit": "Giá trị lượng giác của một góc",
         "part": "I",
@@ -110,8 +107,8 @@
         "source_text": "01 (TD1.2)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "hinh_hoc_do_luong",
+        "topic": "he_thuc_luong_tam_giac",
         "source_topic": "Hệ thức lượng trong tam giác",
         "content_unit": "Giá trị lượng giác của một góc",
         "part": "I",
@@ -124,8 +121,8 @@
         "source_text": "01 (TD1.3)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "hinh_hoc_do_luong",
+        "topic": "he_thuc_luong_tam_giac",
         "source_topic": "Hệ thức lượng trong tam giác",
         "content_unit": "Hệ thức lượng trong tam giác",
         "part": "I",
@@ -138,8 +135,8 @@
         "source_text": "01 (TD1.2)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "hinh_hoc_do_luong",
+        "topic": "he_thuc_luong_tam_giac",
         "source_topic": "Hệ thức lượng trong tam giác",
         "content_unit": "Hệ thức lượng trong tam giác",
         "part": "I",
@@ -152,8 +149,8 @@
         "source_text": "01 (TD1.3)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": null,
         "part": "II",
@@ -167,8 +164,8 @@
         "source_text": "2a, 2b (GQ1.4)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": null,
         "part": "II",
@@ -182,8 +179,8 @@
         "source_text": "2c, 2d (GQ2.1)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": null,
         "part": "II",
@@ -197,8 +194,8 @@
         "source_text": "2a, 2b (GQ1.4)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": null,
         "part": "II",
@@ -242,8 +239,8 @@
         "source_text": "c, d (GQ2.1)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "hinh_hoc_do_luong",
+        "topic": "he_thuc_luong_tam_giac",
         "source_topic": "Hệ thức lượng trong tam giác",
         "content_unit": "Hệ thức lượng trong tam giác",
         "part": "II",
@@ -257,8 +254,8 @@
         "source_text": "a, b (GQ1.4)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "hinh_hoc_do_luong",
+        "topic": "he_thuc_luong_tam_giac",
         "source_topic": "Hệ thức lượng trong tam giác",
         "content_unit": "Hệ thức lượng trong tam giác",
         "part": "II",
@@ -272,8 +269,8 @@
         "source_text": "c, d (GQ2.1)"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": "Tập hợp-Các phép toán trên tập hợp",
         "part": "III",
@@ -284,8 +281,8 @@
         "source_text": "1"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "dai_so_giai_tich",
+        "topic": "menh_de_tap_hop",
         "source_topic": "Mệnh đề và tập hợp",
         "content_unit": "Tập hợp-Các phép toán trên tập hợp",
         "part": "III",
@@ -320,8 +317,8 @@
         "source_text": "1"
       },
       {
-        "strand": null,
-        "topic": null,
+        "strand": "hinh_hoc_do_luong",
+        "topic": "he_thuc_luong_tam_giac",
         "source_topic": "Hệ thức lượng trong tam giác",
         "content_unit": null,
         "part": "III",
@@ -378,21 +375,21 @@
   "rag_cells": [
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "menh_de_tap_hop",
       "level": "Biết",
       "type": "multiple_choice",
       "count": 2
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "menh_de_tap_hop",
       "level": "Biết",
       "type": "multiple_choice",
       "count": 2
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "menh_de_tap_hop",
       "level": "Hiểu",
       "type": "multiple_choice",
       "count": 1
@@ -420,35 +417,35 @@
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "he_thuc_luong_tam_giac",
       "level": "Biết",
       "type": "multiple_choice",
       "count": 1
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "he_thuc_luong_tam_giac",
       "level": "Hiểu",
       "type": "multiple_choice",
       "count": 1
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "he_thuc_luong_tam_giac",
       "level": "Biết",
       "type": "multiple_choice",
       "count": 1
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "he_thuc_luong_tam_giac",
       "level": "Hiểu",
       "type": "multiple_choice",
       "count": 1
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "menh_de_tap_hop",
       "level": "Hiểu",
       "type": "true_false",
       "count": 2,
@@ -474,7 +471,7 @@
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "he_thuc_luong_tam_giac",
       "level": "Hiểu",
       "type": "true_false",
       "count": 1,
@@ -487,14 +484,14 @@
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "menh_de_tap_hop",
       "level": "Hiểu",
       "type": "short_answer",
       "count": 1
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "menh_de_tap_hop",
       "level": "Vận dụng",
       "type": "short_answer",
       "count": 1
@@ -515,7 +512,7 @@
     },
     {
       "subject": "toan",
-      "topic": null,
+      "topic": "he_thuc_luong_tam_giac",
       "level": "Vận dụng",
       "type": "short_answer",
       "count": 2

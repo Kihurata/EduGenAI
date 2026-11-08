@@ -57,3 +57,31 @@ def test_all_topic_codes_exist_in_rag_vocab():
 
     # Lý/Hóa codes (D-013) are checked against topic_queries.json in test_topics_subjects.py.
     assert {f"{topic.strand}/{topic.code}" for topic in TOPICS.values() if topic.subject == "toan"} <= RAG_TOPICS
+
+
+# Chương SGK Toán 10-11 KNTT đã nạp vào RAG nhưng trước đây chưa có mã chủ đề (ma trận giữa kì lớp 10 cần).
+MISSING_CHAPTERS = [
+    ("Mệnh đề và tập hợp", 10, "dai_so_giai_tich/menh_de_tap_hop", "Chương I. Mệnh đề và tập hợp"),
+    ("Hệ thức lượng trong tam giác", 10, "hinh_hoc_do_luong/he_thuc_luong_tam_giac", "Chương III. Hệ thức lượng trong tam giác"),
+    ("Vectơ", 10, "hinh_hoc_do_luong/vecto_mat_phang", "Chương IV. Vectơ"),
+    (
+        "Các số đặc trưng của mẫu số liệu không ghép nhóm",
+        10,
+        "thong_ke_xac_suat/thong_ke_khong_ghep_nhom",
+        "Chương V. Các số đặc trưng của mẫu số liệu không ghép nhóm",
+    ),
+    ("Phương pháp toạ độ trong mặt phẳng", 10, "hinh_hoc_do_luong/toa_do_mat_phang", "Chương VII. Phương pháp toạ độ trong mặt phẳng"),
+    ("Giới hạn. Hàm số liên tục", 11, "dai_so_giai_tich/gioi_han_ham_lien_tuc", "Chương V. Giới hạn. Hàm số liên tục"),
+]
+
+
+@pytest.mark.parametrize(("name", "grade", "code", "chapter"), MISSING_CHAPTERS)
+def test_every_ingested_sgk_chapter_has_a_topic_with_chapter_and_query(name, grade, code, chapter):
+    from app.rag.vocab import CHAPTER_BY_TOPIC, TOPIC_QUERIES
+
+    strand, short = code.split("/")
+    topic = find_topic(name, grade=grade)
+    assert (topic.strand, topic.code, topic.grade) == (strand, short, grade)
+    assert code in RAG_TOPICS
+    assert CHAPTER_BY_TOPIC[code] == chapter  # tên chương đúng như payload `chapter` trong Qdrant
+    assert TOPIC_QUERIES[code]

@@ -43,7 +43,8 @@ def toan12(mc_count: int = 12) -> ParsedMatrix:
 def test_topic_matches_vietnamese_name_ignoring_case_and_punctuation():
     assert find_topic("ỨNG DỤNG ĐẠO HÀM ĐỂ KHẢO SÁT VÀ VẼ ĐỒ THỊ HÀM SỐ.").code == "ung_dung_dao_ham"
     assert find_topic("  Nguyên hàm   và tích phân ").strand == "dai_so_giai_tich"
-    assert find_topic("Mệnh đề và tập hợp") is None
+    assert find_topic("Mệnh đề và tập hợp").code == "menh_de_tap_hop"
+    assert find_topic("Lý thuyết đồ thị") is None  # chương thuộc sách Chuyên đề, chưa có mã (D-022)
 
 
 def test_fixture_header_and_totals():
@@ -59,14 +60,14 @@ def test_fixture_header_and_totals():
     }
 
 
-def test_fixture_maps_known_topic_and_reports_unknown_ones_once():
+def test_fixture_maps_known_topics_and_has_no_issues():
     result = fixture_json()
     cell = result.matrix["cells"][3]
     assert cell["source_topic"] == "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn"
     assert (cell["strand"], cell["topic"]) == ("dai_so_giai_tich", "he_bat_phuong_trinh_bac_nhat_hai_an")
-    assert result.matrix["cells"][0]["topic"] is None
-    assert [i.location for i in result.issues] == ["Mệnh đề và tập hợp", "Hệ thức lượng trong tam giác"]
-    assert not result.ready_for_rag
+    assert result.matrix["cells"][0]["topic"] == "menh_de_tap_hop"  # chương lớp 10 đã có mã
+    assert [i.location for i in result.issues] == []
+    assert result.ready_for_rag
 
 
 def test_part_two_counts_statements_grouped_by_question():

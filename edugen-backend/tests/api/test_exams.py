@@ -133,9 +133,15 @@ def test_colleague_cannot_see_exam_not_in_bank(client, teacher_headers, colleagu
     assert client.get(f"{BASE}/{exam['id']}", headers=outsider_headers).status_code == 404
 
 
+def header_texts(doc) -> list[str]:
+    """Đầu đề nằm trong bảng hai cột đầu tiên (trường | kỳ thi, môn, thời gian, mã đề)."""
+    return [p.text for cell in doc.tables[0].rows[0].cells for p in cell.paragraphs if p.text]
+
+
 def docx(resp) -> tuple[list[str], int]:
+    """(chữ đầu đề + các đoạn, số bảng không kể bảng đầu đề)."""
     doc = Document(io.BytesIO(resp.content))
-    return [p.text for p in doc.paragraphs], len(doc.tables)
+    return header_texts(doc) + [p.text for p in doc.paragraphs], len(doc.tables) - 1
 
 
 def test_export_student_and_teacher_docx(client, teacher_headers, db, storage):
@@ -149,13 +155,13 @@ def test_export_student_and_teacher_docx(client, teacher_headers, db, storage):
     paragraphs, tables = docx(resp)
     assert paragraphs[0] == "THPT NGUYỄN DU"
     assert "KTGK - HK1 - 10" in paragraphs
-    assert "Môn: Toán học – Lớp 12" in paragraphs
-    assert "Thời gian làm bài: 45 phút (không kể thời gian phát đề)" in paragraphs
+    assert "MÔN: TOÁN – LỚP 12" in paragraphs
+    assert "Thời gian làm bài: 45 phút, không kể thời gian phát đề" in paragraphs
     assert tables == 0
 
     resp = client.get(f"{BASE}/{exam['id']}/export", params={"variant": "teacher"}, headers=teacher_headers)
     paragraphs, tables = docx(resp)
-    assert "ĐÁP ÁN VÀ LỜI GIẢI" in paragraphs and tables == 4  # 3 bảng đáp án + ma trận đề
+    assert "ĐÁP ÁN" in paragraphs and tables == 4  # 3 bảng đáp án + ma trận đề
 
     exports = db.scalars(select(ExamExport).order_by(ExamExport.created_at)).all()
     assert [e.variant.value for e in exports] == ["student", "teacher"]

@@ -4,17 +4,18 @@
 - Có `code`: mã in trên đề, tên file có mã; cùng mã xuất lại ra cùng nội dung; mã khác ra thứ tự khác.
 - Không `code`: bản gốc như trước, không có dòng "Mã đề".
 - Mã sai → 422; đề chưa duyệt → 409 (kể cả khi có mã).
-- `export-variants`: nhiều mã trong một zip, mỗi mã một DOCX; tối đa 10 mã.
+- `export-variants`: nhiều mã trong một zip, mỗi mã một DOCX; tối đa 4 mã.
 - Ngân hàng đề: GV tải được đề theo mã như đề của mình.
 """
 
 import io
 import re
 import zipfile
+from urllib.parse import quote
 
 from docx import Document
 
-from tests.api.test_exams import BASE, approved_exam, generated_exam
+from tests.api.test_exams import BASE, approved_exam, generated_exam, header_texts
 
 BANK = "/api/v1/bank"
 
@@ -24,7 +25,8 @@ def doc_of(data: bytes) -> Document:
 
 
 def lines(data: bytes) -> list[str]:
-    return [p.text for p in doc_of(data).paragraphs]
+    doc = doc_of(data)
+    return header_texts(doc) + [p.text for p in doc.paragraphs]
 
 
 def export(client, headers, exam_id, variant="student", **params):
@@ -39,7 +41,7 @@ def test_code_is_printed_and_in_filename(client, teacher_headers):
     exam = approved_exam(client, teacher_headers)
     resp = export(client, teacher_headers, exam["id"], code="101")
     assert resp.status_code == 200
-    assert "M%C3%A3%20%C4%91%E1%BB%81%20101.docx" in resp.headers["content-disposition"]  # "Mã đề 101"
+    assert quote("Mã đề 101 - Bản học sinh.docx") in resp.headers["content-disposition"]
     assert "Mã đề: 101" in lines(resp.content)
 
 
@@ -67,8 +69,8 @@ def test_teacher_variant_has_its_own_answer_tables(client, teacher_headers):
     exam = approved_exam(client, teacher_headers)
     plain = doc_of(export(client, teacher_headers, exam["id"], "teacher").content)
     coded = doc_of(export(client, teacher_headers, exam["id"], "teacher", code="101").content)
-    assert len(coded.tables) == len(plain.tables) == 4  # 3 bảng đáp án + ma trận đề
-    answers = [c.text for c in coded.tables[0].rows[1].cells][1:]  # hàng "Đáp án" Phần I
+    assert len(coded.tables) == len(plain.tables) == 5  # đầu đề + 3 bảng đáp án + ma trận đề
+    answers = [c.text for c in coded.tables[1].rows[1].cells][1:]  # hàng "Đáp án" Phần I
     assert len(answers) == 12 and set(answers) <= set("ABCD")
 
 
@@ -96,7 +98,7 @@ def test_export_variants_zip_one_docx_per_code(client, teacher_headers):
     assert resp.headers["content-type"] == "application/zip"
     with zipfile.ZipFile(io.BytesIO(resp.content)) as z:
         names = z.namelist()
-        assert names == [f"KTGK - HK1 - 10 - GV - Mã đề {c}.docx" for c in ("101", "102", "103")]  # bỏ mã trùng
+        assert names == [f"KTGK - HK1 - 10 - Mã đề {c} - Bản giáo viên.docx" for c in ("101", "102", "103")]  # bỏ mã trùng
         for code, name in zip(("101", "102", "103"), names):
             assert f"Mã đề: {code}" in lines(z.read(name))
 
@@ -108,9 +110,9 @@ def test_export_variants_validates_codes(client, teacher_headers):
     assert bad.status_code == 422
     empty = client.get(url, params={"variant": "student", "codes": " , "}, headers=teacher_headers)
     assert empty.status_code == 422
-    many = ",".join(str(100 + i) for i in range(11))
+    many = ",".join(str(100 + i) for i in range(5))
     over = client.get(url, params={"variant": "student", "codes": many}, headers=teacher_headers)
-    assert (over.status_code, over.json()["detail"]) == (422, "Tối đa 10 mã đề mỗi lần xuất")
+    assert (over.status_code, over.json()["detail"]) == (422, "Tối đa 4 mã đề mỗi lần xuất")
 
 
 def test_colleague_downloads_bank_exam_by_code(client, teacher_headers, colleague_headers, admin_headers):

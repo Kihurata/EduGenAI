@@ -10,7 +10,7 @@ const NOT_FOUND = "Không tìm thấy trang";
 const SHOTS = path.resolve(process.cwd(), "e2e/screens");
 const COMING = /Sắp có|đang được xây dựng/;
 
-const TEACHER_ROUTES = ["/", "/matrices", "/exams", "/bank", "/sample-exams", "/classes", "/sheets", "/scans", "/results"];
+const TEACHER_ROUTES = ["/", "/matrices", "/exams", "/collection", "/bank", "/sample-exams", "/classes", "/sheets", "/scans", "/results"];
 const ADMIN_ROUTES = ["/admin/sources", "/admin/bank", "/admin/teachers"];
 
 async function login(page: Page, email: string) {
@@ -144,8 +144,8 @@ test.describe("admin", () => {
     const errors = watchConsole(page);
     await login(page, "admin@nd.vn");
     const crawled = new Set<string>();
-    for (const r of [...TEACHER_ROUTES, ...ADMIN_ROUTES]) await visit(page, r, errors, crawled);
-    for (const item of ["Nguồn tài liệu", "Tài khoản"]) {
+    for (const r of ["/", ...ADMIN_ROUTES]) await visit(page, r, errors, crawled);
+    for (const item of ["Tài khoản", "Ngân hàng đề", "Nguồn tài liệu"]) {
       await page.locator("header nav").getByRole("link", { name: item }).click();
       await expect(page.locator("h1")).not.toHaveText("Không có quyền truy cập");
     }

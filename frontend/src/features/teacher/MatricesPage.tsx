@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import type { Accepted, MatrixSummary } from "@/types";
 
 import { FormError, StatusChip, teacherSteps } from "./lib";
-import { MatrixFilePreview, useJsonSummary } from "./MatrixFilePreview";
+import { MatrixFilePreview, useFileCheck } from "./MatrixFilePreview";
 
 const ACCEPT = ["image/png", "image/jpeg", "application/pdf", "application/json", ".json"];
 const isJson = (f: File) => f.type === "application/json" || f.name.toLowerCase().endsWith(".json");
@@ -38,7 +38,7 @@ export default function MatricesPage() {
   const [items, setItems] = useState<MatrixSummary[] | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [over, setOver] = useState(false);
-  const jsonSummary = useJsonSummary(file);
+  const check = useFileCheck(file);
   const list = useAction();
   const upload = useAction();
 
@@ -49,7 +49,7 @@ export default function MatricesPage() {
   useEffect(load, [load]);
   usePolling(load, !!items?.some((m) => m.status === "uploaded" || m.status === "converting"));
 
-  const problem = file ? fileProblem(file) : "";
+  const problem = file ? fileProblem(file) || check.error || "" : "";
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -94,7 +94,8 @@ export default function MatricesPage() {
           </div>
         ))}
         <p className="min-w-56 flex-1 self-center px-4 py-2 text-muted">
-          Hỗ trợ ma trận Toán lớp 10, 11 (kiểm tra định kỳ) và lớp 12 theo cấu trúc đề thi tốt nghiệp THPT từ năm 2025.
+          Hỗ trợ ma trận Toán lớp 10, 11 (kiểm tra định kỳ) và 12 (tốt nghiệp THPT). Mọi lớp đều cần đúng cấu trúc đề
+          3 phần từ năm 2025: 12 câu nhiều lựa chọn, 4 câu đúng/sai, 6 câu trả lời ngắn.
         </p>
       </dl>
 
@@ -119,8 +120,8 @@ export default function MatricesPage() {
                 <p className="text-sm text-muted">
                   {(file.name.split(".").pop() ?? "").toUpperCase()} · {fileSize(file.size)}
                 </p>
-                {jsonSummary && <p className="text-sm text-muted">{jsonSummary}</p>}
-                <p className="text-xs text-muted">Bấm vào ảnh xem nhỏ bên trái để xem to ma trận trước khi tải lên.</p>
+                {check.summary && <p className="text-sm text-muted">{check.summary}</p>}
+                {check.previewable && <p className="text-xs text-muted">Bấm vào ảnh xem nhỏ bên trái để xem to ma trận trước khi tải lên.</p>}
                 {problem ? (
                   <p className="text-sm text-bad">{problem}</p>
                 ) : (

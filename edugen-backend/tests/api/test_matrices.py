@@ -161,20 +161,33 @@ def test_true_false_statement_units_are_saved_and_checked(client, teacher_header
     assert client.put(f"{BASE}/{m['id']}/cells", json={"cells": cells}, headers=teacher_headers).status_code == 422
 
 
-def test_confirm_rejects_non_grade_12_matrix_without_rewriting_its_grade(client, teacher_headers):
-    m = uploaded(client, teacher_headers)  # ma trận mẫu là lớp 10
+def test_grade_10_matrix_is_confirmed_without_rewriting_its_grade(client, teacher_headers):
+    m = uploaded(client, teacher_headers)  # ma trận mẫu là lớp 10 (kiểm tra định kỳ)
     resp = client.post(f"{BASE}/{m['id']}/confirm", headers=teacher_headers)
-    assert resp.status_code == 409
-    assert resp.json()["detail"] == "Bản demo hiện chỉ hỗ trợ đề lớp 12. Ma trận này là lớp 10 nên chưa xác nhận được."
-    assert client.get(f"{BASE}/{m['id']}", headers=teacher_headers).json()["grade"] == 10
+    assert resp.status_code == 200 and resp.json()["status"] == "confirmed"
+    assert resp.json()["grade"] == 10
 
 
-def test_matrix_with_missing_or_wrong_grade_can_be_set_to_12_then_confirmed(client, db, teacher_headers):
+def test_confirm_rejects_a_matrix_without_grade(client, db, teacher_headers):
     import uuid
 
     from app.models import ExamMatrix
 
-    for wrong in (None, 11):
+    m = uploaded(client, teacher_headers)
+    row = db.get(ExamMatrix, uuid.UUID(m["id"]))
+    row.grade = None  # DB chỉ nhận lớp 10–12 hoặc trống
+    db.commit()
+    resp = client.post(f"{BASE}/{m['id']}/confirm", headers=teacher_headers)
+    assert resp.status_code == 409
+    assert resp.json()["detail"] == "Chưa xác định được lớp của ma trận (10, 11 hoặc 12): chọn lớp rồi xác nhận lại."
+
+
+def test_matrix_with_missing_grade_can_be_set_to_12_then_confirmed(client, db, teacher_headers):
+    import uuid
+
+    from app.models import ExamMatrix
+
+    for wrong in (None,):
         m = uploaded(client, teacher_headers)
         row = db.get(ExamMatrix, uuid.UUID(m["id"]))
         row.grade = wrong

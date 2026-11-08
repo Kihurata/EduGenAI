@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
-import { api } from "@/api";
+import { api, ApiError } from "@/api";
 import { formatTime, useAction, usePolling } from "@/common";
 import { Chip } from "@/components/Chip";
 import { Stepper } from "@/components/Stepper";
@@ -53,8 +53,21 @@ const STATE_CHIP: Record<ViewState, [string, "ok" | "accent" | "muted"]> = {
   wait: ["Chờ", "muted"],
 };
 
-/** Automatic re-fills per cell before the page falls back to a manual "Sinh lại" button. */
-const AUTO_RETRIES = 3;
+/**
+ * Automatic re-fills per cell before the page falls back to a manual "Sinh lại" button. One is
+ * enough: each fill already asks RAG up to FILL_ROUNDS (3) times on the BE, and every round costs
+ * an LLM call.
+ */
+const AUTO_RETRIES = 1;
+/** Ceiling on automatic re-fills for one exam while the page is open, whatever the number of cells. */
+const AUTO_FILLS_PER_EXAM = 6;
+
+/** A failed fill request (network, server, expired login), as opposed to RAG returning too few questions. */
+function requestProblem(error: unknown): string | null {
+  if (!error) return null;
+  if (error instanceof ApiError && error.status === 409) return null; // the exam started generating meanwhile
+  return "Không kết nối được máy chủ nên chưa sinh bù được. Kiểm tra mạng rồi bấm “Sinh lại”.";
+}
 
 const isBad = (r: CellRow) => r.state === "short" || r.state === "error";
 
@@ -86,20 +99,26 @@ export default function ExamsPage() {
   }
 
   const rows = selected ? cellRows(selected, cells) : [];
-  const retriesLeft = (r: CellRow) => !!selected && (attempts.current[`${selected.id}:${r.cell.id}`] ?? 0) < AUTO_RETRIES;
+  const problem = requestProblem(fill.error);
+  const examFills = selected ? (attempts.current[selected.id] ?? 0) : 0;
+  // A failed request stops the automatic loop (no burning calls while offline); the teacher retries by hand.
+  const retriesLeft = (r: CellRow) =>
+    !!selected && !problem && examFills < AUTO_FILLS_PER_EXAM && (attempts.current[`${selected.id}:${r.cell.id}`] ?? 0) < AUTO_RETRIES;
   const canFill = !!selected && selected.status !== "generating" && selected.status !== "approved";
   const badCells = rows.filter(isBad).map((r) => r.cell.id).join(",");
 
   // Auto re-fill: once the exam is idle, re-fill the first short / failed cell that still has tries left.
+  // Counters are bumped before the request so a re-render can never send the same fill twice.
   useEffect(() => {
     if (!selected || !canFill || fill.busy || !badCells) return;
     const target = rows.find((r) => isBad(r) && retriesLeft(r));
     if (!target) return;
     const key = `${selected.id}:${target.cell.id}`;
     attempts.current[key] = (attempts.current[key] ?? 0) + 1;
+    attempts.current[selected.id] = (attempts.current[selected.id] ?? 0) + 1;
     void retry(selected.id, target.cell.id);
-    // rows / helpers are rebuilt every render; the exam, its status and its bad cells drive this
-  }, [selected?.id, selected?.status, badCells, canFill, fill.busy]);
+    // rows / helpers are rebuilt every render; the exam, its status, its bad cells and request errors drive this
+  }, [selected?.id, selected?.status, badCells, canFill, fill.busy, problem]);
 
   const generating = selected?.status === "generating";
   const autoPending = rows.some((r) => isBad(r) && retriesLeft(r));
@@ -169,6 +188,11 @@ export default function ExamsPage() {
       ) : (
         <>
           <Summary exam={selected} rows={view} working={generating || fill.busy || autoPending} />
+          {problem && (
+            <p role="alert" className="mt-3 rounded-sm border border-warn/40 bg-warn/10 px-4 py-2 text-sm text-warn">
+              {problem}
+            </p>
+          )}
           <div className="mt-6 grid items-start gap-8 lg:grid-cols-[18rem_minmax(0,1fr)]">
             <SlotMap rows={view} hl={hlCell} onPick={jumpTo} />
             <CellList rows={view} hl={hlCell} busy={fill.busy} onRetry={(cellId) => retry(selected.id, cellId)} />

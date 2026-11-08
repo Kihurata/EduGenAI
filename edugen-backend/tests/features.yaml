@@ -165,6 +165,7 @@ features:
     test_cases: [TC-012]
     integration:
       - tests/api/test_bank.py
+      - tests/api/test_exam_source.py   # exam source school|personal: admin review queue, personal collection
 
   F-08:
     title: Teacher accounts   # P2, no feature note in the vault yet

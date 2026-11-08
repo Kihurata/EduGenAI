@@ -10,7 +10,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, CreatedAtMixin, TimestampMixin, UUIDPkMixin
 from app.models.enums import (
+    BankReview,
     CellRunStatus,
+    ExamSource,
     ExamStatus,
     ExportFormat,
     ExportVariant,
@@ -36,8 +38,21 @@ class Exam(UUIDPkMixin, TimestampMixin, Base):
     # Tiến độ job sinh nền: số ô đã gọi RAG / tổng số ô.
     cells_done: Mapped[int] = mapped_column(SmallInteger, default=0)
     cells_total: Mapped[int] = mapped_column(SmallInteger)
+    # Nguồn dữ liệu sinh đề (ExamSource); chuỗi thay vì enum Postgres để thêm cột không cần CREATE TYPE.
+    source: Mapped[str] = mapped_column(String(16), default=ExamSource.school.value, server_default="school")
+    # Chỉ đề nguồn trường đã duyệt: admin xét chọn làm đề chính thức (BankReview); null = chưa tới lượt xét.
+    review_status: Mapped[str | None] = mapped_column(String(16))
+    review_note: Mapped[str | None] = mapped_column(Text)  # lý do admin không chọn
 
     matrix: Mapped[ExamMatrix] = relationship()
+
+    @property
+    def is_personal(self) -> bool:
+        return self.source == ExamSource.personal.value
+
+    def mark_review(self, status: BankReview | None, note: str | None = None) -> None:
+        self.review_status = status.value if status else None
+        self.review_note = note
     cell_runs: Mapped[list["ExamCellRun"]] = relationship(
         cascade="all, delete-orphan", passive_deletes=True
     )

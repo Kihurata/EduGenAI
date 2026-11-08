@@ -59,6 +59,21 @@ class ExamStatus(str, enum.Enum):
     approved = "approved"  # GV đã duyệt: khoá sửa, được xuất file và nạp ngân hàng
 
 
+class ExamSource(str, enum.Enum):
+    """Nguồn dữ liệu GV chọn khi sinh đề; quyết định đề duyệt xong đi đâu."""
+
+    school = "school"  # dữ liệu dùng chung + của trường; duyệt xong vào hàng chờ admin chọn đề chính thức
+    personal = "personal"  # thêm đề mẫu GV tự tải; duyệt xong lưu vào bộ sưu tập cá nhân, admin không thấy
+
+
+class BankReview(str, enum.Enum):
+    """Admin xét đề nguồn trường (sau khi GV duyệt) có thành đề chính thức của ngân hàng không."""
+
+    pending = "pending"  # chờ admin xét
+    accepted = "accepted"  # đã vào ngân hàng đề (đề chính thức)
+    rejected = "rejected"  # admin không chọn, kèm lý do
+
+
 class ExportVariant(str, enum.Enum):
     student = "student"  # chỉ đề
     teacher = "teacher"  # đề + đáp án + lời giải

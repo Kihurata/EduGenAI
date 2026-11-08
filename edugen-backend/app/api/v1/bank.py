@@ -18,7 +18,7 @@ from app.api.v1.exams import ExamOut, download, download_variants
 from app.api.v1.matrices import MatrixOut
 from app.db.session import get_session_factory
 from app.models import Exam, ExamBankEntry, ExamMatrix, User
-from app.models.enums import ExamStatus, ExportVariant, IngestStatus, UserRole
+from app.models.enums import BankReview, ExamStatus, ExportVariant, IngestStatus, UserRole
 from app.services.bank import refresh_status, send_exam_to_rag
 from app.services.rag_client import get_rag_client
 from app.services.rag_ingest import Ingester
@@ -33,6 +33,11 @@ Storage = Annotated[LocalStorage, Depends(get_storage)]
 class BankIn(BaseModel):
     exam_id: uuid.UUID
     is_visible: bool = False  # mặc định tạm ẩn
+
+
+class RejectIn(BaseModel):
+    exam_id: uuid.UUID
+    note: str | None = Field(None, max_length=1000)  # lý do, GV thấy trong danh sách đề của mình
 
 
 class BankPatch(BaseModel):
@@ -88,6 +93,27 @@ def get_entry(db: Session, entry_id: uuid.UUID, user: User) -> ExamBankEntry:
     return entry
 
 
+def get_school_exam(db: Session, exam_id: uuid.UUID, admin: User) -> Exam:
+    """Đề admin được xét: nguồn trường, GV đã duyệt. Đề cá nhân của GV không vào ngân hàng."""
+    exam = get_in_school(db, Exam, exam_id, admin, "đề")
+    if exam.is_personal:
+        raise not_found("đề")
+    if exam.status is not ExamStatus.approved:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Chỉ nạp được đề đã duyệt")
+    return exam
+
+
+@router.post("/reject")
+def reject_exam(body: RejectIn, db: DB, admin: Admin) -> dict[str, str]:
+    """Admin không chọn đề làm đề chính thức (đề chưa ở ngân hàng); GV thấy trạng thái và lý do."""
+    exam = get_school_exam(db, body.exam_id, admin)
+    if db.scalar(select(ExamBankEntry.id).where(ExamBankEntry.exam_id == exam.id)):
+        raise HTTPException(status.HTTP_409_CONFLICT, "Đề đang là đề chính thức, hãy gỡ khỏi ngân hàng trước")
+    exam.mark_review(BankReview.rejected, (body.note or "").strip() or None)
+    db.commit()
+    return {"id": str(exam.id), "review_status": BankReview.rejected.value}
+
+
 @router.post("", status_code=status.HTTP_201_CREATED)
 def add_to_bank(
     body: BankIn,
@@ -98,9 +124,7 @@ def add_to_bank(
     rag: Rag,
     storage: Storage,
 ) -> BankEntryOut:
-    exam = get_in_school(db, Exam, body.exam_id, admin, "đề")
-    if exam.status is not ExamStatus.approved:
-        raise HTTPException(status.HTTP_409_CONFLICT, "Chỉ nạp được đề đã duyệt")
+    exam = get_school_exam(db, body.exam_id, admin)
     if db.scalar(select(ExamBankEntry.id).where(ExamBankEntry.exam_id == exam.id)):
         raise HTTPException(status.HTTP_409_CONFLICT, "Đề đã có trong ngân hàng")
     entry = ExamBankEntry(
@@ -108,6 +132,7 @@ def add_to_bank(
         rag_status=IngestStatus.pending,
     )  # fmt: skip
     db.add(entry)
+    exam.mark_review(BankReview.accepted)
     db.commit()
     db.refresh(entry)
     background.add_task(send_exam_to_rag, factory, entry.id, rag, storage)
@@ -180,8 +205,10 @@ def update_entry(entry_id: uuid.UUID, body: BankPatch, db: DB, admin: Admin) -> 
 
 @router.delete("/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_entry(entry_id: uuid.UUID, db: DB, admin: Admin) -> Response:
-    """Gỡ đề khỏi ngân hàng; đề vẫn còn trong danh sách đề của người tạo."""
-    db.delete(get_entry(db, entry_id, admin))
+    """Gỡ đề khỏi ngân hàng; đề vẫn còn trong danh sách đề của người tạo và trở lại hàng chờ admin xét."""
+    entry = get_entry(db, entry_id, admin)
+    entry.exam.mark_review(BankReview.pending)
+    db.delete(entry)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

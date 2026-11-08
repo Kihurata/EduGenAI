@@ -151,8 +151,12 @@ export function MatrixFilePreview({ file }: Readonly<{ file: File }>) {
       <DialogTrigger asChild>
         <button type="button" className="group relative block w-full cursor-zoom-in text-left" aria-label={`Xem trước ${file.name}`}>
           {thumb}
-          <span className="absolute inset-x-0 bottom-0 bg-ink/60 py-0.5 text-center text-[11px] text-surface opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
-            Xem to
+          {/* luôn hiện (máy cảm ứng không có hover) */}
+          <span aria-hidden className="absolute right-1 bottom-1 grid h-6 w-6 place-items-center rounded-sm bg-ink/70 text-surface group-hover:bg-accent group-focus-visible:bg-accent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5M11 8v6M8 11h6" />
+            </svg>
           </span>
         </button>
       </DialogTrigger>
@@ -167,22 +171,38 @@ export function MatrixFilePreview({ file }: Readonly<{ file: File }>) {
   );
 }
 
-/** Một dòng tóm tắt JSON ma trận cho phần thông tin file (số dòng nội dung, số câu từng phần). */
-export function useJsonSummary(file: File | null): string | null {
-  const [summary, setSummary] = useState<string | null>(null);
+export const JSON_FORMAT_ERROR =
+  "File JSON không đúng định dạng ma trận: cần danh sách “rows”, mỗi dòng có “unit_name” và số câu theo mức độ.";
+
+export interface FileCheck {
+  summary: string | null; // JSON hợp lệ: số dòng nội dung, số câu từng phần
+  error: string | null; // JSON đọc không được: báo ngay ở bước 1, không cho tải lên
+  previewable: boolean; // ô xem nhỏ bấm được để xem to
+}
+
+/** Đọc trước file đã chọn: tóm tắt / lỗi định dạng của JSON, và file có xem trước được không. */
+export function useFileCheck(file: File | null): FileCheck {
+  const [json, setJson] = useState<{ file: File; m: JsonMatrix | null } | null>(null);
   useEffect(() => {
-    setSummary(null);
     if (!file || !isJsonFile(file)) return;
     let alive = true;
-    void file.text().then((t) => {
-      const m = readJsonMatrix(t);
-      if (!alive || !m) return;
-      const part = (p: number) => m.rows.reduce((s, r) => s + r.counts[p * 3] + r.counts[p * 3 + 1] + r.counts[p * 3 + 2], 0);
-      setSummary(`${m.rows.length} dòng nội dung · Phần I ${part(0)} câu · Phần II ${part(1)} ý · Phần III ${part(2)} câu`);
-    });
+    void file.text().then((t) => alive && setJson({ file, m: readJsonMatrix(t) }));
     return () => {
       alive = false;
     };
   }, [file]);
-  return summary;
+  if (!file) return { summary: null, error: null, previewable: false };
+  if (!isJsonFile(file)) {
+    const media = file.type.startsWith("image/") || file.type === "application/pdf";
+    return { summary: null, error: null, previewable: media };
+  }
+  if (json?.file !== file) return { summary: null, error: null, previewable: false }; // đang đọc
+  const m = json.m;
+  if (!m) return { summary: null, error: JSON_FORMAT_ERROR, previewable: false };
+  const part = (p: number) => m.rows.reduce((s, r) => s + r.counts[p * 3] + r.counts[p * 3 + 1] + r.counts[p * 3 + 2], 0);
+  return {
+    summary: `${m.rows.length} dòng nội dung · Phần I ${part(0)} câu · Phần II ${part(1)} ý · Phần III ${part(2)} câu`,
+    error: null,
+    previewable: true,
+  };
 }

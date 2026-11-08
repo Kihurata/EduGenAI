@@ -63,6 +63,24 @@ def test_same_bytes_hit_cache(tmp_path, session_factory):
     assert inner.calls == 1
 
 
+def test_cache_hit_is_logged_only_on_hit(tmp_path, session_factory, caplog):
+    conv = CachedMatrixConverter(FakeConverter(), session_factory, "k")
+    with caplog.at_level("INFO", logger="app.services.matrix_converter"):
+        conv.convert(src(tmp_path))
+        assert "cache hit" not in caplog.text
+        conv.convert(src(tmp_path, name="lan2.png"))
+    assert "Ma trận cache hit, bỏ qua Gemini: file=lan2.png" in caplog.text
+
+
+def test_app_logger_emits_info():
+    import logging
+
+    import app.main  # noqa: F401  # cấu hình logger "app" khi import
+
+    log = logging.getLogger("app")
+    assert log.handlers and log.getEffectiveLevel() == logging.INFO
+
+
 def test_different_bytes_miss(tmp_path, session_factory):
     inner = FakeConverter()
     conv = CachedMatrixConverter(inner, session_factory, "k")
